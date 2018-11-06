@@ -1,0 +1,4 @@
+CFLAGS=-nostdinc -nostdlib
+LDFLAGS=
+ASFLAGS=
+NASMFLAGS=

@@ -1,0 +1,10 @@
+start.o
+main.o
+idt.o
+idtfill.o
+expents.o
+irqents.o
+gen.expdfldoes.o
+gen.irqdfldoes.o
+irq.o
+kbc.o

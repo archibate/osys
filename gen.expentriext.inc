@@ -1,0 +1,17 @@
+	EXTERN do_divide_error
+	EXTERN do_debug
+	EXTERN do_nmi
+	EXTERN do_break_point
+	EXTERN do_overflow
+	EXTERN do_bounds_check
+	EXTERN do_invalid_opcode
+	EXTERN do_device_not_available
+	EXTERN do_double_fault
+	EXTERN do_coprocessor_seg_overrun
+	EXTERN do_invalid_tss
+	EXTERN do_segment_not_present
+	EXTERN do_stack_segment
+	EXTERN do_general_protection
+	EXTERN do_page_fault
+	EXTERN do_reserved_exception
+	EXTERN do_coprocessor_error

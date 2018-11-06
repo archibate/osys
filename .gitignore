@@ -1,0 +1,8 @@
+*.o
+*.elf
+*.bin
+*.img
+*~
+.*~
+.*.sw*
+bochsout.txt
