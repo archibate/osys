@@ -1,9 +1,12 @@
 DISK=a.img
+BOOTSECT=bootsect.bin
+KERNBIN=kernel.bin
 
 default: run
 
-$(DISK): bootsect.bin kernel.bin
-	cat $^ > $@
+$(DISK): $(BOOTSECT) $(KERNBIN)
+	dd if=/dev/zero of=$@ bs=$$((1440*1024)) count=1
+	cat $^ | dd of=$@ conv=notrunc
 
 include tools.mak
 include cross.mak

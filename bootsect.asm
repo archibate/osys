@@ -3,6 +3,10 @@
 CYLS	equ	10
 KERNADR	equ	0x100000
 VINFO	equ	0x7c00
+VGAMODE equ	0x13
+;VBEMODE equ	0x118
+;VBEMODE equ	0x103
+VBEMODE equ	0x13
 
 	org 0x7c00
 
@@ -85,13 +89,14 @@ msg_err:
 	dw 0xaa55
 
 setup_stage:
+	xor ax, ax
+	mov ds, ax
+	mov es, ax
+
 	mov si, msg_setup
 	call print
 
-	call set_vga13
-	mov [VINFO + 0x00], ebx
-	mov [VINFO + 0x04], cx
-	mov [VINFO + 0x06], dx
+	call set_vbe
 
 enable_32:
 	cli

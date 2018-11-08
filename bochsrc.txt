@@ -16,10 +16,11 @@ floppya: 1_44=a.img, status=inserted
 boot: a
 
 # where do we send log messages?
-log: bochsout.txt
+log: bochs.out
 
 # disable the mouse, since OSys is text only
 mouse: enabled=0
 
 # enable key mapping, using US layout as default.
 keyboard: keymap=$BXSHARE/keymaps/x11-pc-us.map
+

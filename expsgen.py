@@ -29,12 +29,13 @@ def pr_entries_inc():
 
 
 def pr_entinfo_h():
+    wr('#pragma once\n')
     wr('#define EXP_MAX ' + str(len(exps)))
 
 
 def pr_dfldoes_c():
     for exp in exps:
-        wr('void do_' + exp)
+        wr('void __attribute__((weak)) do_' + exp)
         wr('(void)')
         wr('{')
         wr('}')

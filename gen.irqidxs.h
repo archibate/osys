@@ -1,3 +1,5 @@
+#pragma once
+
 #define IRQ_TIMER 0
 #define IRQ_KEYBOARD 1
 #define IRQ_2 2

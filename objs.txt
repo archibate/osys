@@ -8,3 +8,4 @@ gen.expdfldoes.o
 gen.irqdfldoes.o
 irq.o
 kbc.o
+mouse.o

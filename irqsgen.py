@@ -22,10 +22,12 @@ def pr_entries_inc():
 
 
 def pr_entinfo_h():
+    wr('#pragma once\n')
     wr('#define IRQ_MAX ' + str(len(exps)))
 
 
 def pr_idxs_h():
+    wr('#pragma once\n')
     for i, exp in enumerate(exps):
         #wr('#define IRQ_' + exp + ' ' + str(i))
         exp = exp.upper()
@@ -34,7 +36,7 @@ def pr_idxs_h():
 
 def pr_dfldoes_c():
     for exp in exps:
-        wr('void do_' + exp)
+        wr('void __attribute__((weak)) do_' + exp)
         wr('(void)')
         wr('{')
         wr('}')
