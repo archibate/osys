@@ -1,26 +1,41 @@
-DISK=a.img
-BOOTSECT=bootsect.bin
-KERNBIN=kernel.bin
+KERN=kernel
+KTE=bin
 
 default: run
 
-$(DISK): $(BOOTSECT) $(KERNBIN)
+
+A=./z_tools/
+S=scripts/
+M=makeinc/
+B=bin/
+
+
+include $Mbindir.mak
+
+
+FDIMG=$Ba.img
+BOOTSECT=$Bbootsect.bin
+K=$B$(KERN)
+
+fdimg: $(FDIMG)
+
+
+$(FDIMG): $(BOOTSECT) $K.$(KTE)
 	dd if=/dev/zero of=$@ bs=$$((1440*1024)) count=1
 	cat $^ | dd of=$@ conv=notrunc
 
-include tools.mak
-include cross.mak
-include flags.mak
 
-CFLAGS+=-m32 -fno-stack-protector
-LDFLAGS+=-T kernel.ld
-ELF=kernel.elf
-BIN=kernel.bin
-OBJS=$(shell cat objs.txt)
+include $Mcross.mak
+include $Mflags.mak
 
-include rules.mak
-include rules-bin.mak
-include mk-elf.mak
-include mk-bin.mak
-include mk-run.mak
-include endup.mak
+
+CFLAGS+=-m32 -fno-stack-protector -I.
+
+OBJS=$(foreach x, $(shell cat objs.txt), $B$x.o)
+ASKOBJS=$(OBJS:%=%bj)
+
+
+include $Mrules.mak
+include $Mmk-bin.mak
+include $Mmk-run.mak
+include $Mendup.mak

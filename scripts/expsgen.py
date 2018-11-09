@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 exps = '''
 divide_error debug nmi break_point overflow
 bounds_check invalid_opcode device_not_available

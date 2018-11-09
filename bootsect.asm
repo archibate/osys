@@ -1,6 +1,6 @@
 ; vim: ft=nasm ai
 
-CYLS	equ	10
+CYLS	equ	9
 KERNADR	equ	0x100000
 VINFO	equ	0x7c00
 VGAMODE equ	0x13
@@ -9,6 +9,8 @@ VGAMODE equ	0x13
 VBEMODE equ	0x13
 
 	org 0x7c00
+
+[BITS 16]
 
 _start:
 %include "diskhead.inc"
