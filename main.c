@@ -1,15 +1,23 @@
-#define INIT(x) extern void init_##x(void); init_##x();
+#define INIT(x, ...) extern void init_##x(); init_##x(__VA_ARGS__);
 int main
 (void)
 {
 	INIT(idt);
-	INIT(idtfill);
-
 	INIT(pic);
 	INIT(kbc);
+	INIT(serial);
+	INIT(keyboard);
 	INIT(mouse);
+	INIT(timer, 100);
+	INIT(dma);
+	INIT(sched);
+
+	asm volatile ("sti");
 
 	INIT(game);
+
+	for (;;)
+		asm volatile ("hlt");
 }
 
 

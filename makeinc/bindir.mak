@@ -1,10 +1,10 @@
 ifneq (B,)
-$B%: $B
+$B%: % $B
+	$Vcat $< > $@
 
-$B%: %
-	cat $< > $@
+$B%: $B
 
 CLEAN+=$B
 $B:
-	mkdir -p $@
+	$Vmkdir -p $@
 endif

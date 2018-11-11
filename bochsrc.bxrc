@@ -10,7 +10,7 @@ romimage: file=$BXSHARE/BIOS-bochs-latest
 vgaromimage: file=$BXSHARE/VGABIOS-lgpl-latest
 
 # what disk images will be used 
-floppya: 1_44=a.img, status=inserted
+floppya: 1_44=bin/a.img, status=inserted
 
 # choose the boot disk.
 boot: a

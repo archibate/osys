@@ -1,6 +1,7 @@
 ; vim: ft=nasm ai
 
 	GLOBAL irq_ents
+	EXTERN irq_table
 
 [SECTION .rodata]
 
@@ -22,7 +23,7 @@ irq_common:
 	mov es, edx
 
 	mov eax, [esp + 40] ; irq index
-	call eax
+	call [irq_table + eax * 4]
 
 	pop dword es
 	pop dword ds

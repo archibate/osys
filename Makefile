@@ -1,23 +1,26 @@
 KERN=kernel
 KTE=bin
 
-default: run
+default: all
+
+-include $B.deps
 
 
-A=./z_tools/
+A=z_tools/
 S=scripts/
 M=makeinc/
 B=bin/
 
 
+include $Mverbose.mak
 include $Mbindir.mak
 
 
 FDIMG=$Ba.img
 BOOTSECT=$Bbootsect.bin
-K=$B$(KERN)
+K:=$B$(KERN)
 
-fdimg: $(FDIMG)
+all: $(FDIMG)
 
 
 $(FDIMG): $(BOOTSECT) $K.$(KTE)
@@ -29,13 +32,40 @@ include $Mcross.mak
 include $Mflags.mak
 
 
-CFLAGS+=-m32 -fno-stack-protector -I.
+PHONY+=bochsrun
+bochsrun: $(FDIMG)
+	$(SH) bochs.sh
 
-OBJS=$(foreach x, $(shell cat objs.txt), $B$x.o)
-ASKOBJS=$(OBJS:%=%bj)
+PHONY+=run
+run: $(FDIMG)
+	$(SH) qemu.sh
+
+PHONY+=debug
+debug: $(FDIMG)
+	@echo "*** now run 'gdb' in another terminal." >&2
+	$(SH) qemu.sh -d
+
+PHONY+=always
+always:
+	@:
+
+
+INCLUDE+=. inc libc
+CFLAGS+=$(INCLUDE:%=-I%)
+
+ONAMES:=$(shell cat objs.txt)
+OBJS:=$(ONAMES:%=$B%.o)
+ASKOBJS:=$(OBJS:%=%bj)
+
+GCC_LIB+=$(shell $(CC) $(CFLAGS) -print-libgcc-file-name)
+OBJS+=$(GCC_LIB)
 
 
 include $Mrules.mak
 include $Mmk-bin.mak
-include $Mmk-run.mak
+include $Mautodep.mak
+
+
+PRECIOUS+=$B%
+
 include $Mendup.mak

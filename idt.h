@@ -5,8 +5,8 @@
 #include "gen.expentinfo.h" // EXP_MAX
 
 
-#define IDT_MAX 256
-#define IRQ_BEG EXP_MAX
+#define IDT_MAX 0x100
+#define IRQ_IDT_BEG 0x20
 
 
 extern

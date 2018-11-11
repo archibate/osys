@@ -1,6 +1,7 @@
-#include "kbc.h"
-#include "ioport.h"
+#include "kbc.h" // kbc_cmd, KB*
+#include "irq.h" // set_irq_enable
 #include "onmouse.h" // on_mouse_event
+#include "ioport.h"
 
 
 static unsigned char mdat0, mdat1;
@@ -12,10 +13,13 @@ void init_mouse
 {
 	kbc_cmd(KB_CMD_TO_MOUSE, KB_MOUSE_CMD_ENABLE);
 	phase = 0;
+
+	set_irq_enable(IRQ_MOUSE, 1);
 }
 
 
-void do_mouse_data(unsigned char a)
+void do_mouse_data
+(unsigned char a)
 {
 	if (phase == 0)
 	{
@@ -59,8 +63,7 @@ void do_mouse
 (void)
 {
 	unsigned char a = io_inb(KB_PORT_DATA);
-	do_mouse_data(a); // TODO: use a FIFO buffer instead
+	do_mouse_data(a); // TODO: use a FIFO buffer
 
-	io_outb(0x20, 0x20);
-	io_outb(0xa0, 0x20);
+	irq_done(IRQ_MOUSE);
 }

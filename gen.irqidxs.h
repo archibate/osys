@@ -2,9 +2,9 @@
 
 #define IRQ_TIMER 0
 #define IRQ_KEYBOARD 1
-#define IRQ_2 2
+#define IRQ_SLAVEPIC 2
 #define IRQ_3 3
-#define IRQ_4 4
+#define IRQ_SERIAL 4
 #define IRQ_5 5
 #define IRQ_6 6
 #define IRQ_7 7

@@ -1,5 +1,7 @@
 $(FONBIN) : $(FONTXT)
-	$(MAKEFONT) $< $@
+	$E makefont $@
+	$V$(MAKEFONT) $< $@
 
 $(FONOBJ) : $(FONBIN)
-	$(BIN2OBJ) $< $@ $(FONSYM)
+	$E bin2obj $@
+	$V$(BIN2OBJ) $< $@ $(FONSYM)

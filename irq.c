@@ -1,8 +1,9 @@
 #include "irq.h"
+#include "idt.h" // IRQ_IDT_BEG
 #include "ioport.h"
 
 
-void *irq_table[IRQ_MAX];
+void *irq_table[IRQ_MAX]; // C rountine table
 
 
 void init_pic
@@ -11,8 +12,8 @@ void init_pic
 	io_outb(0x20, 0x11);
 	io_outb(0xa0, 0x11);
 
-	io_outb(0x21, 0x20);
-	io_outb(0xa1, 0x28);
+	io_outb(0x21, IRQ_IDT_BEG);
+	io_outb(0xa1, IRQ_IDT_BEG + 8);
 
 	io_outb(0x21, 0x04);
 	io_outb(0xa1, 0x02);
@@ -20,8 +21,8 @@ void init_pic
 	io_outb(0x21, 0x01);
 	io_outb(0xa1, 0x01);
 
-	io_outb(0x21, 0xff);
-	io_outb(0xa1, 0xfb); // slave PIC not masked
+	io_outb(0x21, 0xfb); // INTR from slave PIC not masked
+	io_outb(0xa1, 0xff);
 }
 
 
@@ -39,9 +40,11 @@ void set_irq_enable
 	}
 
 	mask = io_inb(port);
+
 	if (enable)
 		mask &= 0xff ^ (1 << irq_no);
 	else
 		mask |= 1 << irq_no;
+
 	io_outb(port, mask);
 }

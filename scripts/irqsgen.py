@@ -3,7 +3,10 @@
 exps = '''
 timer
 keyboard
-2 3 4 5 6 7 8 9 10 11
+slavepic
+3
+serial
+5 6 7 8 9 10 11
 mouse
 13
 harddisk
@@ -31,18 +34,23 @@ def pr_entinfo_h():
 def pr_idxs_h():
     wr('#pragma once\n')
     for i, exp in enumerate(exps):
-        #wr('#define IRQ_' + exp + ' ' + str(i))
-        exp = exp.upper()
-        wr('#define IRQ_' + exp + ' ' + str(i))
+        wr('#define IRQ_' + exp.upper() + ' ' + str(i))
 
 
 def pr_dfldoes_c():
+    wr('#include "irq.h" // IRQ_MAX')
+    wr('')
     for exp in exps:
         wr('void __attribute__((weak)) do_' + exp)
         wr('(void)')
         wr('{')
+        wr('\tirq_done(IRQ_' + exp.upper() + ');')
         wr('}')
         wr('')
+    wr('void *irq_table[IRQ_MAX] = {')
+    for exp in exps:
+        wr('\tdo_' + exp + ',')
+    wr('};')
 
 
 fout = None
