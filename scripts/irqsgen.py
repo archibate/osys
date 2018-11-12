@@ -38,7 +38,7 @@ def pr_idxs_h():
 
 
 def pr_dfldoes_c():
-    wr('#include "irq.h" // IRQ_MAX')
+    wr('#include <irq.h> // IRQ_MAX')
     wr('')
     for exp in exps:
         wr('void __attribute__((weak)) do_' + exp)

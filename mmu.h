@@ -7,7 +7,7 @@
 
 #define mmu_get_pd(pgd) ({ \
 	unsigned long $$$pgd; \
-	asm volatile ("movl %%cr3, %0" : "=r" ($$$pgd)) \
+	asm volatile ("movl %%cr3, %0" : "=r" ($$$pgd)); \
 	$$$pgd; \
 	})
 
@@ -15,4 +15,4 @@
 	asm volatile ("movl %%cr3, %%eax; movl %%eax, %%cr3")
 
 #define mmu_invalidate(va) \
-	asm volatile ("invlpg %0" :: "m" ((volatile void *)(va)))
+	asm volatile ("invlpg (%0)" :: "r" (va))

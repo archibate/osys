@@ -1,4 +1,4 @@
-#include "irq.h" // IRQ_MAX
+#include <irq.h> // IRQ_MAX
 
 void __attribute__((weak)) do_timer
 (void)

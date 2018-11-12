@@ -1,9 +1,9 @@
-#include "mmap.h"
-#include "psm.h"
-#include "panic.h"
+#include <mmap.h>
+#include <psm.h>
+#include <panic.h>
 
 
-unsigned long mmap
+unsigned long __mmap
 	( unsigned long *pgd
 	, unsigned long pa
 	, unsigned long pte
@@ -19,7 +19,7 @@ unsigned long mmap
 	pde = pgd[pdsel];
 	if (!(pde & PG_P)) {
 		if (pte & PG_P) {
-			pde = alloc_page();
+			pde = alloc_ppage();
 			pde |= PG_P | PG_W;
 			pgd[pdsel] = pde;
 		} else {
@@ -27,12 +27,10 @@ unsigned long mmap
 		}
 	}
 
-	pt[ptsel] = 
-
 	pt = (unsigned long *) (pde & PGMASK);
 	old_pte = pt[ptsel];
 
-	if (pte & (PGMASK | PG_P) == PGMASK)
+	if (/*(*/pte/* & (PGMASK | PG_P))*/ != PGMASK)
 		pt[ptsel] = pte;
 
 	return old_pte;

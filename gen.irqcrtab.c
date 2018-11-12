@@ -1,4 +1,4 @@
-#include "irq.h" // IRQ_MAX
+#include <irq.h> // IRQ_MAX
 
 void *irq_table[IRQ_MAX] = {
 	do_timer,

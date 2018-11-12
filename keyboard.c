@@ -1,7 +1,7 @@
-#include "irq.h" // set_irq_enable
-#include "kbc.h" // KB_PORT_DATA
-#include "ioport.h"
-#include "onkeybd.h"
+#include <irq.h> // set_irq_enable
+#include <kbc.h> // KB_PORT_DATA
+#include <ioport.h>
+#include <onkeybd.h>
 
 
 void init_keyboard

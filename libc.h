@@ -1,7 +1,7 @@
 #ifndef __LIBC_H_
 #define __LIBC_H_
 
-#include "ctype.h"
+#include <ctype.h>
 
 /* Note: some systems use 0xB0000 Instead of 0xB8000 */
 #define VIDEO_MEMORY 0xB8000

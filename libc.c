@@ -5,7 +5,7 @@
  *      Author: Arvydas Sidorenko
  *****************************************************************************/
 
-#include "libc.h"
+#include <libc.h>
 
 static int _cursor_loc = 0;
 static char _color = 0;

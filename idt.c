@@ -1,4 +1,4 @@
-#include "idt.h"
+#include <idt.h>
 
 
 struct GATE_DESC

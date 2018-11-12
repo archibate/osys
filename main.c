@@ -1,4 +1,9 @@
 #define INIT(x, ...) extern void init_##x(); init_##x(__VA_ARGS__);
+#ifdef TESTING
+#define TEST(x, ...) extern void test_##x(); test_##x(__VA_ARGS__);
+#else
+#define TEST(x, ...)
+#endif
 int main
 (void)
 {
@@ -12,8 +17,9 @@ int main
 	INIT(psm);
 	INIT(game);
 	INIT(dma);
+	INIT(heap);
+	TEST(heap);
 	INIT(sched);
-
 	asm volatile ("sti");
 
 	for (;;)
@@ -39,6 +45,7 @@ void init_game
 {
 	struct VIDEO_INFO *video = (struct VIDEO_INFO *) 0x7b00;
 
+	//mmap((unsigned long)video->buf, (unsigned long)video->buf | PG_P | PG_W);
 	for (int i = 0; i < video->xsiz * video->ysiz; i++)
 		video->buf[i] = (i % video->xsiz) % 0x10;
 }

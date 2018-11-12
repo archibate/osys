@@ -1,7 +1,7 @@
-#include "kbc.h" // kbc_cmd, KB*
-#include "irq.h" // set_irq_enable
-#include "onmouse.h" // on_mouse_event
-#include "ioport.h"
+#include <kbc.h> // kbc_cmd, KB*
+#include <irq.h> // set_irq_enable
+#include <onmouse.h> // on_mouse_event
+#include <ioport.h>
 
 
 static unsigned char mdat0, mdat1;

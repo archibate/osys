@@ -1,5 +1,6 @@
 ifneq (B,)
 $B%: % $B
+	@mkdir -p $(@D)
 	$Vcat $< > $@
 
 $B%: $B

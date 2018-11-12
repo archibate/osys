@@ -1,5 +1,5 @@
-#include "sched.h"
-#include "schswi.h"
+#include <sched.h>
+#include <schswi.h>
 
 
 TCB *current;

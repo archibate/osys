@@ -1,7 +1,7 @@
-#include "print.h"
-#include "memlay.h"
-#include "page.h"
-#include "mmu.h"
+#include <print.h>
+#include <memlay.h>
+#include <page.h>
+#include <mmu.h>
 
 
 #define DMA_PAGES (DMA_END >> PGSHIFT)

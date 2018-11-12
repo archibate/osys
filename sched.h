@@ -1,9 +1,9 @@
 #pragma once
 
 
-#include "list.h"
-#include "regs.h"
-#include "struct.h"
+#include <list.h>
+#include <regs.h>
+#include <struct.h>
 
 
 STRUCT(TCB)

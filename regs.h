@@ -1,6 +1,6 @@
 #pragma once
 
-#include "struct.h"
+#include <struct.h>
 
 
 STRUCT(KS_REGS)

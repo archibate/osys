@@ -61,7 +61,7 @@ always:
 	@:
 
 
-INCLUDE+=. inc libc
+INCLUDE+=. inc lib
 CFLAGS+=$(INCLUDE:%=-I%)
 
 ONAMES:=$(shell cat objs.txt)

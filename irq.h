@@ -3,7 +3,7 @@
 
 #include "gen.irqentinfo.h" // IRQ_MAX
 #include "gen.irqidxs.h" // IRQ_*
-#include "ioport.h"
+#include <ioport.h>
 
 
 extern

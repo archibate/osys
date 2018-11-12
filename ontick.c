@@ -1,6 +1,6 @@
-#include "ontick.h"
-#include "sched.h"
-#include "print.h"
+#include <ontick.h>
+#include <sched.h>
+#include <print.h>
 
 
 static volatile int ticks = 0;

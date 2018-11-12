@@ -1,6 +1,6 @@
-#include "psm.h"
-#include "memlay.h"
-#include "page.h" // PGSIZE
+#include <psm.h>
+#include <memlay.h>
+#include <page.h> // PGSIZE
 
 
 void init_psm

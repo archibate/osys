@@ -1,5 +1,5 @@
-#include "onmouse.h"
-#include "print.h"
+#include <onmouse.h>
+#include <print.h>
 
 
 void on_mouse_event

@@ -1,5 +1,5 @@
-#include "schswi.h"
-#include "print.h"
+#include <schswi.h>
+#include <print.h>
 
 
 void switch_from_to

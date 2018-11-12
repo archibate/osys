@@ -1,6 +1,6 @@
-#include "irq.h"
-#include "ioport.h"
-#include "ontick.h"
+#include <irq.h>
+#include <ioport.h>
+#include <ontick.h>
 
 
 #define PIT_CTR0 0x40

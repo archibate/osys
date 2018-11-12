@@ -36,10 +36,12 @@ def pr_entinfo_h():
 
 
 def pr_dfldoes_c():
+    wr('#include <panic.h>')
     for exp in exps:
         wr('void __attribute__((weak)) do_' + exp)
         wr('(void)')
         wr('{')
+        wr('\tpanic("UNHANDLED EXCEPTION: ' + exp.upper() + '");')
         wr('}')
         wr('')
 

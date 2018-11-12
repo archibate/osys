@@ -1,4 +1,15 @@
 #pragma once
 
 
-#include "libc.h" // puts, putchar, etc.
+#include <stdarg.h>
+
+
+int vprintf
+	( const char *fmt
+	, va_list ap
+	);
+
+int printf
+	( const char *fmt
+	, ...
+	);

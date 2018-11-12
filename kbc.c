@@ -1,5 +1,5 @@
-#include "kbc.h"
-#include "ioport.h"
+#include <kbc.h>
+#include <ioport.h>
 
 
 static

@@ -8,6 +8,7 @@ timer
 ontick
 sched
 schswi
+heap
 mmap
 psm
 dma
@@ -20,5 +21,9 @@ kbc
 mouse
 onmouse
 serial
-putchar
-libc
+print
+lib/gprintf
+lib/atoi
+lib/div
+lib/memory
+lib/string

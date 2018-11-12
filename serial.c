@@ -1,6 +1,6 @@
-#include "serial.h"
-#include "ioport.h"
-#include "irq.h"
+#include <serial.h>
+#include <ioport.h>
+#include <irq.h>
 
 
 static
@@ -81,6 +81,6 @@ void init_serial
 	io_inb(COM_IIR);
 	io_inb(COM_RX);
 
-	/*if (exists)
-		set_irq_enable(IRQ_SERIAL, 1);*/
+	if (exists)
+		set_irq_enable(IRQ_SERIAL, 1);
 }
