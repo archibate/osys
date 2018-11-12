@@ -19,7 +19,7 @@ unsigned long mmap
 	pde = pgd[pdsel];
 	if (!(pde & PG_P)) {
 		if (pte & PG_P) {
-			pde = psm_alloc_page();
+			pde = alloc_page();
 			pde |= PG_P | PG_W;
 			pgd[pdsel] = pde;
 		} else {
