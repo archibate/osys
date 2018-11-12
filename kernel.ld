@@ -19,12 +19,12 @@ SECTIONS {
 		*(COMMON)
 	}
 	/DISCARD/ : {
-		*(.eh_frame*)
+		/**(.eh_frame*)
 		*(.note*)
 		*(.comment*)
 		*(.GNU*)
 		*(.gnu*)
 		*(.dyn*)
-		*(.interp*)
+		*(.interp*)*/
 	}
 }

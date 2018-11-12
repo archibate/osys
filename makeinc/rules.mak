@@ -7,7 +7,7 @@ $B%.d: $B%.c
 	$V$(CC) -E -M -MT $B$*.o $(CFLAGS) $< > $@
 
 $B%.o: $B%.s
-	$E as $(<F)
+	$E cc $(<F)
 	$V$(CC) -c $(CFLAGS) $(ASFLAGS) -o $@ $<
 
 $B%.o: $B%.asm

@@ -1,3 +1,5 @@
+-include mkargs.ign
+
 KERN=kernel
 KTE=bin
 
@@ -19,13 +21,22 @@ include $Mbindir.mak
 FDIMG=$Ba.img
 BOOTSECT=$Bbootsect.bin
 K:=$B$(KERN)
+ifndef KERNIMG
+KERNIMG=$K.$(KTE)
+endif
 
 all: $(FDIMG)
 
 
-$(FDIMG): $(BOOTSECT) $K.$(KTE)
+$(FDIMG): $(BOOTSECT) $(KERNIMG)
 	dd if=/dev/zero of=$@ bs=$$((1440*1024)) count=1
-	cat $^ | dd of=$@ conv=notrunc
+	mkfs.fat --invariant -F 12 -R 4 -n "OSYS FLOPPY" $@
+	dd if=$(BOOTSECT) of=$@ bs=1 skip=62 seek=62 count=$$((512*4-62)) conv=notrunc
+	mkdir -p $Bmnt
+	-$(SH) $Sumountloop.sh $Bmnt
+	$(SH) $Smountloop.sh $Bmnt $@
+	$(SH) $Smntcpfile.sh $Bmnt KERNEL.BIN $(KERNIMG)
+	$(SH) $Sumountloop.sh $Bmnt
 
 
 include $Mcross.mak
@@ -34,16 +45,16 @@ include $Mflags.mak
 
 PHONY+=bochsrun
 bochsrun: $(FDIMG)
-	$(SH) bochs.sh
+	$(SH) $Sbochs.sh
 
 PHONY+=run
 run: $(FDIMG)
-	$(SH) qemu.sh
+	$(SH) $Sqemu.sh
 
 PHONY+=debug
 debug: $(FDIMG)
 	@echo "*** now run 'gdb' in another terminal." >&2
-	$(SH) qemu.sh -d
+	$(SH) $Sqemu.sh -d
 
 PHONY+=always
 always:

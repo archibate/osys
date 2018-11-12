@@ -1,10 +1,12 @@
 $K.elf: $(KERN).ld $(OBJS)
 	$E ld $@
-	$V$(CC) $(CFLAGS) $(LDFLAGS) -T $(KERN).ld -o $@ $^
+	$V$(CC) $(CFLAGS) $(LDFLAGS) -T $(KERN).ld -o $@ $(OBJS)
 
 $K.bin: $K.elf
-	$E objcopy $@
-	$V$(OBJCOPY) -O binary -R .note -R .comment -S $< $@
+	@#$E objcopy $@
+	@#$V$(OBJCOPY) -O binary -S $< $@
+	$E strip $@
+	$V$(STRIP) -O binary -o $@ $<
 
 $K.bim: $(KERN).rul $(ASKOBJS)
 	$E obj2bim $@

@@ -1,6 +1,5 @@
 start
 main
-dma
 idt
 idtfill
 expents
@@ -9,6 +8,9 @@ timer
 ontick
 sched
 schswi
+mmap
+psm
+dma
 gen.expdfldoes
 gen.irqdfldoes
 keyboard

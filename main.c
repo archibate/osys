@@ -9,12 +9,12 @@ int main
 	INIT(keyboard);
 	INIT(mouse);
 	INIT(timer, 100);
+	INIT(psm);
+	INIT(game);
 	INIT(dma);
 	INIT(sched);
 
 	asm volatile ("sti");
-
-	INIT(game);
 
 	for (;;)
 		asm volatile ("hlt");
@@ -37,7 +37,7 @@ struct VIDEO_INFO
 void init_game
 (void)
 {
-	struct VIDEO_INFO *video = (struct VIDEO_INFO *) 0x7c00;
+	struct VIDEO_INFO *video = (struct VIDEO_INFO *) 0x7b00;
 
 	for (int i = 0; i < video->xsiz * video->ysiz; i++)
 		video->buf[i] = (i % video->xsiz) % 0x10;

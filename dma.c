@@ -34,7 +34,6 @@ void init_dma
 	{
 		addr = (unsigned long) (&dma_ptes[i * PTSIZE]);
 		dma_pd[i] = addr | PG_P | PG_W;
-		printf("%x\n", addr);
 	}
 
 	mmu_set_pd(dma_pd);

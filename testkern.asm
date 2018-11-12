@@ -3,7 +3,7 @@
 [BITS 32]
 
 _start:
-	lea esi, [0x7c00]
+	lea esi, [0x7b00]
 	movzx eax, word [esi + 4] ; xsiz
 	movzx ecx, word [esi + 6] ; ysiz
 	mul ecx

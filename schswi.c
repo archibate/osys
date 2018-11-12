@@ -7,6 +7,7 @@ void switch_from_to
 	, TCB *next
 	)
 {
+	return;
 	asm volatile (
 		"pushl %%ebp\n"
 		"pushl %%edi\n"

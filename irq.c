@@ -3,9 +3,6 @@
 #include "ioport.h"
 
 
-void *irq_table[IRQ_MAX]; // C rountine table
-
-
 void init_pic
 (void)
 {
