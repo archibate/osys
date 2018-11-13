@@ -99,12 +99,12 @@ int vgprintf
 		unsigned long x = 0;
 		long l = 0;
 		int lon = 0;
-		const char *digsel = "01234567890abcdef";
+		const char *digsel = "0123456789abcdef";
 		int base = 10;
 		int algnr = 0;
 		char possign = 0;
 		char prefill = ' ';
-		int sharp = 0, doted = 0;
+		int sharp = 0, __attribute__((unused))/*TODO!!*/doted = 0;
 		int rightalg = 0, len = 0;
 again:
 		switch (c = *fmt++) {
@@ -188,7 +188,7 @@ again:
 			algnr = sizeof(long) * 2;
 			prefill = '0';
 		case 'X':
-			digsel = "01234567890ABCDEF";
+			digsel = "0123456789ABCDEF";
 		case 'x':
 			base = 16;
 		case 'u':

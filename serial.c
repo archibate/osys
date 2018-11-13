@@ -49,7 +49,7 @@ int serial_proc_data
 
 
 void serial_putc
-(int c)
+(char c)
 {
 	for (int i = 0;
 			!(io_inb(COM_LSR) & COM_LSR_TXRDY) &&

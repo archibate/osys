@@ -8,7 +8,9 @@ timer
 ontick
 sched
 schswi
-heap
+mkproc
+mkthrd
+slob
 mmap
 psm
 dma
@@ -22,6 +24,7 @@ mouse
 onmouse
 serial
 print
+panic
 lib/gprintf
 lib/atoi
 lib/div

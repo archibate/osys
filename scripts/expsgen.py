@@ -41,7 +41,7 @@ def pr_dfldoes_c():
         wr('void __attribute__((weak)) do_' + exp)
         wr('(void)')
         wr('{')
-        wr('\tpanic("UNHANDLED EXCEPTION: ' + exp.upper() + '");')
+        wr('\tpanic("' + exp.upper() + '");')
         wr('}')
         wr('')
 

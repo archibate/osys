@@ -17,9 +17,10 @@ int main
 	INIT(psm);
 	INIT(game);
 	INIT(dma);
-	INIT(heap);
-	TEST(heap);
+	INIT(slob);
+	TEST(slob);
 	INIT(sched);
+	TEST(sched);
 	asm volatile ("sti");
 
 	for (;;)
@@ -45,7 +46,6 @@ void init_game
 {
 	struct VIDEO_INFO *video = (struct VIDEO_INFO *) 0x7b00;
 
-	//mmap((unsigned long)video->buf, (unsigned long)video->buf | PG_P | PG_W);
 	for (int i = 0; i < video->xsiz * video->ysiz; i++)
 		video->buf[i] = (i % video->xsiz) % 0x10;
 }

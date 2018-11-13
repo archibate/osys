@@ -3,4 +3,4 @@
 
 extern
 void serial_putc
-(int c);
+(char c);

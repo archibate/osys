@@ -1,22 +1,17 @@
 #pragma once
 
 
-#include <list.h>
-#include <regs.h>
-#include <struct.h>
+#include <tcb.h>
 
 
-STRUCT(TCB)
-{
-	LIST list;
+extern
+TCB *current;
 
-	KS_REGS *sp;
-};
-
-
+extern
 void do_schedule
 (void);
 
-void switch_to
-	( TCB *next
+extern
+void add_task
+	( TCB *tcb
 	);

@@ -1,6 +1,18 @@
 #pragma once
 
 
-void memcpy(char *dst, const char *src, unsigned long n);
-int memcmp(const char *dst, const char *src, unsigned long n);
-void memset(char *dst, char val, unsigned long n);
+void memcpy(void *dst, const char *src, unsigned long n);
+int memcmp(const void *dst, const char *src, unsigned long n);
+void memset(void *dst, char val, unsigned long n);
+
+static inline void *bzero(void *dst, unsigned long n)
+{
+	memset(dst, 0, n);
+	return dst;
+}
+
+static inline void *bcopy(void *dst, const void *src, unsigned long n)
+{
+	memcpy(dst, src, n);
+	return dst;
+}
