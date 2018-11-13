@@ -26,7 +26,6 @@ PCB *create_process
 	)
 {
 	PCB *pcb = kmalloc(STACK_SIZE);
-	bzero(pcb, sizeof(PCB));
 
 	unsigned long *sp = (unsigned long*)((char*)pcb + STACK_SIZE);
 	*--sp = (unsigned long) arg;

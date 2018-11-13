@@ -1,4 +1,5 @@
 #include <schpcb.h>
+#include <print.h>
 
 
 extern
@@ -12,6 +13,5 @@ void switch_from_to
 	, PCB *next
 	)
 {
-	printf("switch from %p to %p\n", prev, next);
 	__switch_from_to(&prev->sp, &next->sp);
 }

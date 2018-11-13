@@ -53,7 +53,7 @@ run: $(FDIMG)
 
 PHONY+=debug
 debug: $(FDIMG)
-	@echo "*** now run 'gdb' in another terminal." >&2
+	@#@echo "*** now run 'gdb' in another terminal." >&2
 	$(SH) $Sqemu.sh -d
 
 PHONY+=always

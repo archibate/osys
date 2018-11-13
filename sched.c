@@ -89,8 +89,5 @@ void switch_to
 void do_schedule
 (void)
 {
-	return; // TODO
-	printf("schedule():\n");
-	print_sched_status();
 	switch_to(NEXT(current));
 }

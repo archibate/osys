@@ -11,8 +11,13 @@ set architecture i386
 
 # For kernel debugging
 # Add KERNEL file for debugging information
-add-symbol-file bin/kernel.elf 0xC0001000
+add-symbol-file bin/kernel.elf 0x100000
 
 # For both ;)
 set disassemble-next-line on
 set disassembly-flavor intel
+
+define qq
+	kill
+	quit
+end

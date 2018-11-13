@@ -6,6 +6,9 @@ WARNINGS+=error all
 DEFINES+=TESTING=1
 
 CFLAGS+=-nostdlib -nostdinc
+ifdef DEBUG
+CFLAGS+=-ggdb -gstabs+
+endif
 CFLAGS+=$(OPTIMIZE:%=-O%) $(MODES:%=-m%) \
 	$(FUNCTIONS:%=-f%) $(WARNINGS:%=-W%) \
 	$(DEFINES:%=-D%)

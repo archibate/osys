@@ -1,11 +1,11 @@
 ; vim: ft=nasm ai
 
-	GLOBAL switch_from_to
+	GLOBAL __switch_from_to
 
 [SECTION .text]
 [BITS 32]
 
-switch_from_to:
+__switch_from_to:
 	push ebp
 	push edi
 	push esi
