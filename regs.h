@@ -5,5 +5,5 @@
 
 STRUCT(KS_REGS)
 {
-	unsigned long bx, si, di, bp, pc;
+	unsigned long bx, si, di, bp, eflags, pc;
 };

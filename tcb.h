@@ -1,13 +1,15 @@
 #pragma once
 
 
-#include <list.h>
-#include <struct.h>
 #include <pcb.h>
-
+#include <struct.h>
 
 STRUCT(TCB)
 {
-	LIST list;
+	TCB *next, *prev;
+
 	PCB *pcb;
 };
+#define LIST TCB
+#define LMETHNAME tcb
+#include <list.h>

@@ -14,11 +14,29 @@ TCB *current;
 #define tprintf(...) printf(__VA_ARGS__)
 #include <mkthrd.h>
 #include <mkproc.h>
+#include <event.h>
 
 static
-int fuck_func
+EVENT eve_cam;
+
+static
+int suck_func
 (void)
 {
+	printf("suck_func in\n");
+	wait_on(&eve_cam);
+	printf("suck_func out\n");
+	for (;;) asm volatile ("hlt");
+	return 0;
+}
+
+static
+int dick_func
+(void)
+{
+	printf("dick_func in\n");
+	trig_up(&eve_cam);
+	printf("dick_func out\n");
 	for (;;) asm volatile ("hlt");
 	return 0;
 }
@@ -30,9 +48,8 @@ void __attribute__((unused)) print_sched_status
 void test_sched
 (void)
 {
-	PCB *pcb = create_process(fuck_func, 0);
-	TCB *tcb = create_thread(pcb);
-	printf("created: t%p p%p sp=%p\n", tcb, pcb, pcb->sp);
+	create_thread(create_process(dick_func, 0));
+	create_thread(create_process(suck_func, 0));
 	print_sched_status();
 }
 #endif
@@ -41,12 +58,13 @@ void test_sched
 void print_sched_status
 (void)
 {
-	printf("sched status:\n");
+	tprintf("sched status:\n");
 	TCB *curr = current;
 	do {
-		printf("t%p p%p: sp=%p\n", curr, curr->pcb, curr->pcb->sp);
-		curr = NEXT(curr);
+		tprintf("t%p p%p: sp=%p\n", curr, curr->pcb, curr->pcb->sp);
+		curr = curr->next;
 	} while (curr != current);
+	tprintf("sched status end\n");
 }
 
 
@@ -60,7 +78,7 @@ void init_sched
 	pcb0.sp = (KS_REGS *) (kstk0 + sizeof(kstk0) - sizeof(KS_REGS));
 	bzero(pcb0.sp, sizeof(KS_REGS));
 
-	tcb0.list = SELF_LOOP(LI(&tcb0));
+	tcb0.next = tcb0.prev = &tcb0;
 	tcb0.pcb = &pcb0;
 	current = &tcb0;
 }
@@ -70,12 +88,11 @@ void add_task
 	( TCB *tcb
 	)
 {
-	list_insert_after(LI(current), LI(tcb));
+	tcb_insert_after_ch(tcb, &current);
 }
 
 
-static
-void switch_to
+void task_run
 	( TCB *next
 	)
 {
@@ -89,5 +106,7 @@ void switch_to
 void do_schedule
 (void)
 {
-	switch_to(NEXT(current));
+	tprintf("do_schedule()\n");
+	assert(current);
+	task_run(current->next);
 }

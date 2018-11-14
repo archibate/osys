@@ -25,7 +25,7 @@ void init_timer
 void do_timer
 (void)
 {
-	on_tick();
-
 	irq_done(IRQ_TIMER);
+
+	on_tick();
 }

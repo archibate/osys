@@ -15,3 +15,8 @@ extern
 void add_task
 	( TCB *tcb
 	);
+
+extern
+void task_run
+	( TCB *next
+	);

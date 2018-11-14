@@ -6,6 +6,7 @@
 [BITS 32]
 
 __switch_from_to:
+	pushfd
 	push ebp
 	push edi
 	push esi
@@ -16,4 +17,5 @@ __switch_from_to:
 	pop esi
 	pop edi
 	pop ebp
+	popfd
 	ret

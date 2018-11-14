@@ -21,8 +21,8 @@ void do_keyboard_data
 void do_keyboard
 (void)
 {
+	irq_done(IRQ_KEYBOARD);
+
 	unsigned char scancode = io_inb(KB_PORT_DATA);
 	do_keyboard_data(scancode);
-
-	irq_done(IRQ_KEYBOARD);
 }

@@ -6,4 +6,4 @@ void __attribute__((noreturn)) panic
 		);
 
 #define assert(x) \
-	if (!(x)) { panic("ASSERTION_FAILURE: " #x) } else {}
+	if (!(x)) { panic("ASSERTION_FAILURE: " #x); } else {}

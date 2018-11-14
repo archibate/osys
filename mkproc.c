@@ -33,6 +33,7 @@ PCB *create_process
 
 	pcb->sp = (KS_REGS *) sp;
 	bzero(--pcb->sp, sizeof(KS_REGS));
+	pcb->sp->eflags = 0x202;
 	pcb->sp->pc = (unsigned long) proc;
 
 	return pcb;

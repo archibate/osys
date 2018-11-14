@@ -7,6 +7,7 @@ irqents
 timer
 ontick
 sched
+event
 schpcb
 schswi
 mkproc

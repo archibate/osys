@@ -62,8 +62,8 @@ void do_mouse_data
 void do_mouse
 (void)
 {
+	irq_done(IRQ_MOUSE);
+
 	unsigned char a = io_inb(KB_PORT_DATA);
 	do_mouse_data(a); // TODO: use a FIFO buffer
-
-	irq_done(IRQ_MOUSE);
 }

@@ -15,9 +15,9 @@ void __attribute__((noreturn)) halt(void)
 {
 	printf("cpu dump:\n");
 
-	unsigned long cr3;
-	asm volatile ("movl %%cr3, %%eax\n" : "=a" (cr3));
-	printf("cr3=%p\n", cr3);
+	unsigned long cr2;
+	asm volatile ("movl %%cr2, %%eax\n" : "=a" (cr2));
+	printf("cr2=%p\n", cr2);
 
 	cpu_halt();
 }

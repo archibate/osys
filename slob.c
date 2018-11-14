@@ -1,6 +1,5 @@
-// vim: set ts=4 sts=4 sw=4
+// vim: ts=4 sts=4 sw=4
 #include <struct.h>
-#include <list.h>
 #include <panic.h>
 #include <memlay.h>
 #include <page.h>
@@ -36,18 +35,20 @@ void test_slob
 #endif
 
 STRUCT(HNODE) {
-	LIST list;
+	HNODE *next, *prev;
 	unsigned long allocated;
 };
+#define LIST HNODE
+#include <list.h>
 
 // reference: http://wiki.0xffffff.org/posts/hurlex-11.html
 static
-LIST *slob_head;
+HNODE *slob_head;
 
 void init_slob(void)
 {
-	slob_head = LI((HNODE*)SLOB_BEG);
-	NODEOF(HNODE, slob_head)->allocated = 0;
+	slob_head = (HNODE*)SLOB_BEG;
+	slob_head->allocated = 0;
 	slob_head->next = 0;
 }
 
@@ -62,9 +63,9 @@ static void shrink_mapping_to(unsigned long adr)
 void print_slob_status(void)
 {
 	printf("slob status %p:\n", slob_head);
-	list_foreach_(le, slob_head) {
-		HNODE *curr = NODEOF(HNODE, le);
-		unsigned long len = NEXT(curr) ? (char*)NEXT(curr) - (char*)curr : 0;
+	list_foreach(curr, slob_head) {
+		unsigned long len = curr->next ?
+				(char*)curr->next - (char*)curr : 0;
 		printf("%c:%p:%d\n", curr->allocated ? 'M' : '-', curr, len);
 	}
 }
@@ -73,35 +74,33 @@ void *kmalloc(unsigned long len)
 {
 	len = (len + sizeof(int) - 1) & (~0UL ^ (sizeof(int) - 1));
 	len += sizeof(HNODE);
-	printf("!!kmalloc(%d)\n", len);
+	printf("kmalloc %d\n", len);
 
-	HNODE *curr = NODEOF(HNODE, slob_head);
-
-	while (LI(curr)->next) // for the last blk is unused and { .next = NULL }
+	HNODE *curr;
+	for (curr = slob_head; curr->next; curr = curr->next)
 	{
 		if (!curr->allocated) {
-			long rest_len = (char*)NEXT(curr) - (char*)curr - len;
+			long rest_len = (char*)curr->next - (char*)curr - len;
 			tprintf("%p rest:%d\n", curr, rest_len);
 			if (rest_len > 0) {
 				curr->allocated = len;
 				if (rest_len > sizeof(HNODE)) {
 					HNODE *rest = (HNODE*)((char*)curr + len);
 					rest->allocated = 0;
-					tprintf("%p:%p:%p\n", curr, rest, NEXT(curr));
-					list_link3(LI(curr), LI(rest), LI(curr)->next);
+					tprintf("%p:%p:%p\n", curr, rest, curr->next);
+					list_link3(curr, rest, curr->next);
 				}
 				tprintf("return %p\n", curr + 1);
 				return curr + 1;
 			}
 		}
-		curr = NEXT(curr);
 	}
 
 	HNODE *next = (HNODE*)((char*)curr + len);
 	tprintf("grow to %p\n", next + 1);
 	grow_mapping_to((unsigned long) (next + 1));
-	list_link(LI(curr), LI(next));
-	LI(next)->next = 0;
+	list_link(curr, next);
+	next->next = 0;
 	next->allocated = 0;
 	curr->allocated = len;
 	tprintf("return %p:%d\n", curr, len);
@@ -113,18 +112,18 @@ void kfree(void *p)
 	HNODE *curr = (HNODE*)p - 1;
 	tprintf("free %p:%d\n", curr, curr->allocated);
 
-	if (LI(curr)->next && !NEXT(curr)->allocated) {
-		list_remove_nextof_s3(LI(curr));
+	if (curr->next && !curr->next->allocated) {
+		list_remove_nextof_s3(curr);
 	}
 
-	if (LI(curr)->prev && !PREV(curr)->allocated) {
-		list_remove_s2(LI(curr));
+	if (curr->prev && !curr->prev->allocated) {
+		list_remove_s2(curr);
 	}
 
-	if (!LI(curr)->next) {
-		LI(curr)->prev->next = 0;
-		tprintf("shrink to %p\n", PREV(curr) + 1);
-		shrink_mapping_to((unsigned long) (PREV(curr) + 1));
+	if (!curr->next) {
+		curr->prev->next = 0;
+		tprintf("shrink to %p\n", curr->prev + 1);
+		shrink_mapping_to((unsigned long) (curr->prev + 1));
 	}
 
 	curr->allocated = 0;
