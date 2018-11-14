@@ -11,7 +11,7 @@ static inline void *bzero(void *dst, unsigned long n)
 	return dst;
 }
 
-static inline void *bcopy(void *dst, const void *src, unsigned long n)
+static inline void *bcopy(const void *src, void *dst, unsigned long n)
 {
 	memcpy(dst, src, n);
 	return dst;

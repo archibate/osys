@@ -1,3 +1,5 @@
+#include <print.h>
+
 #define INIT(x, ...) extern void init_##x(); init_##x(__VA_ARGS__);
 #ifdef TESTING
 #define TEST(x, ...) extern void test_##x(); test_##x(__VA_ARGS__);
@@ -11,6 +13,7 @@ int main
 	INIT(pic);
 	INIT(kbc);
 	INIT(serial);
+	printf("\nOSYS kernel v0.1 (C) archibate 2018\n\n");
 	INIT(keyboard);
 	INIT(mouse);
 	INIT(timer, 100);
@@ -21,6 +24,8 @@ int main
 	TEST(slob);
 	INIT(sched);
 	TEST(sched);
+	INIT(ramfs);
+	INIT(ramdisk);
 	asm volatile ("sti");
 
 	for (;;)

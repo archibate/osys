@@ -1,4 +1,6 @@
 #pragma once
 
 
-#define STRUCT(name) typedef struct name name; struct name
+#define STRUCT(name) EXTSTRUCT(name); DEFSTRUCT(name)
+#define EXTSTRUCT(name) typedef struct name name
+#define DEFSTRUCT(name) struct name

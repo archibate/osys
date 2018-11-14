@@ -16,8 +16,9 @@ slob
 mmap
 psm
 dma
-gen.expdfldoes
-gen.irqdfldoes
+fs
+ramfs
+ramdisk
 keyboard
 onkeybd
 irq
@@ -27,8 +28,11 @@ onmouse
 serial
 print
 panic
+gen.expdfldoes
+gen.irqdfldoes
 lib/gprintf
 lib/atoi
 lib/div
 lib/memory
 lib/string
+lib/wcsing

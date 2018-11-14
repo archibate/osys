@@ -1,1 +1,1 @@
-switch_from_to
+fixed bug in kfree() and strcmp()

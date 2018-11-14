@@ -35,7 +35,8 @@ $(FDIMG): $(BOOTSECT) $(KERNIMG)
 	mkdir -p $Bmnt
 	-$(SH) $Sumountloop.sh $Bmnt
 	$(SH) $Smountloop.sh $Bmnt $@
-	$(SH) $Smntcpfile.sh $Bmnt KERNEL.BIN $(KERNIMG)
+	$(SH) $Smntcpfile.sh $Bmnt kernel.bin $(KERNIMG)
+	$(SH) $Smntcpfile.sh $Bmnt copying.txt test.txt
 	$(SH) $Sumountloop.sh $Bmnt
 
 

@@ -1,6 +1,7 @@
 #include <stddef.h>
 #include <stdarg.h>
 #include <string.h>
+#include <wcsing.h>
 #include <memory.h>
 #include <div.h>
 #include <atoi.h>
@@ -41,20 +42,6 @@ unsigned long geusslen
 }
 
 
-static
-unsigned long gputs
-	( void (*putch)(char)
-	, const char *s
-	)
-{
-	unsigned long len;
-	char c;
-	while ((c = *s++))
-		len++, putch(c);
-	return len;
-}
-
-
 static inline
 long get_lon_arg
 	( va_list *pap
@@ -88,6 +75,7 @@ int vgprintf
 	)
 {
 	char c;
+	wchar_t wc;
 
 	while ((c = *fmt++)) {
 		if (c != '%') {
@@ -96,16 +84,18 @@ int vgprintf
 		}
 
 		const char *s = NULL;
+		const wchar_t *ws = NULL;
 		unsigned long x = 0;
 		long l = 0;
 		int lon = 0;
 		const char *digsel = "0123456789abcdef";
 		int base = 10;
 		int algnr = 0;
+		unsigned long len, maxlen = -1;
 		char possign = 0;
 		char prefill = ' ';
-		int sharp = 0, __attribute__((unused))/*TODO!!*/doted = 0;
-		int rightalg = 0, len = 0;
+		int sharp = 0, maxitied = 0;
+		int rightalg = 0;
 again:
 		switch (c = *fmt++) {
 		case 0:
@@ -113,12 +103,19 @@ again:
 
 		default:
 			if ('1' <= c && c <= '9') {
-				algnr = strtol(fmt - 1, &fmt, 10);
-			} // TODO: on doted = 1??
-			goto again;
+				len = strtol(fmt - 1, &fmt, 10);
+				goto setalg;
+			}
+			putch(c);
+			break;
 
 		case '*':
-			algnr = va_arg(ap, int);
+			len = va_arg(ap, int);
+setalg:
+			if (!maxitied)
+				algnr = len;
+			else
+				maxlen = len;
 			goto again;
 
 		case '%':
@@ -130,7 +127,7 @@ again:
 			goto again;
 
 		case '.':
-			doted = 1; //
+			maxitied = 1;
 			goto again;
 
 		case '#':
@@ -148,6 +145,7 @@ again:
 
 		case '-':
 			rightalg = 1;
+			goto again;
 
 		case 'c':
 			do {
@@ -162,7 +160,21 @@ again:
 				len = strlen(s);
 				gputtimes(putch, algnr - len, prefill);
 			}
-			len = gputs(putch, s);
+			while ((c = *s++) && maxlen--)
+				putch(c);
+			if (algnr && rightalg) {
+				gputtimes(putch, algnr - len, prefill);
+			}
+			break;
+
+		case 'S':
+			ws = va_arg(ap, const wchar_t *);
+			if (algnr && !rightalg) {
+				len = wcslen(ws);
+				gputtimes(putch, algnr - len, prefill);
+			}
+			while ((wc = *ws++) && maxlen--)
+				putch(wch2cch(wc));
 			if (algnr && rightalg) {
 				gputtimes(putch, algnr - len, prefill);
 			}

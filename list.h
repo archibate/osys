@@ -4,11 +4,17 @@ STRUCT(LIST)
 {
 	LIST *next, *prev;
 };
+typedef LIST LIST_NODE, *LIST_HEAD;
 #endif
 #ifndef LMETHNAME
 #define LMETHNAME list
 #endif
 
+
+#ifndef list_entry
+#include <derive.h>
+#define list_entry(type, list, node) derive_of(type, list, node)
+#endif
 
 #if 0
 #include <stddef.h> // offsetof
@@ -253,7 +259,7 @@ LIST *_$LMETH(shift_backward_ch)
 #define list_for(le, head) for (le = (head); le; le = le->next)
 #endif
 #ifndef list_foreach
-#define list_foreach(le, head) for (typeof(head) le = (head); le; le = le->next)
+#define list_foreach(le, head) for (typeof((head)[0]) *le = (head); le; le = le->next)
 #endif
 
 

@@ -1,14 +1,16 @@
-void strcpy(char *dst, const char *src)
+#include <wchar.h>
+
+void wcscpy(wchar_t *dst, const wchar_t *src)
 {
 	while ((*dst++ = *src++));
 }
 
-void strncpy(char *dst, const char *src, unsigned long n)
+void wcsncpy(wchar_t *dst, const wchar_t *src, unsigned long n)
 {
 	while (n-- && (*dst++ = *src++));
 }
 
-unsigned long strlen(const char *src)
+unsigned long wcslen(const wchar_t *src)
 {
 	unsigned long res = 0;
 	while (*src++)
@@ -16,7 +18,7 @@ unsigned long strlen(const char *src)
 	return res;
 }
 
-unsigned long strnlen(const char *src, unsigned long n)
+unsigned long wcsnlen(const wchar_t *src, unsigned long n)
 {
 	unsigned long res = 0;
 	while (n-- && *src++)
@@ -24,14 +26,14 @@ unsigned long strnlen(const char *src, unsigned long n)
 	return res;
 }
 
-int strcmp(const char *dst, const char *src)
+int wcscmp(const wchar_t *dst, const wchar_t *src)
 {
 	int res = 0;
 	while (*dst && !(res = *dst++ - *src++));
 	return res;
 }
 
-int strncmp(const char *dst, const char *src, unsigned long n)
+int wcsncmp(const wchar_t *dst, const wchar_t *src, unsigned long n)
 {
 	int res = 0;
 	while (n-- && *dst && (res = *dst++ - *src++));

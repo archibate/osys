@@ -9,7 +9,7 @@
 #define tprintf(...)
 #else
 #include <print.h>
-#define tprintf(...) printf(__VA_ARGS__)
+#define tprintf(...) printf("slob: " __VA_ARGS__)
 
 static
 void __attribute__((unused)) print_slob_status(void);
@@ -29,7 +29,7 @@ void test_slob
 	void *p5 = kmalloc(1240);
 	kfree(p4);
 	kfree(p5);
-	printf("!!survive\n");
+	tprintf("!!survive\n");
 	print_slob_status();
 }
 #endif
@@ -60,21 +60,23 @@ static void shrink_mapping_to(unsigned long adr)
 {
 }
 
+#ifdef TESTING
 void print_slob_status(void)
 {
-	printf("slob status %p:\n", slob_head);
+	tprintf("slob status %p:\n", slob_head);
 	list_foreach(curr, slob_head) {
 		unsigned long len = curr->next ?
 				(char*)curr->next - (char*)curr : 0;
-		printf("%c:%p:%d\n", curr->allocated ? 'M' : '-', curr, len);
+		tprintf("%c:%p:%d\n", curr->allocated ? 'M' : '-', curr, len);
 	}
 }
+#endif
 
 void *kmalloc(unsigned long len)
 {
 	len = (len + sizeof(int) - 1) & (~0UL ^ (sizeof(int) - 1));
 	len += sizeof(HNODE);
-	printf("kmalloc %d\n", len);
+	tprintf("kmalloc %d\n", len);
 
 	HNODE *curr;
 	for (curr = slob_head; curr->next; curr = curr->next)
@@ -109,8 +111,12 @@ void *kmalloc(unsigned long len)
 
 void kfree(void *p)
 {
+	assert(p);
+
 	HNODE *curr = (HNODE*)p - 1;
 	tprintf("free %p:%d\n", curr, curr->allocated);
+
+	// die: 123 23 13
 
 	if (curr->next && !curr->next->allocated) {
 		list_remove_nextof_s3(curr);
@@ -120,7 +126,7 @@ void kfree(void *p)
 		list_remove_s2(curr);
 	}
 
-	if (!curr->next) {
+	if (!curr->next && !curr->prev && curr->prev->allocated) {
 		curr->prev->next = 0;
 		tprintf("shrink to %p\n", curr->prev + 1);
 		shrink_mapping_to((unsigned long) (curr->prev + 1));

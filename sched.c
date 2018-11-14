@@ -7,7 +7,7 @@
 TCB *current;
 
 
-#ifndef TESTING
+#ifndef TESTING /////
 #define tprintf(...)
 #else
 #include <print.h>
@@ -52,9 +52,10 @@ void test_sched
 	create_thread(create_process(suck_func, 0));
 	print_sched_status();
 }
-#endif
+#endif /////
 
 
+#ifdef TESTING
 void print_sched_status
 (void)
 {
@@ -66,6 +67,7 @@ void print_sched_status
 	} while (curr != current);
 	tprintf("sched status end\n");
 }
+#endif
 
 
 void init_sched
