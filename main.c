@@ -25,7 +25,10 @@ int main
 	INIT(sched);
 	TEST(sched);
 	INIT(ramfs);
-	INIT(ramdisk);
+	INIT(devfs);
+	INIT(zero);
+	INIT(welcome);
+	INIT(shell);
 	asm volatile ("sti");
 
 	for (;;)

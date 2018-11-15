@@ -12,6 +12,7 @@ A=z_tools/
 S=scripts/
 M=makeinc/
 B=bin/
+N=isodir/
 
 
 include $Mverbose.mak
@@ -35,8 +36,8 @@ $(FDIMG): $(BOOTSECT) $(KERNIMG)
 	mkdir -p $Bmnt
 	-$(SH) $Sumountloop.sh $Bmnt
 	$(SH) $Smountloop.sh $Bmnt $@
-	$(SH) $Smntcpfile.sh $Bmnt kernel.bin $(KERNIMG)
-	$(SH) $Smntcpfile.sh $Bmnt copying.txt test.txt
+	sudo cp $(KERNIMG) $Bmnt/kernel.bin
+	sudo cp -r isodir/* $Bmnt
 	$(SH) $Sumountloop.sh $Bmnt
 
 

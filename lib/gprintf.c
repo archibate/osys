@@ -2,6 +2,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <wcsing.h>
+#include <strerr.h>
 #include <memory.h>
 #include <div.h>
 #include <atoi.h>
@@ -87,6 +88,7 @@ int vgprintf
 		const wchar_t *ws = NULL;
 		unsigned long x = 0;
 		long l = 0;
+		int err = 0;
 		int lon = 0;
 		const char *digsel = "0123456789abcdef";
 		int base = 10;
@@ -148,14 +150,18 @@ setalg:
 			goto again;
 
 		case 'c':
-			do {
-				c = va_arg(ap, int);
-				putch(c);
-			} while (0);
+			c = va_arg(ap, int);
+			putch(c);
 			break;
+
+		case 'm':
+			err = va_arg(ap, int);
+			s = strerror(err);
+			goto prstr;
 
 		case 's':
 			s = va_arg(ap, const char *);
+prstr:
 			if (algnr && !rightalg) {
 				len = strlen(s);
 				gputtimes(putch, algnr - len, prefill);

@@ -143,6 +143,18 @@ void _$LMETH(replace)
 
 
 static inline
+void _$LMETH(add_head_n)
+	( LIST **phead
+	, LIST *node
+	)
+{
+	node->prev = 0;
+	_$LMETH(link_s2)(node, *phead);
+	*phead = node;
+}
+
+
+static inline
 void _$LMETH(lookfit)
 	( LIST *node
 	, LIST *curr

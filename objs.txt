@@ -16,9 +16,13 @@ slob
 mmap
 psm
 dma
+welcome
+zero
+ramdisk
+vfs
 fs
 ramfs
-ramdisk
+devfs
 keyboard
 onkeybd
 irq
@@ -35,4 +39,5 @@ lib/atoi
 lib/div
 lib/memory
 lib/string
+lib/strerr
 lib/wcsing

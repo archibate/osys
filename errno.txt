@@ -1,0 +1,6 @@
+   NO_SRCH	: no such file or directory
+   INVL_ARG	: invalid argument / syscall
+   NO_WR	: not writable (read-only)
+   NO_RD	: not readable (write-only)
+   WRN_TYP	: wrong type of inode / spec
+   BAD_BLK	: bad block / chunk

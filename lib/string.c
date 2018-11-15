@@ -27,13 +27,17 @@ unsigned long strnlen(const char *src, unsigned long n)
 int strcmp(const char *dst, const char *src)
 {
 	int res = 0;
-	while (*dst && !(res = *dst++ - *src++));
+	while (!(res = *dst - *src))
+		if (*dst++ == 0 || *src++ == 0)
+			break;
 	return res;
 }
 
 int strncmp(const char *dst, const char *src, unsigned long n)
 {
 	int res = 0;
-	while (n-- && *dst && (res = *dst++ - *src++));
+	while (n-- && !(res = *dst - *src))
+		if (*dst++ == 0 || *src++ == 0)
+			break;
 	return res;
 }

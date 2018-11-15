@@ -29,13 +29,17 @@ unsigned long wcsnlen(const wchar_t *src, unsigned long n)
 int wcscmp(const wchar_t *dst, const wchar_t *src)
 {
 	int res = 0;
-	while (*dst && !(res = *dst++ - *src++));
+	while (!(res = *dst - *src))
+		if (*dst++ == 0 || *src++ == 0)
+			break;
 	return res;
 }
 
 int wcsncmp(const wchar_t *dst, const wchar_t *src, unsigned long n)
 {
 	int res = 0;
-	while (n-- && *dst && (res = *dst++ - *src++));
+	while (n-- && !(res = *dst - *src))
+		if (*dst++ == 0 || *src++ == 0)
+			break;
 	return res;
 }
