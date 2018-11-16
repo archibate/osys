@@ -40,21 +40,14 @@ int welcome_read(FILE *f, char *buf, size_t size)
 }
 
 static
-int welcome_write(FILE *f, const char *buf, size_t size)
-{
-	return size;
-}
-
-static
 FILE_OPS welcome_fops = {
 	.open = welcome_open,
 	.read = welcome_read,
-	.write = welcome_write,
 	.close = welcome_close,
 };
 
 
 void init_welcome(void)
 {
-	register_dev(&welcome_fops, "welcome", INODE_CHR | INODE_RD | INODE_WR);
+	register_dev(&welcome_fops, "welcome", INODE_CHR | INODE_RD);
 }

@@ -8,6 +8,7 @@
 #define MAX_FNAME 30
 
 
+#define EOF (-1)
 // inode.i_type:
 #define INODE_FIL 0
 #define INODE_DIR 1
@@ -93,6 +94,8 @@ struct FILE_OPS // 文件操作,读写之类的
 	int (*open)(FILE *file, INODE *inode, unsigned int oattr); // 打开文件
 	int (*read)(FILE *file, char *buf, size_t size); // 读取文件
 	int (*write)(FILE *file, const char *buf, size_t size); // 写入文件
+	unsigned int (*getch)(FILE *file); // 读入一个字节
+	int (*putch)(FILE *file, unsigned char ch); // 输出一个字节
 	int (*seek)(FILE *file, long offset, int whence); // 定位到特定文件位置
 	//int (*tell)(FILE *file, int what); // 告知文件特定的偏移量信息
 	int (*fsync)(FILE *file); // 同步文件改动
@@ -219,5 +222,8 @@ int open_in(FILE *file, DIR *indir, const char *name, unsigned int oattr);
 int opendir_in(DIR *dir, DIR *indir, const char *name, unsigned int oattr);
 void closedir(DIR *file);
 int read(FILE *file, char *buf, size_t size);
+int write(FILE *file, const char *buf, size_t size);
+unsigned int getch(FILE *file);
+int putch(FILE *file, unsigned char ch);
 int seek(FILE *file, long offset, int whence);
 void close(FILE *file);

@@ -27,3 +27,11 @@ int printf
 #define    C_PURPLE	"\033[35m"
 #define    C_CYAN	"\033[36m"
 #define    C_WHITE	"\033[37m"
+
+
+#ifdef PRRDTSC
+#include <rdtsc.h>
+#define prrdtsc(x) printf(x "%d\n", (rdtsc() >> 8) & 0xffff)
+#else
+#define prrdtsc(x)
+#endif

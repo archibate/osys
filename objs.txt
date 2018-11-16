@@ -23,6 +23,8 @@ vfs
 fs
 ramfs
 devfs
+keymap
+kbd
 keyboard
 onkeybd
 irq

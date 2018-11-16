@@ -11,18 +11,11 @@ void init_keyboard
 }
 
 
-void do_keyboard_data
-(unsigned char scancode)
-{
-	on_keyboard_event(scancode);
-}
-
-
 void do_keyboard
 (void)
 {
 	irq_done(IRQ_KEYBOARD);
 
 	unsigned char scancode = io_inb(KB_PORT_DATA);
-	do_keyboard_data(scancode);
+	on_keyboard_event(scancode);
 }

@@ -1,4 +1,15 @@
 #include <print.h>
+#include <mkthrd.h>
+#include <mkproc.h>
+
+
+static
+int __attribute__((noreturn)) idle_func
+(void *__attribute__((unused)) unused)
+{
+	for (;;)
+		asm volatile ("sti; hlt");
+}
 
 #define INIT(x, ...) extern void init_##x(); init_##x(__VA_ARGS__);
 #ifdef TESTING
@@ -24,10 +35,12 @@ int main
 	TEST(slob);
 	INIT(sched);
 	TEST(sched);
+	create_thread(create_process(idle_func, 0));
 	INIT(ramfs);
 	INIT(devfs);
 	INIT(zero);
 	INIT(welcome);
+	INIT(kbd);
 	INIT(shell);
 	asm volatile ("sti");
 

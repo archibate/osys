@@ -108,7 +108,7 @@ void task_run
 void do_schedule
 (void)
 {
-	tprintf("do_schedule()\n");
+	//tprintf("do_schedule()\n");
 	assert(current);
 	task_run(current->next);
 }

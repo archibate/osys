@@ -445,6 +445,30 @@ void uncompress_fat12(clus_t *fat, const unsigned char *img, unsigned int ents)
 }
 
 static
+DIR_OPS ramfs_root_dops;
+static
+int ramfs_root_opendir(DIR *dir, INODE *inode, unsigned int oattr)
+{
+	dir->d_inode = inode;
+	dir->d_ops = &ramfs_root_dops;
+	dir->d_oattr = oattr;
+	dir->d_ents = inode->i_sb->s_root->d_ents;
+	return 0;
+}
+
+static
+int ramfs_root_closedir(__attribute__((unused)) DIR *dir)
+{
+	return 0;
+}
+
+static
+DIR_OPS ramfs_root_dops = {
+	.opendir = ramfs_root_opendir,
+	.closedir = ramfs_root_closedir,
+};
+
+static
 SUPER *ramfs_load_super(void *ramdisk)
 {
 	SUPER *sb = kmalloc_for(SUPER);
@@ -453,7 +477,8 @@ SUPER *ramfs_load_super(void *ramdisk)
 	es->sb = sb;
 	es->data = (unsigned char *) ramdisk;
 
-	es->sb->s_inode = 0;
+	es->sb->s_inode = ramfs_alloc_inode(es->sb);
+	es->sb->s_inode->i_dops = &ramfs_root_dops;
 	es->sb->s_root = kmalloc_for(DIR);
 
 	ramfs_decode_mbr(es);

@@ -1,4 +1,4 @@
 fsfsfsfsfsramfs.getchars&
-/dev/keybd
+/dev/kbd!!!!!!!!
 通过自制root的DIRENTRY和INODE来取消/的特殊性
 sem event irq

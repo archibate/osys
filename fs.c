@@ -149,6 +149,21 @@ int read(FILE *file, char *buf, size_t size)
 	return file->f_ops->read(file, buf, size);
 }
 
+int write(FILE *file, const char *buf, size_t size)
+{
+	return file->f_ops->write(file, buf, size);
+}
+
+unsigned int getch(FILE *file)
+{
+	return file->f_ops->getch(file);
+}
+
+int putch(FILE *file, unsigned char ch)
+{
+	return file->f_ops->putch(file, ch);
+}
+
 
 
 

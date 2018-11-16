@@ -1,6 +1,7 @@
 #include <fs.h>
 #include <vfs.h>
 #include <print.h>
+#include <serial.h>
 #include <kmalloc.h>
 #include <panic.h>
 
@@ -80,6 +81,47 @@ int shell_type(const char *name)
 	return 0;
 }
 
+int shell_cat(const char *name)
+{
+	FILE *f = kmalloc_for(FILE);
+	int res = open(f, name, OPEN_RD);
+	if (res) {
+		return res;
+	}
+
+	int ch;
+	while ((ch = getch(f)) != EOF) {
+		printf("%c", ch);
+	}
+
+	close(f);
+	kfree(f);
+
+	return 0;
+}
+
+int shell_catkbd(void)
+{
+	FILE *f = kmalloc_for(FILE);
+	int res = open(f, "/dev/kbd", OPEN_RD);
+	if (res) {
+		return res;
+	}
+
+	while (1) {
+		unsigned int ch = getch(f);
+		prrdtsc("G");
+		extern const int keymap[0x80];
+		if (ch < 0x80)
+			serial_putc(keymap[ch]);
+	}
+
+	close(f);
+	kfree(f);
+
+	return 0;
+}
+
 
 void init_shell(void)
 {
@@ -89,4 +131,6 @@ void init_shell(void)
 
 	shell_ls("/etc");
 	shell_ls("/dev");
+
+	shell_catkbd();
 }

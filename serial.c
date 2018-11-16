@@ -48,18 +48,23 @@ int serial_proc_data
 
 
 
+#define FAST_PUTC 1
 void serial_putc
 (char c)
 {
+#ifndef FAST_PUTC
 	for (int i = 0;
 			!(io_inb(COM_LSR) & COM_LSR_TXRDY) &&
 			i < 12800;
 			i++)
 		delay();
+#endif
 
 	io_outb(COM_TX, c);
+#ifndef FAST_PUTC
 	io_outb(COM_FCR, 0x0f);
 	io_outb(COM_FCR, 0x08);
+#endif
 }
 
 
