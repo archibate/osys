@@ -1,4 +1,6 @@
 fsfsfsfsfsramfs.getchars&
 /dev/kbd!!!!!!!!
+exec("/bin/ls")!!!
+dir:readdir,seekdir...
 通过自制root的DIRENTRY和INODE来取消/的特殊性
 sem event irq

@@ -53,6 +53,11 @@ STRUCT(FAT_FILE_EX)
 	clus_t fe_beg_clus;
 };
 
+STRUCT(EFIFO_FILE_EX)
+{
+	struct EFIFO *fe_efifo;
+};
+
 struct FILE // 表示一个文件
 {
 	LIST_NODE f_list;
@@ -66,6 +71,7 @@ struct FILE // 表示一个文件
 
 	union {
 		FAT_FILE_EX f_fat;
+		EFIFO_FILE_EX f_efifo;
 	};
 };
 
@@ -105,6 +111,7 @@ struct FILE_OPS // 文件操作,读写之类的
 struct DIR_OPS // 对目录的操作,删除啊遍历啊之类的
 {
 	int (*opendir)(DIR *dir, INODE *inode, unsigned int oattr); // 打开目录
+	DIRENT *(*dirfind)(DIR *dir, const char *name);
 	int (*closedir)(DIR *dir);
 };
 
@@ -131,6 +138,11 @@ STRUCT(DEVDIR_INODE_EX)
 	LIST_HEAD ie_dents;
 };
 
+STRUCT(MKEFIFO_INODE_EX)
+{
+	struct EFIFO *ie_efifo;
+};
+
 struct INODE // 表示一个文件或者目录, 算是什么东西的最小单位吧
 {
 	LIST_NODE i_list;
@@ -152,6 +164,7 @@ struct INODE // 表示一个文件或者目录, 算是什么东西的最小单�
 	union {
 		FAT_INODE_EX i_fat; // fat系统的私有变量, 存储起始clus号之类的
 		DEVDIR_INODE_EX i_devdir; // /dev节点的私有变量
+		MKEFIFO_INODE_EX i_mkefifo; // /dev/*efifo节点的私有变量
 	};
 };
 
@@ -221,6 +234,10 @@ int inode_opendir(DIR *dir, INODE *inode, unsigned int oattr);
 int open_in(FILE *file, DIR *indir, const char *name, unsigned int oattr);
 int opendir_in(DIR *dir, DIR *indir, const char *name, unsigned int oattr);
 void closedir(DIR *file);
+DIRENT *dirfind(DIR *dir, const char *name);
+DIRENT *simple_dirfind(DIR *dir, const char *name);
+int simple_close(__attribute__((unused)) FILE *f);
+int simple_closedir(__attribute__((unused)) DIR *d);
 int read(FILE *file, char *buf, size_t size);
 int write(FILE *file, const char *buf, size_t size);
 unsigned int getch(FILE *file);

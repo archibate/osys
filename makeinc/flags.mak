@@ -2,7 +2,8 @@ OPTIMIZE=0
 MODES+=32 arch=i386 soft-float
 FUNCTIONS+=no-common no-exceptions no-non-call-exceptions \
 	  freestanding no-stack-protector no-builtin
-WARNINGS+=error all no-unused-function
+WARNINGS+=error all no-unused-function no-error=unused-variable \
+	  no-error=unused-but-set-variable 
 #DEFINES+=TESTING=1
 
 CFLAGS+=-nostdlib -nostdinc

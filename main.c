@@ -25,6 +25,7 @@ int main
 	INIT(kbc);
 	INIT(serial);
 	printf("\nOSYS kernel v0.1 (C) archibate 2018\n\n");
+	INIT(palette);
 	INIT(keyboard);
 	INIT(mouse);
 	INIT(timer, 100);

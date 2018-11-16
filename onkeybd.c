@@ -19,8 +19,12 @@ void on_keyboard_event
 
 	keydowns[scancode & 0x7f] = (scancode & 0x80);
 
+	extern const int keymap[0x80];
+	if (scancode < 0x80)
+		serial_putc(keymap[scancode]);
+
 	efifo_put(&keybd_efifo, scancode);
-	//if (scancode == 0x1c)
+	if (scancode == 0x1c)
 		efifo_flush(&keybd_efifo);
 }
 

@@ -26,7 +26,7 @@ void destroy_inode(INODE *inode)
 
 
 
-DIRENT *dir_find_entry(LIST_HEAD dents, const char *name)
+/*DIRENT *dir_find_entry(LIST_HEAD dents, const char *name)
 {
 	list_foreach(le, dents) {
 		DIRENT *de = list_entry(DIRENT, e_list, le);
@@ -34,6 +34,31 @@ DIRENT *dir_find_entry(LIST_HEAD dents, const char *name)
 			return de;
 	}
 	return 0;
+}*/
+
+int simple_close(__attribute__((unused)) FILE *f)
+{
+	return 0;
+}
+
+int simple_closedir(__attribute__((unused)) DIR *d)
+{
+	return 0;
+}
+
+DIRENT *simple_dirfind(DIR *dir, const char *name)
+{
+	list_foreach(le, dir->d_ents) {
+		DIRENT *de = list_entry(DIRENT, e_list, le);
+		if (!strcmp(de->e_name, name))
+			return de;
+	}
+	return 0;
+}
+
+DIRENT *dirfind(DIR *dir, const char *name)
+{
+	return dir->d_ops->dirfind(dir, name);
 }
 
 static
@@ -54,22 +79,22 @@ DIRENT *dir_locate_entry(DIR *_dir, const char *_name)
 	char *name = kmalloc(len);
 	memcpy(name, _name, len);
 
-	LIST_HEAD dents = _dir->d_ents;
+	DIR *dir = _dir;
 
 	int i;
 	while ((i = strfind(name, '/')) != -1) {
 		name[i] = 0;
-		DIRENT *de = dir_find_entry(dents, name);
+		DIRENT *de = dirfind(dir, name);
 		if (!de)
 			return 0;
-		DIR *dir = kmalloc_for(DIR);
+		if (dir != _dir) kfree(dir);
+		dir = kmalloc_for(DIR);
 		inode_opendir(dir, de->e_inode, OPEN_RD);
-		dents = dir->d_ents;
-		kfree(dir);
 		name += i + 1;
 	}
 
-	DIRENT *de = dir_find_entry(dents, name);
+	if (dir != _dir) kfree(dir);
+	DIRENT *de = dirfind(dir, name);
 	return de;
 }
 

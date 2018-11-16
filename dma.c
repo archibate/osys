@@ -17,8 +17,8 @@ void init_dma
 	unsigned long addr;
 	unsigned i;
 
-	for	( addr = 0
-		, i    = 0
+	for	( addr = PGSIZE
+		, i    = 1
 		; addr < DMA_END
 		; addr += PGSIZE
 		, i++

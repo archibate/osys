@@ -63,6 +63,7 @@ static
 DIR_OPS devfs_devdir_dops = {
 	.opendir = devfs_devdir_opendir,
 	.closedir = devfs_devdir_closedir,
+	.dirfind = simple_dirfind,
 };
 
 static
@@ -91,7 +92,7 @@ FSDRIVE devfs_drive = {
 
 SUPER *dev_super;
 
-void register_dev
+INODE *register_dev
 	( FILE_OPS *fops
 	, const char *name
 	, unsigned int iattr
@@ -105,6 +106,8 @@ void register_dev
 	de->e_inode->i_fops = fops;
 
 	list_add_head_n(&dev_super->s_inode->i_devdir.ie_dents, &de->e_list);
+
+	return de->e_inode;
 }
 
 void init_devfs(void)

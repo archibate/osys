@@ -23,6 +23,7 @@ vfs
 fs
 ramfs
 devfs
+mkefifo
 keymap
 kbd
 keyboard
@@ -43,3 +44,7 @@ lib/memory
 lib/string
 lib/strerr
 lib/wcsing
+palette
+tes/gview
+tes/bmp
+tes/jpeg

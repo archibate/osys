@@ -201,6 +201,7 @@ FILE_OPS ramfs_fops = {
 static
 DIR_OPS ramfs_dops = {
 	.opendir = ramfs_opendir,
+	.dirfind = simple_dirfind,
 	.closedir = ramfs_closedir,
 };
 
@@ -381,7 +382,8 @@ void ramfs_decode_fatents(SUPER *sb, DIR *dir, const FAT_DIRENT *fes, unsigned i
 			continue;
 		}
 	}
-	de->e_list.prev->next = 0;
+	if (de->e_list.prev)
+		de->e_list.prev->next = 0;
 
 	kfree(de);
 
@@ -466,6 +468,7 @@ static
 DIR_OPS ramfs_root_dops = {
 	.opendir = ramfs_root_opendir,
 	.closedir = ramfs_root_closedir,
+	.dirfind = simple_dirfind,
 };
 
 static
@@ -480,6 +483,7 @@ SUPER *ramfs_load_super(void *ramdisk)
 	es->sb->s_inode = ramfs_alloc_inode(es->sb);
 	es->sb->s_inode->i_dops = &ramfs_root_dops;
 	es->sb->s_root = kmalloc_for(DIR);
+	ramfs_root_opendir(es->sb->s_root, es->sb->s_inode, OPEN_RD | OPEN_WR);
 
 	ramfs_decode_mbr(es);
 	ramfs_decode_fatents(es->sb, es->sb->s_root, es->rootdir, es->rootdir_ents);

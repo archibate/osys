@@ -1,7 +1,8 @@
 #pragma once
 
+#include <fs.h>
 
-void register_dev
+INODE *register_dev
 	( FILE_OPS *fops
 	, const char *name
 	, unsigned int iattr

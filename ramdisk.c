@@ -103,7 +103,7 @@ int shell_cat(const char *name)
 int shell_catkbd(void)
 {
 	FILE *f = kmalloc_for(FILE);
-	int res = open(f, "/dev/kbd", OPEN_RD);
+	int res = open(f, "/dev/kbd0", OPEN_RD);
 	if (res) {
 		return res;
 	}
@@ -129,8 +129,12 @@ void init_shell(void)
 
 	shell_type("/dev/welcome");
 
-	shell_ls("/etc");
 	shell_ls("/dev");
+	shell_ls("/etc");
+	shell_ls("/root");
+
+	int gview_main(const char *name);
+	//gview_main("/root/2s2s.jpg");
 
 	shell_catkbd();
 }
