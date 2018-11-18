@@ -27,6 +27,6 @@
 #define SEEK_CUR 1
 #define SEEK_END 2
 // mmap.mattr
-#include "page.h" // PG_*
-#define MMAP_WR PG_W
-#define MMAP_US PG_U
+#include "kern/page.h" // PG_*
+#define MMAP_WR  PG_W
+#define MMAP_USR PG_U

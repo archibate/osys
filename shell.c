@@ -231,8 +231,19 @@ int exec_cmd(int argc, char *const *argv)
 		}
 	}
 
-	printf("sh: command not found: %s\n", name);
-	return -E_NO_SRCH;
+	char *path = kmalloc(10 + strlen(name));
+	memcpy(path, "/bin/", 5);
+	strcpy(path + 5, name);
+	strcat(path + 5, ".com");
+	//printf("starting %s...\n", path);
+	int res = shell_start(path);
+	kfree(path);
+
+	if (res == E_NO_SRCH)
+		printf("sh: command not found: %s\n", name);
+	else if (res)
+		printf("sh: error %d: %m\n", res, res);
+	return res;
 }
 
 int shell_main(void)
@@ -270,5 +281,7 @@ void init_shell(void)
 	// change bootsect.asm line 9 to 0x103 to have a complete view of 2s2s.jpg
 	//gview_main("2s2s.jpg");
 
+	//shell_start("/bin/splash.com");
+	//shell_start("/bin/gview.com");
 	shell_main();
 }

@@ -8,6 +8,7 @@ ontick
 sched
 event
 texit
+schpgd
 schpcb
 schswi
 mkproc
@@ -18,6 +19,7 @@ sysentry
 uload
 tss
 slob
+vram
 map
 psm
 dma

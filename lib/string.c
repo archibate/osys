@@ -10,6 +10,16 @@ void strncpy(char *dst, const char *src, unsigned long n)
 	while (n-- && (*dst++ = *src++));
 }
 
+void strcat(char *dst, const char *src)
+{
+	strcpy(dst + strlen(dst), src);
+}
+
+void strncat(char *dst, const char *src, unsigned long n)
+{
+	strncpy(dst + strlen(dst), src, n);
+}
+
 unsigned long strlen(const char *src)
 {
 	unsigned long res = 0;

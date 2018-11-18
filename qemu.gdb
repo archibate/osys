@@ -11,7 +11,7 @@ set architecture i386
 
 # For kernel debugging
 # Add KERNEL file for debugging information
-#add-symbol-file bin/kernel.elf 0x100000
+add-symbol-file bin/kernel.elf 0x100000
 add-symbol-file user/gview/bin/gview.elf 0x10000000
 
 # For both ;)

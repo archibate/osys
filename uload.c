@@ -4,14 +4,19 @@
 #include <umemlay.h>
 #include <uload.h>
 #include <umove.h>
+#include <sched.h>
+#include <schpcb.h>
 #include <map.h>
 #include <psm.h>
+#include <mmu.h>
+#include <memory.h>
 
 void __attribute__((noreturn)) transfer_to_user(void)
 {
 	static IF_REGS uregs = {
 		.pc = USER_TEXT_BEG,
 		.sp = USER_STACK_END,
+		.eflags = 0x202,
 		.cs = 0x001b,
 		.ss = 0x0023,
 		.ds = 0x0023,
@@ -28,7 +33,13 @@ int load_user_program(const char *name)
 		goto out_free;
 
 	void *addr = (void *) USER_TEXT_BEG;
-	res = mmap(f, addr, f->f_size, MMAP_US);
+
+	unsigned long *pgd = (unsigned long *) alloc_ppage();
+	switch_pgd(current->pcb->pgd = pgd);
+
+	map(0x20000000, 0x7000 | PG_P | PG_U);
+
+	res = mmap(f, addr, f->f_size, MMAP_USR);
 	if (res < 0)
 		goto out_close;
 	else
@@ -36,11 +47,16 @@ int load_user_program(const char *name)
 
 	unsigned long stkbtm = USER_STACK_END;
 	for (int i = 0; i < 0xd00; i++)
-		map(stkbtm -= PGSIZE, alloc_ppage() | PG_P | PG_W | PG_U);
+		map(stkbtm -= PGSIZE, alloc_ppage() | PG_P | PG_W | PG_U | PG_PSM);
 
 out_close:
 	close(f);
 out_free:
 	kfree(f);
 	return res;
+}
+
+void on_user_exit(void)
+{
+	unmap_free_psm_non_global_pages();
 }

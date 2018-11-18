@@ -1,10 +1,12 @@
 #include <uregs.h>
+#include <print.h>
 #include <sched.h>
 #include <kmalloc.h>
 #include <vfs.h>
 #include <panic.h>
 #include <memlay.h>
 #include <mkproc.h>
+#include <uload.h>
 #include <texit.h>
 #include <errno.h>
 #include <umemlay.h>
@@ -17,6 +19,8 @@ int __attribute__((noreturn)) sys_undefined(void)
 
 void __attribute__((noreturn)) sys_exit(int status)
 {
+	//printf("sys_exit(%d)!\n", status);
+	on_user_exit();
 	thread_exit(status);
 }
 
@@ -26,18 +30,19 @@ void __attribute__((noreturn)) sys_exit(int status)
 
 int sys_open(const char *name, unsigned int oattr)
 {
+	//printf("sys_open(%s)!\n", name);
+
 	verify_ptr(name);
 
-	int res = 0, fd;
+	int res = -E_OO_MAX, fd;
 
 	for (fd = 0; fd < FILES_MAX; fd++) {
 		if (!current->pcb->files[fd]) {
-			res = -E_OO_MAX;
 			goto got_fd;
 		}
 	}
 	goto out;
-got_fd:
+got_fd:	res = 0;
 	current->pcb->files[fd] = kmalloc_for(FILE);
 	res = open(current->pcb->files[fd], name, oattr);
 	if (res)
@@ -58,6 +63,8 @@ int sys_close(int fd)
 	close(current->pcb->files[fd]);
 	kfree(current->pcb->files[fd]);
 
+	current->pcb->files[fd] = 0;
+
 	return 0;
 }
 
@@ -72,6 +79,8 @@ int sys_mmap(int fd, void *p, size_t size, unsigned int mattr)
 {
 	verify_fd(fd);
 	verify_mappable_ptr(p);
+
+	mattr |= MMAP_USR;
 
 	return mmap(current->pcb->files[fd], p, size, mattr);
 }

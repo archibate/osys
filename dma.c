@@ -24,7 +24,7 @@ void init_dma
 		, i++
 		)
 	{
-		dma_ptes[i] = addr | PG_P | PG_W;
+		dma_ptes[i] = addr | PG_P | PG_W | PG_G;
 	}
 
 	for	( i = 0
@@ -33,7 +33,7 @@ void init_dma
 		)
 	{
 		addr = (unsigned long) (&dma_ptes[i * PTSIZE]);
-		dma_pd[i] = addr | PG_P | PG_W;
+		dma_pd[i] = addr | PG_P | PG_W | PG_G;
 	}
 
 	mmu_set_pd(dma_pd);

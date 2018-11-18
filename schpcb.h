@@ -9,3 +9,5 @@ void switch_from_to
 	( PCB *prev
 	, PCB *next
 	);
+extern
+void switch_pgd(unsigned long *pgd);

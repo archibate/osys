@@ -5,16 +5,22 @@
 
 
 extern
-unsigned long __map
+unsigned long pgd_map
 	( unsigned long *pgd
 	, unsigned long va
 	, unsigned long pte
 	);
 
+extern
+void pgd_unmap_free_psm_non_global_pages
+	( unsigned long *pgd
+	, int invalidate
+	);
+
 
 // TODO: consider #define map with an assert(pte & PGMASK..wiaht)?
-#define __unmap(pgd, va)  __map(pgd, va, 0)
-#define __getmap(pgd, va) __map(pgd, va, PGMASK)
+#define pgd_unmap(pgd, va)  pgd_map(pgd, va, 0)
+#define pgd_getmap(pgd, va) pgd_map(pgd, va, PGMASK)
 
 
 #include <mmu.h>
@@ -26,10 +32,17 @@ unsigned long map
 	)
 {
 	unsigned long *pgd = (unsigned long *) mmu_get_pd();
-	unsigned long old_pte = __map(pgd, va, pte);
+	unsigned long old_pte = pgd_map(pgd, va, pte);
 	if (pte != PGMASK)
 		mmu_invalidate(pte & PGMASK);
 	return old_pte;
+}
+
+static inline
+void unmap_free_psm_non_global_pages(void)
+{
+	unsigned long *pgd = (unsigned long *) mmu_get_pd();
+	pgd_unmap_free_psm_non_global_pages(pgd, 1);
 }
 
 #define unmap(pa)  map(pa, 0)

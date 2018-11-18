@@ -11,6 +11,16 @@ void wcsncpy(wchar_t *dst, const wchar_t *src, unsigned long n)
 	while (n-- && (*dst++ = *src++));
 }
 
+void wcscat(wchar_t *dst, const wchar_t *src)
+{
+	wcscpy(dst + wcslen(dst), src);
+}
+
+void wcsncat(wchar_t *dst, const wchar_t *src, unsigned long n)
+{
+	wcsncpy(dst + wcslen(dst), src, n);
+}
+
 unsigned long wcslen(const wchar_t *src)
 {
 	unsigned long res = 0;

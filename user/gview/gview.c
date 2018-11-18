@@ -35,7 +35,7 @@ int gview_main(const char *path)
 	struct VIDEO_INFO *video = (struct VIDEO_INFO *) 0x20000b00;
 	struct DLL_STRPICENV env;
 	char filebuf[512 * 1024], *p;
-	char *winbuf = (void *) video->buf;//[1040 * 805];
+	char *winbuf = (void *) 0x80000000;//video->buf;//[1040 * 805];
 	int i, j, fsize, xsize, info[8];
 	struct RGB picbuf[1024 * 768 * sizeof(struct RGB)], *q;
 
@@ -49,13 +49,18 @@ int gview_main(const char *path)
 	read(i, filebuf, fsize);
 	close(i);
 
+	i = open("/dev/vram", OPEN_WR); if (i < 0) { error("can't open vram.\n"); return 3; }
+	xsize = tellsize(i);
+	mmap(i, winbuf, xsize, MMAP_WR);
+	close(i);
+
 	/* ファイルタイプチェック */
 	if (info_BMP(&env, info, fsize, filebuf) == 0) {
 		/* BMPではなかった */
 		if (info_JPEG(&env, info, fsize, filebuf) == 0) {
 			/* JPEGでもなかった */
 			error("file type unknown.\n");
-			return 3;
+			return 4;
 		}
 	}
 	/* どちらかのinfo関数が成功すると、以下の情報がinfoに入っている */
@@ -66,7 +71,7 @@ int gview_main(const char *path)
 
 	if (info[2] > 1024 || info[3] > 768) {
 		error("picture too large.\n");
-		return 4;
+		return 5;
 	}
 
 	/* ウィンドウの準備 */
@@ -86,7 +91,7 @@ int gview_main(const char *path)
 	/* skipは0にしておけばよい */
 	if (i != 0) {
 		error("decode error.\n");
-		return 5;
+		return 6;
 	}
 
 	/* 表示 */xsize = video->xsiz;//320;

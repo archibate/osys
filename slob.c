@@ -62,7 +62,7 @@ void grow_mapping_to(unsigned long adr)
 {
 	//if (adr == 8405024) asm volatile ("int3"); // `b do_break_point` in gdb
 	for (; curr_brk < adr + PGSIZE; curr_brk += PGSIZE) { // eeee...
-		map(curr_brk, alloc_ppage() | PG_P | PG_W);
+		map(curr_brk, alloc_ppage() | PG_PSM | PG_P | PG_W | PG_G);
 	}
 }
 

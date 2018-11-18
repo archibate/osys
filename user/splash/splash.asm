@@ -6,7 +6,7 @@
 [BITS 32]
 
 _start:
-	mov edi, 0xfd000000
+	mov edi, [0x20000b00]
 	mov ecx, 800 * 600
 .again:
 	mov eax, ecx

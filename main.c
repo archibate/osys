@@ -42,6 +42,7 @@ int main
 	INIT(zero);
 	INIT(welcome);
 	INIT(kbd);
+	INIT(vram);
 	INIT(tss);
 	INIT(shell);
 	asm volatile ("sti");
@@ -70,8 +71,6 @@ struct VIDEO_INFO
 void init_game
 (void)
 {
-	map(0x20000000, 0x7000 | PG_P | PG_U);
-
 	struct VIDEO_INFO *video = (struct VIDEO_INFO *) 0x7b00;
 	printf("video: mode %x at %p (%dx%d %dbpp)\n", video->vmode,
 			video->buf, video->xsiz, video->ysiz,
@@ -80,7 +79,7 @@ void init_game
 	unsigned long base = (unsigned long) video->buf;
 	assert(!(base & PGATTR));
 	for (int i = 0; i < video->xsiz * video->ysiz; i += PGSIZE)
-		map(base + i, (base + i) | PG_P | PG_W | PG_U);
+		map(base + i, (base + i) | PG_P | PG_W | PG_U | PG_G);
 	mmu_flush_tlb();
 
 	/*for (int i = 0; i < video->xsiz * video->ysiz; i++)

@@ -9,5 +9,7 @@ STRUCT(PCB)
 {
 	KS_REGS *sp;
 
+	unsigned long *pgd;
+
 	struct FILE *files[FILES_MAX];
 };
