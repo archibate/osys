@@ -17,6 +17,7 @@ _start:
 	stosb
 	loop .again
 
-	jmp $
+	mov eax, 1
+	int 0x80
 	cli
 	hlt

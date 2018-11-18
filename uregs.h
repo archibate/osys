@@ -12,3 +12,5 @@ STRUCT(IF_REGS)
 	};
 	unsigned long pc, cs, eflags, sp, ss;
 } __attribute__((packed));
+
+typedef IF_REGS PT_REGS;

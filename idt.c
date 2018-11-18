@@ -86,6 +86,7 @@ void init_idt
 
 extern void *exp_ents[EXP_MAX]; // expents.asm
 extern void *irq_ents[IRQ_MAX]; // irqents.asm
+extern void __syscall_entry(); // sysentry.asm
 
 
 static
@@ -105,4 +106,7 @@ void fill_up_idt
 {
 	fill_with(exp_ents,           0, EXP_MAX);
 	fill_with(irq_ents, IRQ_IDT_BEG, IRQ_MAX);
+
+	set_idt(0x03, exp_ents[0x03], 3);
+	set_idt(0x80, &__syscall_entry, 3);
 }

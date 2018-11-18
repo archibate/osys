@@ -11,6 +11,8 @@ schpcb
 schswi
 mkproc
 mkthrd
+syscall
+sysentry
 uload
 tss
 slob
@@ -49,6 +51,6 @@ lib/string
 lib/strerr
 lib/wcsing
 palette
-user/gview/gview
-user/gview/bmp
-user/gview/jpeg
+gview/gview
+gview/bmp
+gview/jpeg
