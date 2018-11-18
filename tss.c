@@ -11,7 +11,7 @@ void set_tss_seg(TSS *tss, unsigned int limit)
 	} __attribute__((packed)) gdtr;
 	asm volatile ("sgdt %0\n" :: "m" (gdtr) : "memory");
 
-	gdtr.gdt[5] = SEG(STS_T32A, (unsigned long) tss, limit, 0);
+	gdtr.gdt[5] = SEG16(STS_T32A, (unsigned long) tss, limit, 0);
 	gdtr.gdt[5].sd_s = 0;
 
 	asm volatile ("lgdt %0\n" :: "m" (gdtr));
@@ -22,7 +22,7 @@ void set_tss_seg(TSS *tss, unsigned int limit)
 void set_tss_data(TSS *tss, unsigned long esp, unsigned int iomap_off)
 {
 	tss->ts_esp0 = esp;
-	tss->ts_ss0 = 0x0008;
+	tss->ts_ss0 = 0x0010;
 	tss->ts_iomb = offsetof(TSS, ts_iomaps) + iomap_off;
 	tss->ts_iomaps[0] = 0xff; // for now
 }

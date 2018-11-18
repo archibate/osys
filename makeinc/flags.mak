@@ -1,4 +1,4 @@
-OPTIMIZE=0
+OPTIMIZE=3
 MODES+=32 arch=i386 soft-float
 FUNCTIONS+=no-common no-exceptions no-non-call-exceptions \
 	  freestanding no-stack-protector no-builtin

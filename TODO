@@ -1,3 +1,9 @@
+better thread_exit
+free unmapable user_exit
+user app(argv, argc)
+/dev/vram
+wait_exit.etc.
+
 fsfsfsfsfsramfs.getchars&
 fops.mmap!!!!!!!!!!
 exec("/bin/gview")!!!

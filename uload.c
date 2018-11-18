@@ -1,7 +1,11 @@
 #include <vfs.h>
+#include <print.h>
 #include <kmalloc.h>
 #include <umemlay.h>
+#include <uload.h>
 #include <umove.h>
+#include <map.h>
+#include <psm.h>
 
 void __attribute__((noreturn)) transfer_to_user(void)
 {
@@ -13,7 +17,6 @@ void __attribute__((noreturn)) transfer_to_user(void)
 		.ds = 0x0023,
 		.es = 0x0023,
 	};
-
 	move_to_user(&uregs);
 }
 
@@ -30,6 +33,10 @@ int load_user_program(const char *name)
 		goto out_close;
 	else
 		res = 0;
+
+	unsigned long stkbtm = USER_STACK_END;
+	for (int i = 0; i < 0xd00; i++)
+		map(stkbtm -= PGSIZE, alloc_ppage() | PG_P | PG_W | PG_U);
 
 out_close:
 	close(f);

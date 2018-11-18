@@ -2,6 +2,7 @@
 
 	GLOBAL irq_ents
 	GLOBAL move_to_user
+	EXTERN tss0
 	EXTERN irq_table
 
 [SECTION .rodata]
@@ -34,6 +35,8 @@ irq_common:
 	;add esp, 8
 
 int_return:
+	mov dword [tss0 + 4], esp
+	add dword [tss0 + 4], 68
 	popad
 	pop dword es
 	pop dword ds
@@ -44,5 +47,10 @@ move_to_user:
 	push ebp
 	mov ebp, esp
 
-	mov esp, [ebp + 8]
+	mov ecx, 68
+	sub esp, ecx
+	mov edi, esp
+	mov esi, [ebp + 8]
+	cld
+	rep movsb
 	jmp int_return

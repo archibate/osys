@@ -3,20 +3,15 @@
 #include <memory.h>
 #include <kmalloc.h>
 #include <panic.h>
+#include <texit.h>
 
 #define STACK_SIZE 4096
 
-
-void __attribute__((noreturn)) process_exit(int val)
-{
-	panic("process exited with %d\n", val);
-}
-
 static
-void __process_exit(void)
+void __attribute__((noreturn)) __process_exit(void)
 {
 	register int val asm ("eax");
-	process_exit(val);
+	thread_exit(val);
 }
 
 
@@ -26,6 +21,7 @@ PCB *create_process
 	)
 {
 	PCB *pcb = kmalloc(STACK_SIZE);
+	bzero(pcb, sizeof(PCB));
 
 	unsigned long *sp = (unsigned long*)((char*)pcb + STACK_SIZE);
 	*--sp = (unsigned long) arg;

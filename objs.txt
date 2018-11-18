@@ -7,11 +7,13 @@ timer
 ontick
 sched
 event
+texit
 schpcb
 schswi
 mkproc
 mkthrd
 syscall
+systab
 sysentry
 uload
 tss
@@ -51,6 +53,3 @@ lib/string
 lib/strerr
 lib/wcsing
 palette
-gview/gview
-gview/bmp
-gview/jpeg

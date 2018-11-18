@@ -1,6 +1,5 @@
-#include <vfs.h>
-#include <kmalloc.h>
-#include <panic.h>
+#include <kern/sysapi.h>
+#include <fsdefs.h>
 
 struct VIDEO_INFO
 {
@@ -33,23 +32,22 @@ void error(char *s);
 
 int gview_main(const char *path)
 {
-	struct VIDEO_INFO *video = (struct VIDEO_INFO *) 0x7b00;
+	struct VIDEO_INFO *video = (struct VIDEO_INFO *) 0x20000b00;
 	struct DLL_STRPICENV env;
-	char *filebuf = kmalloc(512 * 1024), *p;
+	char filebuf[512 * 1024], *p;
 	char *winbuf = (void *) video->buf;//[1040 * 805];
 	int i, j, fsize, xsize, info[8];
-	struct RGB *picbuf = kmalloc(1024 * 768 * sizeof(struct RGB)), *q;
+	struct RGB picbuf[1024 * 768 * sizeof(struct RGB)], *q;
 
-	FILE *f = kmalloc_for(FILE);
 	/* ファイル読み込み */
-	i = open(f, path, OPEN_RD); if (i != 0) { error("file not found.\n"); }
-	fsize = f->f_size;
+	i = open(path, OPEN_RD); if (i < 0) { error("file not found.\n"); return 1; }
+	fsize = tellsize(i);
 	if (fsize > 512 * 1024) {
 		error("file too large.\n");
+		return 2;
 	}
-	read(f, filebuf, fsize);
-	close(f);
-	kfree(f);
+	read(i, filebuf, fsize);
+	close(i);
 
 	/* ファイルタイプチェック */
 	if (info_BMP(&env, info, fsize, filebuf) == 0) {
@@ -57,6 +55,7 @@ int gview_main(const char *path)
 		if (info_JPEG(&env, info, fsize, filebuf) == 0) {
 			/* JPEGでもなかった */
 			error("file type unknown.\n");
+			return 3;
 		}
 	}
 	/* どちらかのinfo関数が成功すると、以下の情報がinfoに入っている */
@@ -67,6 +66,7 @@ int gview_main(const char *path)
 
 	if (info[2] > 1024 || info[3] > 768) {
 		error("picture too large.\n");
+		return 4;
 	}
 
 	/* ウィンドウの準備 */
@@ -82,11 +82,11 @@ int gview_main(const char *path)
 	} else {
 		i = decode0_JPEG(&env, fsize, filebuf, 4, (char *) picbuf, 0);
 	}
-	kfree(filebuf);
 	/* b_type = 4 は、 struct RGB 形式を意味する */
 	/* skipは0にしておけばよい */
 	if (i != 0) {
 		error("decode error.\n");
+		return 5;
 	}
 
 	/* 表示 */xsize = video->xsiz;//320;
@@ -127,5 +127,5 @@ unsigned char rgb2pal(int r, int g, int b, int x, int y)
 
 void error(char *s)
 {
-	panic(s);
+	//printf(s);
 }

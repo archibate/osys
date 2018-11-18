@@ -70,6 +70,8 @@ struct VIDEO_INFO
 void init_game
 (void)
 {
+	map(0x20000000, 0x7000 | PG_P | PG_U);
+
 	struct VIDEO_INFO *video = (struct VIDEO_INFO *) 0x7b00;
 	printf("video: mode %x at %p (%dx%d %dbpp)\n", video->vmode,
 			video->buf, video->xsiz, video->ysiz,

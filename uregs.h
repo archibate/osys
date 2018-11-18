@@ -2,6 +2,8 @@
 
 #include <struct.h>
 
+// syscall args: ax(cx, dx, bx, di, si, bp)
+
 STRUCT(IF_REGS)
 {
 	unsigned long di, si, bp, unused_sp, bx, dx, cx, ax;

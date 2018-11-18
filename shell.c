@@ -1,6 +1,8 @@
 #include <fs.h>
 #include <uload.h>
 #include <vfs.h>
+#include <mkthrd.h>
+#include <mkproc.h>
 #include <uload.h>
 #include <atoi.h>
 #include <memory.h>
@@ -69,7 +71,7 @@ out_free:
 	return 0;
 }
 
-int shell_exec(const char *name)
+int shell_start(const char *name)
 {
 	int res = load_user_program(name);
 	if (res) {
@@ -77,7 +79,7 @@ int shell_exec(const char *name)
 		goto out;
 	}
 
-	transfer_to_user();
+	create_thread(create_process((void*)transfer_to_user, 0));
 
 out:
 	return res;
@@ -214,9 +216,8 @@ int exec_cmd(int argc, char *const *argv)
 		SHCMD(cat, 1,1),
 		SHCMD(catkbd, 0,0),
 		SHCMD(map, 3,4),
-		SHCMD(exec, 1,1),
+		SHCMD(start, 1,1),
 		{"cd", setcwd, 1,1},
-		{"gview", gview_main, 1,1},
 	};
 
 	char *name = argv[0]; argc--, argv++;
@@ -269,6 +270,5 @@ void init_shell(void)
 	// change bootsect.asm line 9 to 0x103 to have a complete view of 2s2s.jpg
 	//gview_main("2s2s.jpg");
 
-	shell_exec("/bin/splash.com");
 	shell_main();
 }

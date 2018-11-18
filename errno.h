@@ -7,3 +7,5 @@
 #define E_NO_RD 5 // not readable (write-only)
 #define E_WRN_TYP 6 // wrong type of inode / spec
 #define E_BAD_BLK 7 // bad block / chunk
+#define E_OO_MAX 8 // out of open / slots / memory
+#define E_ACC_VIOL 9 // access violentation

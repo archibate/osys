@@ -1,0 +1,9 @@
+SYSCALL_MAX equ (7+1)
+_SYS_undefined equ 0
+_SYS_exit equ 1
+_SYS_open equ 2
+_SYS_close equ 3
+_SYS_read equ 4
+_SYS_write equ 5
+_SYS_mmap equ 6
+_SYS_tellsize equ 7

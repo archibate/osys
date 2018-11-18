@@ -3,7 +3,7 @@ always:
 	@:
 
 
-INCLUDE+=. inc lib
+INCLUDE+=. $Dkuinc $Dlib
 CFLAGS+=$(INCLUDE:%=-I%)
 
 ONAMES:=$(shell cat objs.txt)

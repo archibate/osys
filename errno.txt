@@ -5,3 +5,5 @@
    NO_RD	: not readable (write-only)
    WRN_TYP	: wrong type of inode / spec
    BAD_BLK	: bad block / chunk
+   OO_MAX	: out of open / slots / memory
+   ACC_VIOL	: access violentation

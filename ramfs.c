@@ -112,7 +112,7 @@ int ramfs_mmap(FILE *f, void *p, size_t size, unsigned int mattr)
 		i += sb->s_fat.se_clusiz;
 
 		if (f->f_pos >= f->f_size || i >= size)
-			return i;
+			return i > size ? size : i;
 
 		f->f_fat.fe_clus = sb->s_fat.se_fat[f->f_fat.fe_clus];
 	}

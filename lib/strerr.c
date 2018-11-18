@@ -8,6 +8,8 @@ const char *err_msgs[] = {
 	"not readable (write-only)",
 	"wrong type of inode / spec",
 	"bad block / chunk",
+	"out of open / slots / memory",
+	"access violentation",
 };
 
 const char *strerror(int err)

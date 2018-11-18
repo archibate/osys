@@ -4,6 +4,8 @@ LDSCRIPT=kernel.ld
 
 default: all
 
+DEFINES+=_KERNEL=1
+
 include $Ddirs.mak
 include $Mbeg.mak
 
@@ -46,6 +48,7 @@ PHONY+=debug
 debug: $(FDIMG)
 	@#@echo "*** now run 'gdb' in another terminal." >&2
 	$(SH) $Sqemu.sh -d
+
 
 
 include $Mend.mak
