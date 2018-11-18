@@ -3,6 +3,13 @@
 #include <print.h>
 
 
+int putchar(char c)
+{
+	serial_putc(c);
+	return 0;
+}
+
+
 int vprintf
 	( const char *fmt
 	, va_list ap

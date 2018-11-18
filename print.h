@@ -4,6 +4,9 @@
 #include <stdarg.h>
 
 
+int putchar(char ch);
+
+
 int vprintf
 	( const char *fmt
 	, va_list ap

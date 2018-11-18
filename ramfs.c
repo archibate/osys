@@ -1,5 +1,6 @@
 #include <vfs.h>
 #include <mbr.h>
+#include <map.h>
 #include <kmalloc.h>
 #include <errno.h>
 #include <string.h>
@@ -59,14 +60,13 @@ int ramfs_read(FILE *f, char *buf, size_t size)
 {
 	SUPER *sb = f->f_inode->i_sb;
 
-
 	int i = 0;
 	while (1) {
-		if (f->f_fat.fe_clus >= sb->s_fat.se_clusmax) {
+		if (f->f_fat.fe_clus >= sb->s_fat.se_clusmax)
 			return -E_BAD_BLK;
-		}
+
 		off_t off = f->f_fat.fe_clus * sb->s_fat.se_clusiz + f->f_fat.fe_cloff;
-		//printf("ramfs_read: clus=%x\n", f->f_fat.fe_clus);
+
 		while (i < size && f->f_fat.fe_cloff < sb->s_fat.se_clusiz)
 		{
 			if (f->f_pos >= f->f_size)
@@ -76,8 +76,45 @@ int ramfs_read(FILE *f, char *buf, size_t size)
 		}
 		if (i >= size)
 			return i;
+
 		f->f_fat.fe_clus = sb->s_fat.se_fat[f->f_fat.fe_clus];
 		f->f_fat.fe_cloff = 0;
+	}
+}
+
+static
+int ramfs_mmap(FILE *f, void *p, size_t size, unsigned int mattr)
+{
+	unsigned long addr = (unsigned long) p;
+	assert((addr & PGATTR) == 0);
+	size = PGMASK & (PGSIZE - 1 + size);
+
+	SUPER *sb = f->f_inode->i_sb;
+
+	// 有些小纠结的事情呢..
+	if (f->f_fat.fe_cloff != 0)
+		return -E_NO_IMPL;
+	if (sb->s_fat.se_clusiz != PGSIZE)
+		return -E_NO_IMPL;
+
+	int i = 0;
+	while (1) {
+		if (f->f_fat.fe_clus >= sb->s_fat.se_clusmax)
+			return -E_BAD_BLK;
+
+		off_t off = f->f_fat.fe_clus * sb->s_fat.se_clusiz;
+		const char *src = sb->s_fat.se_data + off;
+
+		map(addr, (unsigned long) src | mattr | PG_P);
+
+		addr += PGSIZE;
+		f->f_pos += sb->s_fat.se_clusiz;
+		i += sb->s_fat.se_clusiz;
+
+		if (f->f_pos >= f->f_size || i >= size)
+			return i;
+
+		f->f_fat.fe_clus = sb->s_fat.se_fat[f->f_fat.fe_clus];
 	}
 }
 
@@ -195,6 +232,7 @@ FILE_OPS ramfs_fops = {
 	.read = ramfs_read,
 	.seek = ramfs_seek,
 	//.tell = ramfs_tell,
+	.mmap = ramfs_mmap,
 	.close = ramfs_close,
 };
 

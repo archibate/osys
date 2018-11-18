@@ -1,6 +1,7 @@
 fsfsfsfsfsramfs.getchars&
-/dev/kbd!!!!!!!!
-exec("/bin/ls")!!!
+fops.mmap!!!!!!!!!!
+exec("/bin/gview")!!!
 dir:readdir,seekdir...
-通过自制root的DIRENTRY和INODE来取消/的特殊性
+mmap(mm, va, pte)
+mmap(mm, va, pa, mattr)
 sem event irq

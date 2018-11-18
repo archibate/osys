@@ -29,9 +29,9 @@ set_vbe:
 	mov [VINFO + 6], ax ; screen_y
 	mov eax, [di + 0x28]
 	mov [VINFO + 0], eax ; video_ram
-	mov al, [di + 0x1b]
+	mov al, [di + 0x19]
 	mov [VINFO + 10], al ; bits_per_pixel
-	mov al, [di + 0x28]
+	mov al, [di + 0x1b]
 	mov [VINFO + 11], al ; memory_model
 	mov ax, VBEMODE
 	mov [VINFO + 8], ax ; video_mode

@@ -38,7 +38,7 @@ int gview_main(const char *path)
 	char *filebuf = kmalloc(512 * 1024), *p;
 	char *winbuf = (void *) video->buf;//[1040 * 805];
 	int i, j, fsize, xsize, info[8];
-	struct RGB *picbuf = (void *) 0x800000/*kmalloc(1024 * 768 * sizeof(struct RGB))*/, *q;
+	struct RGB *picbuf = kmalloc(1024 * 768 * sizeof(struct RGB)), *q;
 
 	FILE *f = kmalloc_for(FILE);
 	/* ファイル読み込み */
@@ -97,7 +97,6 @@ int gview_main(const char *path)
 			p[j] = rgb2pal(q[j].r, q[j].g, q[j].b, j, i);
 		}
 	}
-	kfree(picbuf);
 	//api_refreshwin(win, (xsize - info[2]) / 2, 29, (xsize - info[2]) / 2 + info[2], 29 + info[3]);
 
 	/* 終了待ち */

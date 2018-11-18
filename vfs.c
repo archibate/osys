@@ -52,6 +52,9 @@ int open(FILE *file, const char *name, unsigned int oattr)
 
 int opendir(DIR *dir, const char *name, unsigned int oattr)
 {
+	if (name[0] == '.' && name[1] == 0)
+		inode_opendir(dir, cdir->d_inode, oattr);
+
 	DIRENT *de = locate_entry(name);
 	if (!de)
 		return -E_NO_SRCH;

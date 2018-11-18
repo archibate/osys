@@ -12,7 +12,7 @@
 	})
 
 #define mmu_flush_tlb() \
-	asm volatile ("movl %%cr3, %%eax; movl %%eax, %%cr3")
+	asm volatile ("movl %%cr3, %%eax; movl %%eax, %%cr3" ::: "eax")
 
 #define mmu_invalidate(va) \
 	asm volatile ("invlpg (%0)" :: "r" (va))

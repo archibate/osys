@@ -53,7 +53,7 @@ STRUCT(FAT_FILE_EX)
 	clus_t fe_beg_clus;
 };
 
-STRUCT(EFIFO_FILE_EX)
+STRUCT(MKEF_FILE_EX)
 {
 	struct EFIFO *fe_efifo;
 };
@@ -71,7 +71,7 @@ struct FILE // 表示一个文件
 
 	union {
 		FAT_FILE_EX f_fat;
-		EFIFO_FILE_EX f_efifo;
+		MKEF_FILE_EX f_mkef;
 	};
 };
 
@@ -94,6 +94,9 @@ struct DIR
 	};
 };
 
+#include <page.h> // PG_*
+#define MMAP_WR PG_W
+#define MMAP_US PG_U
 
 struct FILE_OPS // 文件操作,读写之类的
 {
@@ -102,10 +105,21 @@ struct FILE_OPS // 文件操作,读写之类的
 	int (*write)(FILE *file, const char *buf, size_t size); // 写入文件
 	unsigned int (*getch)(FILE *file); // 读入一个字节
 	int (*putch)(FILE *file, unsigned char ch); // 输出一个字节
+	char *(*getline)(FILE *file); // 读取一行, 返回一个buf, 需要kfree
+	// TODO: 考虑给getline加个`void *(*alloc)(size_t)`参数?
+	int (*mmap) // 把文件的内容直接映射到虚拟内存空间中
+		( FILE *file // 哪个文件?
+		// 额,现在我们打算通过seek来给定偏移量了:
+		//, off_t off // 从文件中的什么地方开始映射数据? (有的fops要求对齐到页或簇)
+		, void *p // 要映射到的虚拟内存地址 (API要求对齐到页)
+		, size_t size // 映射多长一段呢? (也要对齐到页哦)
+		, unsigned int mattr // 映射要求页的属性? 只读? (pte的参数嘛)
+		);
+	size_t (*glinesize)(FILE *file); // 预估一行的最大容量(API要求的呗)
 	int (*seek)(FILE *file, long offset, int whence); // 定位到特定文件位置
 	//int (*tell)(FILE *file, int what); // 告知文件特定的偏移量信息
 	int (*fsync)(FILE *file); // 同步文件改动
-	int (*close)(FILE *file); // 关闭文件(但是不释放FILE*的内存的那种)
+	int (*close)(FILE *file); // 关闭文件(但是不释放FILE指针内存的那种)
 };
 
 struct DIR_OPS // 对目录的操作,删除啊遍历啊之类的
@@ -138,7 +152,7 @@ STRUCT(DEVDIR_INODE_EX)
 	LIST_HEAD ie_dents;
 };
 
-STRUCT(MKEFIFO_INODE_EX)
+STRUCT(MKEF_INODE_EX)
 {
 	struct EFIFO *ie_efifo;
 };
@@ -164,7 +178,7 @@ struct INODE // 表示一个文件或者目录, 算是什么东西的最小单�
 	union {
 		FAT_INODE_EX i_fat; // fat系统的私有变量, 存储起始clus号之类的
 		DEVDIR_INODE_EX i_devdir; // /dev节点的私有变量
-		MKEFIFO_INODE_EX i_mkefifo; // /dev/*efifo节点的私有变量
+		MKEF_INODE_EX i_mkef; // /dev/*efifo节点的私有变量
 	};
 };
 
@@ -240,7 +254,10 @@ int simple_close(__attribute__((unused)) FILE *f);
 int simple_closedir(__attribute__((unused)) DIR *d);
 int read(FILE *file, char *buf, size_t size);
 int write(FILE *file, const char *buf, size_t size);
+int mmap(FILE *f, void *p, size_t size, unsigned int mattr);
 unsigned int getch(FILE *file);
 int putch(FILE *file, unsigned char ch);
 int seek(FILE *file, long offset, int whence);
+size_t glinesize(FILE *file);
+char *getline(FILE *file);
 void close(FILE *file);

@@ -45,3 +45,7 @@ $B%.bin: $B%.nas
 $B%.bin: $B%.nas
 	$E nask $(<F)
 	$V$(NASK) $< $@
+
+$B%.com: $B%.bin
+	$E cat $(<F)
+	$V$(CAT) $< > $@

@@ -205,6 +205,7 @@ prstr:
 		case 'p':
 			algnr = sizeof(long) * 2;
 			prefill = '0';
+			c = 'x';
 		case 'X':
 			digsel = "0123456789ABCDEF";
 		case 'x':

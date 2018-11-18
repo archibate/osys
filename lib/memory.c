@@ -1,3 +1,5 @@
+//#include "memory.h" // xuxuxu!
+
 void memcpy(char *dst, const char *src, unsigned long n)
 {
 	while (n--)

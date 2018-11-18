@@ -1,6 +1,8 @@
 // vim: ts=4 sts=4 sw=4
 #include <struct.h>
 #include <panic.h>
+#include <psm.h>
+#include <map.h>
 #include <memlay.h>
 #include <page.h>
 #include <kmalloc.h> // impelementation
@@ -43,21 +45,33 @@ STRUCT(HNODE) {
 
 // reference: http://wiki.0xffffff.org/posts/hurlex-11.html
 static
-HNODE *slob_head;
+HNODE *slob_head = (HNODE*)SLOB_BEG;
+
+static
+unsigned long curr_brk;
 
 void init_slob(void)
 {
-	slob_head = (HNODE*)SLOB_BEG;
+	curr_brk = PGMASK & (PGSIZE - 1 + (unsigned long) slob_head);
 	slob_head->allocated = 0;
 	slob_head->next = 0;
 }
 
-static void grow_mapping_to(unsigned long adr)
+static
+void grow_mapping_to(unsigned long adr)
 {
+	//if (adr == 8405024) asm volatile ("int3"); // `b do_break_point` in gdb
+	for (; curr_brk < adr + PGSIZE; curr_brk += PGSIZE) { // eeee...
+		map(curr_brk, alloc_ppage() | PG_P | PG_W);
+	}
 }
 
-static void shrink_mapping_to(unsigned long adr)
+static
+void shrink_mapping_to(unsigned long adr)
 {
+	for (; curr_brk > adr + PGSIZE; curr_brk -= PGSIZE) {
+		free_ppage(unmap(curr_brk) & PGMASK);
+	}
 }
 
 #ifdef TESTING
@@ -101,7 +115,7 @@ void *kmalloc(unsigned long len)
 	HNODE *next = (HNODE*)((char*)curr + len);
 	tprintf("grow to %p\n", next + 1);
 	grow_mapping_to((unsigned long) (next + 1));
-	list_link(curr, next);
+	list_link(curr, next);//FIXME:next can be unaccessable!!???
 	next->next = 0;
 	next->allocated = 0;
 	curr->allocated = len;

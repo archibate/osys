@@ -1,6 +1,10 @@
-$K.elf: $(KERN).ld $(OBJS)
+ifndef LDSCRIPT
+LDSCRIPT=$Suser.ld
+endif
+
+$K.elf: $(LDSCRIPT) $(OBJS)
 	$E ld $@
-	$V$(CC) $(CFLAGS) $(LDFLAGS) -T $(KERN).ld -o $@ $(OBJS)
+	$V$(CC) $(CFLAGS) $(LDFLAGS) -T $(LDSCRIPT) -o $@ $(OBJS)
 
 $K.bin: $K.elf
 	@#$E objcopy $@
@@ -8,7 +12,7 @@ $K.bin: $K.elf
 	$E strip $@
 	$V$(STRIP) -O binary -o $@ $<
 
-$K.bim: $(KERN).rul $(ASKOBJS)
+$K.bim: $(NAME).rul $(ASKOBJS)
 	$E obj2bim $@
 	$V$(OBJ2BIM) @$N.rul out:$@ stack:3136k $K.map $(ASKOBJS)
 

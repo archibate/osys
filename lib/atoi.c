@@ -11,7 +11,7 @@ int ctoi(int c)
 	else if ('A' <= c && c <= 'Z')
 		return c - 'A' + 10;
 	else
-		return 0;
+		return -1;
 }
 
 
@@ -25,9 +25,9 @@ unsigned long strtol
 	unsigned long res = 0;
 	while ((c = *s)) {
 		c = ctoi(c);
-		if (c == 0 || c >= base)
+		if (c < 0 || c >= base)
 			break;
-		res *= 10;
+		res *= base;
 		res += c;
 		s++;
 	}

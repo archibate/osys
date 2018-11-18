@@ -4,7 +4,7 @@ FUNCTIONS+=no-common no-exceptions no-non-call-exceptions \
 	  freestanding no-stack-protector no-builtin
 WARNINGS+=error all no-unused-function no-error=unused-variable \
 	  no-error=unused-but-set-variable 
-#DEFINES+=TESTING=1
+#DEFINES+=TESTING=1#FIXME:bug in dick_func
 
 CFLAGS+=-nostdlib -nostdinc
 ifdef DEBUG

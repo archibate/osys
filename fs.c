@@ -61,18 +61,6 @@ DIRENT *dirfind(DIR *dir, const char *name)
 	return dir->d_ops->dirfind(dir, name);
 }
 
-static
-int strfind(const char *src, char ch)
-{
-	int i = 0;
-	while (*src) {
-		if (*src == ch)
-			return i;
-		i++, src++;
-	}
-	return -1;
-}
-
 DIRENT *dir_locate_entry(DIR *_dir, const char *_name)
 {
 	int len = strlen(_name) + 1;
@@ -187,6 +175,24 @@ unsigned int getch(FILE *file)
 int putch(FILE *file, unsigned char ch)
 {
 	return file->f_ops->putch(file, ch);
+}
+
+size_t glinesize(FILE *file)
+{
+	return file->f_ops->glinesize(file);
+}
+
+char *getline(FILE *file)
+{
+	return file->f_ops->getline(file);
+}
+
+int mmap(FILE *f, void *p, size_t size, unsigned int mattr)
+{
+	if ((((unsigned long)p) & PGATTR) != 0)
+		return -E_INVL_ARG;
+
+	return f->f_ops->mmap(f, p, size, mattr);
 }
 
 

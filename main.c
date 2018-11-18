@@ -30,8 +30,8 @@ int main
 	INIT(mouse);
 	INIT(timer, 100);
 	INIT(psm);
-	INIT(game);
 	INIT(dma);
+	INIT(game);
 	INIT(slob);
 	TEST(slob);
 	INIT(sched);
@@ -42,6 +42,7 @@ int main
 	INIT(zero);
 	INIT(welcome);
 	INIT(kbd);
+	INIT(tss);
 	INIT(shell);
 	asm volatile ("sti");
 
@@ -63,11 +64,23 @@ struct VIDEO_INFO
 } __attribute__((packed));
 
 
+#include <map.h>
+#include <panic.h>
+
 void init_game
 (void)
 {
 	struct VIDEO_INFO *video = (struct VIDEO_INFO *) 0x7b00;
+	printf("video: mode %x at %p (%dx%d %dbpp)\n", video->vmode,
+			video->buf, video->xsiz, video->ysiz,
+			video->bpp);
 
-	for (int i = 0; i < video->xsiz * video->ysiz; i++)
-		video->buf[i] = (i % video->xsiz) % 0x10;
+	unsigned long base = (unsigned long) video->buf;
+	assert(!(base & PGATTR));
+	for (int i = 0; i < video->xsiz * video->ysiz; i += PGSIZE)
+		map(base + i, (base + i) | PG_P | PG_W | PG_U);
+	mmu_flush_tlb();
+
+	/*for (int i = 0; i < video->xsiz * video->ysiz; i++)
+		video->buf[i] = (i % video->xsiz) % 0x10;*/
 }

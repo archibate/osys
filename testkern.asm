@@ -1,4 +1,4 @@
-; vim ft=nasm ai
+; vim: ft=nasm ai
 
 [BITS 32]
 
@@ -17,6 +17,7 @@ _start:
 	;shr eax, 1
 	and eax, 0x0f
 	;div bx
+	cld
 	stosb
 	loop .again
 	cli

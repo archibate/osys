@@ -1,0 +1,6 @@
+#!/bin/bash
+
+alias do-run='make -B run'
+alias do-bochsrun='make -B bochsrun'
+alias do-heximg='hexdump -C bin/a.img | less'
+alias do-dumpk='objdump -D bin/kernel.elf | less'

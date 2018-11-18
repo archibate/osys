@@ -1,7 +1,6 @@
 #include <onkeybd.h>
 #include <print.h>
 #include <efifo.h>
-#include <serial.h>
 #include <vkeys.h>
 
 
@@ -20,12 +19,16 @@ void on_keyboard_event
 	keydowns[scancode & 0x7f] = (scancode & 0x80);
 
 	extern const int keymap[0x80];
-	if (scancode < 0x80)
-		serial_putc(keymap[scancode]);
+	int ch = keymap[scancode];
 
-	efifo_put(&keybd_efifo, scancode);
-	if (scancode == 0x1c)
-		efifo_flush(&keybd_efifo);
+	if (scancode < 0x80)
+	{
+		putchar(ch);
+
+		efifo_put(&keybd_efifo, ch);
+		if (ch == '\n')
+			efifo_flush(&keybd_efifo);
+	}
 }
 
 

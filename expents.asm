@@ -14,19 +14,25 @@ exp_ents:
 %include "gen.expentries.inc"
 
 exp_common:
-	pushad
 	push dword ds
 	push dword es
+	pushad
 
 	mov edx, ss
 	mov ds, edx
 	mov es, edx
 
+	;push dword [esp + 48] ; old eip
+	;push ebp ; fake stack frame
+	;mov ebp, esp
+
 	mov eax, [esp + 40] ; do_exp address
 	call eax
 
+	;add esp, 8
+
+	popad
 	pop dword es
 	pop dword ds
-	popad
 	add esp, 8 ; skip do_exp address & error code
 	iretd

@@ -1,4 +1,5 @@
-#include <wchar.h>
+#include "wcsing.h"
+#include "wchar.h"
 
 void wcscpy(wchar_t *dst, const wchar_t *src)
 {
@@ -42,4 +43,51 @@ int wcsncmp(const wchar_t *dst, const wchar_t *src, unsigned long n)
 		if (*dst++ == 0 || *src++ == 0)
 			break;
 	return res;
+}
+
+int wcsfind(const wchar_t *src, wchar_t ch)
+{
+	int i = 0;
+	while (*src) {
+		if (*src == ch)
+			return i;
+		i++, src++;
+	}
+	return -1;
+}
+
+wchar_t *wcsskip(const wchar_t *dst, const wchar_t *chrs)
+{
+	while (wcsfind(chrs, *dst) != -1)
+		dst++;
+	return (wchar_t *) dst;
+}
+
+int wcsfindin(const wchar_t *src, const wchar_t *chrs)
+{
+	int i = 0;
+	while (*src) {
+		if (wcsfind(chrs, *src) != -1)
+			return i;
+		i++, src++;
+	}
+	return -1;
+}
+
+int wcschop(wchar_t *dst, const wchar_t *chrs)
+{
+	int i = 0;
+	unsigned long len = wcslen(dst) - 1;
+	while (len > 0 && wcsfind(chrs, dst[len]) != -1) {
+		dst[len--] = 0;
+		i++;
+	}
+	return 0;
+}
+
+wchar_t *wcstrim(wchar_t *dst, const wchar_t *chrs)
+{
+	dst = wcsskip(dst, chrs);
+	wcschop(dst, chrs);
+	return dst;
 }

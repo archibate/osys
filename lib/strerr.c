@@ -3,6 +3,7 @@ const char *err_msgs[] = {
 	"success",
 	"no such file or directory",
 	"invalid argument / syscall",
+	"not impelemented (yet)",
 	"not writable (read-only)",
 	"not readable (write-only)",
 	"wrong type of inode / spec",
