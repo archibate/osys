@@ -49,6 +49,6 @@ lib/string
 lib/strerr
 lib/wcsing
 palette
-gview/gview
-gview/bmp
-gview/jpeg
+user/gview/gview
+user/gview/bmp
+user/gview/jpeg
