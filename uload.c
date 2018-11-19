@@ -45,8 +45,9 @@ int load_user_program(const char *name)
 	else
 		res = 0;
 
+	unsigned int pages = (name[5] == 'g' ? 0xd00 : 0x5);
 	unsigned long stkbtm = USER_STACK_END;
-	for (int i = 0; i < 0xd00; i++)
+	for (int i = 0; i < pages; i++)
 		map(stkbtm -= PGSIZE, alloc_ppage() | PG_P | PG_W | PG_U | PG_PSM);
 
 out_close:

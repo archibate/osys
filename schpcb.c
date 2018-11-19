@@ -1,5 +1,4 @@
 #include <schpcb.h>
-#include <print.h>
 
 
 extern

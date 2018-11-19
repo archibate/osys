@@ -231,11 +231,12 @@ int exec_cmd(int argc, char *const *argv)
 		}
 	}
 
-	char *path = kmalloc(10 + strlen(name));
+	unsigned long len = strlen(name);
+	char *path = kmalloc(5 + len + 4 + 1);
 	memcpy(path, "/bin/", 5);
-	strcpy(path + 5, name);
-	strcat(path + 5, ".com");
-	//printf("starting %s...\n", path);
+	memcpy(path + 5, name, len);
+	memcpy(path + 5 + len, ".com", 4);
+	path[5 + len + 4] = 0;
 	int res = shell_start(path);
 	kfree(path);
 
@@ -260,9 +261,9 @@ int shell_main(void)
 		char *cmdl = getline(f);
 		int argc;
 		char **argv = parse_argv(cmdl, &argc);
-		kfree(cmdl);
 		if (argv[0])
 			res = exec_cmd(argc, argv);
+		kfree(cmdl);
 		kfree(argv);
 	}
 

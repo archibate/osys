@@ -46,50 +46,6 @@ unsigned long pgd_map
 }
 
 
-#if 0
-void pgd_unmap_free_marked_pages
-	( unsigned long *pgd
-	, int invalidate
-	)
-{
-	unsigned long pde, pte, *pt;
-	int i, j;
-
-	for (i = 0; i < PTSIZE; i++)
-	{
-		pde = pgd[i];
-
-		if ((pde & (PG_P | PG_G)) != PG_P)
-			continue;
-		printf("s");
-
-		if (pde & PG_PDM)
-		{
-			//free_ppage(pde & PGMASK);
-			//pgd[i] = 0;
-		}
-		if (/*1 || (*/pde & PG_PSM/*)*/)
-		{
-			printf("S");
-			pt = (unsigned long *) (pde & PGMASK);
-
-			for (j = 0; j < PTSIZE; j++)
-			{
-				pte = pt[j];
-
-				if ((pte & (PG_P | PG_PSM | PG_G)) == (PG_P | PG_PSM))
-				{
-					free_ppage(pte & PGMASK);
-					pt[j] = 0;
-
-					if (invalidate)
-						mmu_invalidate(pte & PGMASK);
-				}
-			}
-		}
-	}
-}
-#else
 void pgd_unmap_free_psm_non_global_pages
 	( unsigned long *pgd
 	, int invalidate
@@ -130,4 +86,3 @@ void pgd_unmap_free_psm_non_global_pages
 		}
 	}
 }
-#endif

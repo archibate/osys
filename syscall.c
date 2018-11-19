@@ -19,7 +19,6 @@ int __attribute__((noreturn)) sys_undefined(void)
 
 void __attribute__((noreturn)) sys_exit(int status)
 {
-	//printf("sys_exit(%d)!\n", status);
 	on_user_exit();
 	thread_exit(status);
 }
@@ -30,8 +29,6 @@ void __attribute__((noreturn)) sys_exit(int status)
 
 int sys_open(const char *name, unsigned int oattr)
 {
-	//printf("sys_open(%s)!\n", name);
-
 	verify_ptr(name);
 
 	int res = -E_OO_MAX, fd;
