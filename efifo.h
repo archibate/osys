@@ -11,6 +11,13 @@ STRUCT(EFIFO)
 	EVENT eve_wr;
 };
 
+static inline
+void efifo_init(EFIFO *ef)
+{
+	fifo_init(&ef->fifo);
+	event_init(&ef->eve_wr);
+}
+
 static
 fifo_idx_t efifo_wait_size(EFIFO *ef)
 {

@@ -10,4 +10,10 @@ void switch_from_to
 	, PCB *next
 	);
 extern
-void switch_pgd(unsigned long *pgd);
+void switch_pgd
+	( unsigned long *pgd
+	);
+extern
+void setup_pgd
+	( unsigned long *pgd
+	);

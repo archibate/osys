@@ -1,3 +1,4 @@
+# vim: ft=gdb ts=2 sts=2 sw=2
 # https://github.com/archibate/OS/blob/master/.gdbinit
 
 # Connect to QEMU
@@ -12,7 +13,7 @@ set architecture i386
 # For kernel debugging
 # Add KERNEL file for debugging information
 add-symbol-file bin/kernel.elf 0x100000
-add-symbol-file user/gview/bin/gview.elf 0x10000000
+add-symbol-file user/hello/bin/hello.elf 0x10000000
 
 # For both ;)
 set disassemble-next-line on
@@ -22,3 +23,10 @@ define qq
 	kill
 	quit
 end
+
+define bc
+	break $arg0
+	continue
+end
+
+bc crt_start

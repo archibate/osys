@@ -11,5 +11,7 @@ STRUCT(PCB)
 
 	unsigned long *pgd;
 
+	unsigned long brk;
+
 	struct FILE *files[FILES_MAX];
 };

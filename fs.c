@@ -172,6 +172,11 @@ unsigned int getch(FILE *file)
 	return file->f_ops->getch(file);
 }
 
+int flush(FILE *file)
+{
+	return file->f_ops->flush(file);
+}
+
 int putch(FILE *file, unsigned char ch)
 {
 	return file->f_ops->putch(file, ch);

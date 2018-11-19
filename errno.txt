@@ -1,9 +1,11 @@
    NO_SRCH	: no such file or directory
    INVL_ARG	: invalid argument / syscall
    NO_IMPL	: not impelemented (yet)
+   BAD_FD	: bad file descriptor
    NO_WR	: not writable (read-only)
    NO_RD	: not readable (write-only)
    WRN_TYP	: wrong type of inode / spec
-   BAD_BLK	: bad block / chunk
+   BAD_BLK	: bad block / chunk / file
+   EXISTD	: already existed
    OO_MAX	: out of open / slots / memory
-   ACC_VIOL	: access violentation
+   SEG_FL	: access violentation / segment fault

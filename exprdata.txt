@@ -1,0 +1,81 @@
+idle_func  = 0x100230
+exec       = 0x10117e
+int_return = 0x100577
+--------------------------------------
+process_exit(0)
+0010BC40->01002140: 00100230
+01002140->00FFFFEC: 00100230
+00FFFFEC->01002140: 00000202
+sys_getch()
+01002140->00FFFFEC: 00100BA6
+00FFFFEC->00FFFFEC: 00100B59
+00FFFFEC->00FFFFEC: 00100B59
+
+-------------------------------------
+(gdb) p current->pcb - 4096
+$6 = (PCB *) 0xfbe140
+(gdb) p current->pcb + 4096
+$7 = (PCB *) 0x1046140
+(gdb) p (char*)current->pcb + 4096
+$8 = 0x1003140 "X1"
+(gdb) p (void*)current->pcb + 4096
+$9 = (void *) 0x1003140
+(gdb) p (void*)current->pcb->sp   
+$10 = (void *) 0x1002f9c
+(gdb) p (void*)next->pcb + 4096
+$11 = (void *) 0x1000fec
+(gdb) p (void*)next->pcb->sp   
+$12 = (void *) 0x1000e90
+(gdb) 
+
+--------------------------------------
+
+OSYS kernel v0.1 (C) archibate 2018
+
+video: mode 103 at FD000000 (800x600 8bpp)
+ramfs: super block info in mbr:
+  VOL NAME  OSYS FLOPPY
+  VOL ID    0x1234ABCD
+  OEM NAME  mkfs.fat
+  FAT ENTS  682
+  ROOT MAX  224
+  CLU SIZE  4096
+process_exit(0)
+0010BC40->01002140: 00100230
+01002140->00FFFFEC: 00100230
+00FFFFEC->01002140: 00000202
+sys_getch(): 00100BB7
+01002140->00FFFFEC: 00100BB7
+00FFFFEC->00FFFFEC: 00100B6A
+00FFFFEC->00FFFFEC: 00100B6A
+00FFFFEC->00FFFFEC: 00100B6A
+00FFFFEC->00FFFFEC: 00100B6A
+00FFFFEC->00FFFFEC: 00100B6A
+00FFFFEC->00FFFFEC: 00100B6A
+00FFFFEC->00FFFFEC: 00100B6A
+00FFFFEC->00FFFFEC: 00100B6A
+00FFFFEC->00FFFFEC: 00100B6A
+00FFFFEC->00FFFFEC: 00100B6A
+00FFFFEC->00FFFFEC: 00100B6A
+l00FFFFEC->00FFFFEC: 00100B6A
+00FFFFEC->00FFFFEC: 00100B6A
+s00FFFFEC->00FFFFEC: 00100B6A
+00FFFFEC->00FFFFEC: 00100B6A
+00FFFFEC->00FFFFEC: 00100B6A
+00FFFFEC->00FFFFEC: 00100B6A
+00FFFFEC->00FFFFEC: 00100B6A
+00FFFFEC->00FFFFEC: 00100B6A
+
+00FFFFEC->01002140: 001045C9
+sys_putch(l)
+sys_getch(): 0000000A
+sys_putch(s)
+sys_getch(): 0000000A
+sys_putch(
+)
+ls
+sys_getch(): 0000000A
+01002140->00FFFFEC: 0000000A
+PANIC: DEBUG
+cpu dump:
+cr2=00000000

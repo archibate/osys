@@ -101,7 +101,7 @@ void task_run
 	TCB *prev = current;
 	current = next;
 
-	switch_from_to(prev->pcb, current->pcb);
+	switch_from_to(prev->pcb, next->pcb);
 }
 
 

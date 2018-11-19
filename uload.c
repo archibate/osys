@@ -34,12 +34,9 @@ int load_user_program(const char *name)
 
 	void *addr = (void *) USER_TEXT_BEG;
 
-	unsigned long *pgd = (unsigned long *) alloc_ppage();
-	switch_pgd(current->pcb->pgd = pgd);
+	map(0x20000000, 0x7000 | PG_P | PG_U); // emmm...VIDEO_INFO desu
 
-	map(0x20000000, 0x7000 | PG_P | PG_U);
-
-	res = mmap(f, addr, f->f_size, MMAP_USR);
+	res = mmap(f, addr, f->f_size, MMAP_USR | MMAP_WR);
 	if (res < 0)
 		goto out_close;
 	else
@@ -55,9 +52,4 @@ out_close:
 out_free:
 	kfree(f);
 	return res;
-}
-
-void on_user_exit(void)
-{
-	unmap_free_psm_non_global_pages();
 }

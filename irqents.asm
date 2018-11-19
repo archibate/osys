@@ -2,6 +2,7 @@
 
 	GLOBAL irq_ents
 	GLOBAL move_to_user
+	GLOBAL int_return
 	EXTERN tss0
 	EXTERN irq_table
 
@@ -37,6 +38,11 @@ irq_common:
 int_return:
 	mov dword [tss0 + 4], esp
 	add dword [tss0 + 4], 68
+	;add dword [tss0 + 4], 60
+	;test dword [esp + 52], 3
+	;jz .cont
+	;add dword [tss0 + 4], 8
+;.cont:
 	popad
 	pop dword es
 	pop dword ds

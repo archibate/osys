@@ -1,11 +1,15 @@
+problem in malloc.c: page fault on c0000000
+
+setbrk (growing & shrinking heap)
+auto increase stack on page fault
+main(argc, argv)
+syspt.c::wait_exit.etc.
+hankaku,hanzi
+
+map.c:干脆考虑把所有在USER_BEG以后,且物理地址在PSM管辖范围内的页都free了?
 better thread_exit
 free unmapable user_exit
-user defined stack size (like in haribsys.hrb)
-user app(argv, argc): struct mm auto free
-map.c:干脆考虑把所有在USER_BEG以后,且物理地址在PSM管辖范围内的页都free了?
 mm_on_exit()!!!!
-hankaku
-wait_exit.etc.
 
 dir:readdir,seekdir...
 ramfs.getchars&...

@@ -8,6 +8,10 @@ extern int sys_read();
 extern int sys_write();
 extern int sys_mmap();
 extern int sys_tellsize();
+extern int sys_getch();
+extern int sys_putch();
+extern int sys_flush();
+extern int sys_setbrk();
 
 int (*syscall_table[SYSCALL_MAX])() = {
 	[_SYS_undefined] = &sys_undefined,
@@ -18,4 +22,8 @@ int (*syscall_table[SYSCALL_MAX])() = {
 	[_SYS_write] = &sys_write,
 	[_SYS_mmap] = &sys_mmap,
 	[_SYS_tellsize] = &sys_tellsize,
+	[_SYS_getch] = &sys_getch,
+	[_SYS_putch] = &sys_putch,
+	[_SYS_flush] = &sys_flush,
+	[_SYS_setbrk] = &sys_setbrk,
 };

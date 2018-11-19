@@ -12,8 +12,9 @@ void switch_from_to
 	, PCB *next
 	)
 {
-	if (next->pgd)
-		switch_pgd(next->pgd);
+	switch_pgd(next->pgd);
 
-	__switch_from_to(&prev->sp, &next->sp);
+	//printf("%p:%p -> %p:%p\n", prev, prev->sp, next, next->sp);
+	if (prev != next)
+		__switch_from_to(&prev->sp, &next->sp);
 }

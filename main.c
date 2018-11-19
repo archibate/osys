@@ -1,14 +1,20 @@
 #include <print.h>
 #include <mkthrd.h>
 #include <mkproc.h>
+#include <pexit.h>
 
 
-static
+extern
 int __attribute__((noreturn)) idle_func
+(void *__attribute__((unused)) unused);
+
+int __attribute__((noreturn)) test_func
 (void *__attribute__((unused)) unused)
 {
-	for (;;)
+	for (;;) {
+		printf("T");
 		asm volatile ("sti; hlt");
+	}
 }
 
 #define INIT(x, ...) extern void init_##x(); init_##x(__VA_ARGS__);
@@ -33,22 +39,19 @@ int main
 	INIT(dma);
 	INIT(game);
 	INIT(slob);
-	TEST(slob);
 	INIT(sched);
-	TEST(sched);
 	create_thread(create_process(idle_func, 0));
+	//create_thread(create_process(test_func, 0));
 	INIT(ramfs);
 	INIT(devfs);
 	INIT(zero);
 	INIT(welcome);
-	INIT(kbd);
 	INIT(vram);
+	INIT(kbd);
+	INIT(mon);
 	INIT(tss);
 	INIT(shell);
-	asm volatile ("sti");
-
-	for (;;)
-		asm volatile ("hlt");
+	process_exit(0);
 }
 
 

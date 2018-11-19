@@ -31,6 +31,12 @@ STRUCT(MKEF_FILE_EX)
 	struct EFIFO *fe_efifo;
 };
 
+STRUCT(MKLB_FILE_EX)
+{
+	struct FIFO *fe_fifo;
+	int (*fe_flush_cb)(struct FIFO *fifo);
+};
+
 struct FILE // 表示一个文件
 {
 	LIST_NODE f_list;
@@ -45,6 +51,7 @@ struct FILE // 表示一个文件
 	union {
 		FAT_FILE_EX f_fat;
 		MKEF_FILE_EX f_mkef;
+		MKLB_FILE_EX f_mklb;
 	};
 };
 
@@ -87,7 +94,8 @@ struct FILE_OPS // 文件操作,读写之类的
 	size_t (*glinesize)(FILE *file); // 预估一行的最大容量(API要求的呗)
 	int (*seek)(FILE *file, long offset, int whence); // 定位到特定文件位置
 	//int (*tell)(FILE *file, int what); // 告知文件特定的偏移量信息
-	int (*fsync)(FILE *file); // 同步文件改动
+	int (*flush)(FILE *file); // 刷新get端的数据,让他不再等待
+	//int (*fsync)(FILE *file); // 同步文件改动
 	int (*close)(FILE *file); // 关闭文件(但是不释放FILE指针内存的那种)
 };
 
@@ -126,6 +134,11 @@ STRUCT(MKEF_INODE_EX)
 	struct EFIFO *ie_efifo;
 };
 
+STRUCT(MKLB_INODE_EX)
+{
+	int (*ie_flush_cb)(struct FIFO *fifo);
+};
+
 struct INODE // 表示一个文件或者目录, 算是什么东西的最小单位吧
 {
 	LIST_NODE i_list;
@@ -146,8 +159,9 @@ struct INODE // 表示一个文件或者目录, 算是什么东西的最小单�
 
 	union {
 		FAT_INODE_EX i_fat; // fat系统的私有变量, 存储起始clus号之类的
-		DEVDIR_INODE_EX i_devdir; // /dev节点的私有变量
+		DEVDIR_INODE_EX i_devdir; // /dev目录这个节点的私有变量
 		MKEF_INODE_EX i_mkef; // /dev/*efifo节点的私有变量
+		MKLB_INODE_EX i_mklb; // /dev/*linbuf节点的私有变量
 	};
 };
 
@@ -230,3 +244,4 @@ int seek(FILE *file, long offset, int whence);
 size_t glinesize(FILE *file);
 char *getline(FILE *file);
 void close(FILE *file);
+int flush(FILE *file);

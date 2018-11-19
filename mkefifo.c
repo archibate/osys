@@ -2,12 +2,20 @@
 #include <efifo.h>
 #include <kmalloc.h>
 #include <devfs.h>
+#include <sched.h>//
 
 
 static
 int mkef_putch(FILE *f, unsigned char ch)
 {
 	efifo_put(f->f_mkef.fe_efifo, ch);
+	return 0;
+}
+
+static
+int mkef_flush(FILE *f)
+{
+	efifo_flush(f->f_mkef.fe_efifo);
 	return 0;
 }
 
@@ -55,6 +63,7 @@ int mkef_open(FILE *f, INODE *inode, unsigned int oattr)
 	f->f_pos = 0;
 	f->f_size = -1;
 	f->f_mkef.fe_efifo = kmalloc_for(EFIFO);
+	efifo_init(f->f_mkef.fe_efifo);
 	return 0;
 }
 
@@ -98,6 +107,7 @@ FILE_OPS mkef_e_fops = {
 	.close = mkef_close,
 	.putch = mkef_putch,
 	.getch = mkef_getch,
+	.flush = mkef_flush,
 };
 
 INODE *make_efifo_dev(const char *name, EFIFO *efifo, unsigned int iattr)

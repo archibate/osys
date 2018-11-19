@@ -11,6 +11,7 @@ __switch_from_to:
 	push edi
 	push esi
 	push ebx
+	cli
 	mov [ecx], esp
 	mov esp, [edx]
 	pop ebx

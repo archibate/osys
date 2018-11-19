@@ -1,0 +1,12 @@
+undefined
+exit
+open
+close
+read
+write
+mmap
+tellsize
+getch
+putch
+flush
+setbrk

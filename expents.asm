@@ -1,5 +1,6 @@
 ; vim: ft=nasm ai
 
+	EXTERN int_return
 	GLOBAL exp_ents
 %include "gen.expentriext.inc"
 
@@ -31,8 +32,4 @@ exp_common:
 
 	;add esp, 8
 
-	popad
-	pop dword es
-	pop dword ds
-	add esp, 8 ; skip do_exp address & error code
-	iretd
+	jmp int_return

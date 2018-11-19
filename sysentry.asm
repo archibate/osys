@@ -2,6 +2,7 @@
 
 	GLOBAL __syscall_entry
 	EXTERN syscall_table
+	EXTERN int_return
 
 %include "sysnr.inc"
 
@@ -22,8 +23,4 @@ __syscall_entry:
 	call [syscall_table + eax * 4]
 	add esp, 12
 	mov [esp + 28], eax
-	popad
-	pop dword ds
-	pop dword es
-	add esp, 8
-	iretd
+	jmp int_return

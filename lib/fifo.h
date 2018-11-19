@@ -18,6 +18,12 @@ int fifo_empty(const FIFO *fifo)
 }
 
 static inline
+void fifo_init(FIFO *fifo)
+{
+	fifo->wr = fifo->rd = 0;
+}
+
+static inline
 fifo_idx_t fifo_size(const FIFO *fifo)
 {
 	return fifo->wr - fifo->rd;

@@ -1,18 +1,10 @@
-#include <fs.h>
-#include <uload.h>
 #include <vfs.h>
+#include <print.h>
 #include <mkthrd.h>
 #include <mkproc.h>
-#include <uload.h>
-#include <atoi.h>
-#include <memory.h>
-#include <print.h>
-#include <string.h>
-#include <vacall.h>
-#include <kmalloc.h>
-#include <errno.h>
-#include <panic.h>
+#include <exec.h>
 
+#if 0 // {{{
 int gview_main(const char *name);
 
 int shell_ls(const char *name)
@@ -69,20 +61,6 @@ out_free:
 	kfree(dir);
 
 	return 0;
-}
-
-int shell_start(const char *name)
-{
-	int res = load_user_program(name);
-	if (res) {
-		printf("load_user_program(%s): %m\n", name, res);
-		goto out;
-	}
-
-	create_thread(create_process((void*)transfer_to_user, 0));
-
-out:
-	return res;
 }
 
 int shell_type(const char *name)
@@ -216,7 +194,7 @@ int exec_cmd(int argc, char *const *argv)
 		SHCMD(cat, 1,1),
 		SHCMD(catkbd, 0,0),
 		SHCMD(map, 3,4),
-		SHCMD(start, 1,1),
+		SHCMD(exec, 1,1),
 		{"cd", setcwd, 1,1},
 	};
 
@@ -237,14 +215,14 @@ int exec_cmd(int argc, char *const *argv)
 	memcpy(path + 5, name, len);
 	memcpy(path + 5 + len, ".com", 4);
 	path[5 + len + 4] = 0;
-	int res = shell_start(path);
+	create_thread(create_process((void*)shell_exec, path));
 	kfree(path);
 
-	if (res == E_NO_SRCH)
+	/*if (res == E_NO_SRCH)
 		printf("sh: command not found: %s\n", name);
 	else if (res)
-		printf("sh: error %d: %m\n", res, res);
-	return res;
+		printf("sh: error %d: %m\n", res, res);*/
+	return 0;
 }
 
 int shell_main(void)
@@ -272,17 +250,12 @@ int shell_main(void)
 
 	return res;
 }
-
+#endif // }}}
 
 void init_shell(void)
 {
 	setcwd("/root");
-	shell_type("/dev/welcome");
-
-	// change bootsect.asm line 9 to 0x103 to have a complete view of 2s2s.jpg
-	//gview_main("2s2s.jpg");
-
-	//shell_start("/bin/splash.com");
-	//shell_start("/bin/gview.com");
-	shell_main();
+	//create_thread(create_process((void*)exec, "/bin/splash.com"));
+	//create_thread(create_process((void*)exec, "/bin/catkbd.com"));
+	create_thread(create_process((void*)exec, "/bin/hello.com"));
 }

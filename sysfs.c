@@ -5,27 +5,14 @@
 #include <vfs.h>
 #include <panic.h>
 #include <memlay.h>
-#include <mkproc.h>
-#include <uload.h>
-#include <texit.h>
+#include <pexit.h>
 #include <errno.h>
 #include <umemlay.h>
 #include <kern/sysapi.h>
 
-int __attribute__((noreturn)) sys_undefined(void)
-{
-	panic("undefined system call");
-}
-
-void __attribute__((noreturn)) sys_exit(int status)
-{
-	on_user_exit();
-	thread_exit(status);
-}
-
-#define verify_fd(fd) if ((fd) < 0 || (fd) > FILES_MAX || !current->pcb->files[(fd)]) return -E_INVL_ARG
-#define verify_ptr(p) if ((unsigned long) p < DMA_END) return -E_ACC_VIOL
-#define verify_mappable_ptr(p) if ((unsigned long) (p) < USER_BEG || (unsigned long) (p) > USER_STACK_BEG) return -E_ACC_VIOL
+#define verify_fd(fd) if ((fd) < 0 || (fd) > FILES_MAX || !current->pcb->files[(fd)]) return -E_BAD_FD
+#define verify_ptr(p) if ((unsigned long) p < DMA_END) return -E_SEG_FL
+#define verify_mappable_ptr(p) if ((unsigned long) (p) < USER_BEG || (unsigned long) (p) > USER_STACK_BEG) return -E_SEG_FL
 
 int sys_open(const char *name, unsigned int oattr)
 {
@@ -44,6 +31,7 @@ got_fd:	res = 0;
 	res = open(current->pcb->files[fd], name, oattr);
 	if (res)
 		goto out_free;
+	res = fd;
 
 	goto out;
 
@@ -96,4 +84,25 @@ int sys_write(int fd, const char *buf, size_t size)
 	verify_ptr(buf);
 
 	return write(current->pcb->files[fd], buf, size);
+}
+
+int sys_putch(int fd, unsigned char ch)
+{
+	verify_fd(fd);
+
+	return putch(current->pcb->files[fd], ch);
+}
+
+unsigned int sys_getch(int fd)
+{
+	verify_fd(fd);
+
+	return getch(current->pcb->files[fd]);
+}
+
+int sys_flush(int fd)
+{
+	verify_fd(fd);
+
+	return flush(current->pcb->files[fd]);
 }

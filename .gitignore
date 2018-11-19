@@ -1,4 +1,11 @@
 bin
+user/*/bin
+user/*/lib
+user/*/ulib
+bin/*
+user/*/bin/*
+user/*/lib/*
+user/*/ulib/*
 *.o
 *.d
 *.obj

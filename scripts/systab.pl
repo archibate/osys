@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-@scs = qw(undefined exit open close read write mmap tellsize);
+@scs = split ' ', `cat systab.txt`;
 
 open N, '>kuinc/kern/sysnr.h';
 open C, '>sysnr.inc';

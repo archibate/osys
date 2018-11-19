@@ -1,17 +1,21 @@
 #include <pcb.h>
 #include <mkproc.h> // impelementation
 #include <memory.h>
+#include <umemlay.h>
 #include <kmalloc.h>
+#include <schpcb.h>
 #include <panic.h>
-#include <texit.h>
+#include <pexit.h>
+#include <psm.h>
+#include <print.h>
 
-#define STACK_SIZE 4096
+#define STACK_SIZE 8192
 
 static
 void __attribute__((noreturn)) __process_exit(void)
 {
 	register int val asm ("eax");
-	thread_exit(val);
+	process_exit(val);
 }
 
 
@@ -31,6 +35,13 @@ PCB *create_process
 	bzero(--pcb->sp, sizeof(KS_REGS));
 	pcb->sp->eflags = 0x202;
 	pcb->sp->pc = (unsigned long) proc;
+
+	printf("create: %p:%p\n", pcb, pcb->sp);
+
+	unsigned long *pgd = (unsigned long *) alloc_ppage();
+	setup_pgd(pcb->pgd = pgd);
+
+	pcb->brk = USER_STACK_BEG;
 
 	return pcb;
 }

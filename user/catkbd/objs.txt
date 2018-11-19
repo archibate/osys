@@ -1,0 +1,10 @@
+start
+main
+../lib/gprintf
+../lib/atoi
+../lib/div
+../lib/vacall
+../lib/memory
+../lib/string
+../lib/strerr
+../lib/wcsing
