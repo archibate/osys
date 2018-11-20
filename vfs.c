@@ -8,10 +8,10 @@ DIR *root = 0;
 DIR *cdir = 0;
 
 
-int setcwd(const char *cwd)
+int chdir(const char *path)
 {
 	DIR *dir = kmalloc_for(DIR);
-	int res = opendir(dir, cwd, OPEN_RD | OPEN_WR);
+	int res = opendir(dir, path, OPEN_RD | OPEN_WR);
 	if (!res) {
 		if (cdir)
 			kfree(cdir);

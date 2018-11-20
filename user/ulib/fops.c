@@ -6,14 +6,28 @@ int fflush(FILE *f)
 	return flush(f->f_fd);
 }
 
-int fputc(FILE *f, int c)
+int fputc(int c, FILE *f)
 {
-	return putch(f->f_fd, c);
+	int res = putch(f->f_fd, c);
+	if (c == '\n')
+		fflush(f); // TODO: use wr_check_refill_buf??
+	return res;
 }
 
-int fgetc(FILE *f)
+static
+void check_refill_buf(FILE *f, void (*will_wait_cb)(void))
 {
-	return getch(f->f_fd);
+	if (f->f_bpos >= f->f_bsize) {
+		will_wait_cb();
+		f->f_bsize = read(f->f_fd, f->f_buf, BUFSIZ);
+		f->f_bpos = 0;
+	}
+}
+
+int fgetc_ex(FILE *f, void (*will_wait_cb)(void))
+{
+	check_refill_buf(f, will_wait_cb);
+	return f->f_buf[f->f_bpos++];
 }
 
 int fread(void *p, size_t size, size_t count, FILE *f)

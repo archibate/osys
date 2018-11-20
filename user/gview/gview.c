@@ -1,15 +1,7 @@
 #include <kern/sysapi.h>
 #include <fsdefs.h>
-
-struct VIDEO_INFO
-{
-	unsigned char *buf;
-	unsigned short xsiz;
-	unsigned short ysiz;
-	unsigned short vmode;
-	unsigned char bpp;
-	unsigned char mmodel;
-} __attribute__((packed));
+#include <malloc.h>
+#include <vinfo.h>
 
 struct DLL_STRPICENV {	/* 64KB */
 	int work[64 * 1024 / 4];
@@ -32,12 +24,12 @@ void error(char *s);
 
 int gview_main(const char *path)
 {
-	struct VIDEO_INFO *video = (struct VIDEO_INFO *) 0x20000b00;
+	struct VIDEO_INFO video;
 	struct DLL_STRPICENV env;
-	char filebuf[512 * 1024], *p;
-	char *winbuf = (void *) 0x80000000;//video->buf;//[1040 * 805];
+	char *filebuf = malloc(512 * 1024), *p;
+	char *winbuf = (void *) 0x80000000;//video.buf;//[1040 * 805];
 	int i, j, fsize, xsize, info[8];
-	struct RGB picbuf[1024 * 768 * sizeof(struct RGB)], *q;
+	struct RGB *picbuf = malloc(1024 * 768 * sizeof(struct RGB)), *q;
 
 	/* ファイル読み込み */
 	i = open(path, OPEN_RD); if (i < 0) { error("file not found.\n"); return 1; }
@@ -47,6 +39,10 @@ int gview_main(const char *path)
 		return 2;
 	}
 	read(i, filebuf, fsize);
+	close(i);
+
+	i = open("/dev/vinfo", OPEN_RD); if (i < 0) { error("can't open vinfo.\n"); return 3; }
+	read(i, &video, sizeof(VIDEO_INFO));
 	close(i);
 
 	i = open("/dev/vram", OPEN_WR); if (i < 0) { error("can't open vram.\n"); return 3; }
@@ -87,6 +83,7 @@ int gview_main(const char *path)
 	} else {
 		i = decode0_JPEG(&env, fsize, filebuf, 4, (char *) picbuf, 0);
 	}
+	free(filebuf);
 	/* b_type = 4 は、 struct RGB 形式を意味する */
 	/* skipは0にしておけばよい */
 	if (i != 0) {
@@ -94,7 +91,8 @@ int gview_main(const char *path)
 		return 6;
 	}
 
-	/* 表示 */xsize = video->xsiz;//320;
+	/* 表示 */
+	xsize = video.xsiz;
 	for (i = 0; i < info[3]; i++) {
 		p = winbuf + (i + 29) * xsize + (xsize - info[2]) / 2;
 		q = picbuf + i * info[2];
@@ -102,6 +100,7 @@ int gview_main(const char *path)
 			p[j] = rgb2pal(q[j].r, q[j].g, q[j].b, j, i);
 		}
 	}
+	free(picbuf);
 	//api_refreshwin(win, (xsize - info[2]) / 2, 29, (xsize - info[2]) / 2 + info[2], 29 + info[3]);
 
 	/* 終了待ち */

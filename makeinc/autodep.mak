@@ -5,6 +5,8 @@ PHONY+=dep
 dep: $B.deps
 
 $B.deps: $(ONAMES:%=$B%.d)
-	$(PERL) $Smergedeps.pl $@ $^
+	$V$(PERL) $Smergedeps.pl $@ $^
 
+ifndef NODEP
 -include $B.deps
+endif

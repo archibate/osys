@@ -1,0 +1,17 @@
+../ulib/start
+../ulib/crt
+main
+../lib/gprintf
+../lib/atoi
+../lib/div
+../lib/vacall
+../lib/memory
+../lib/string
+../lib/strerr
+../lib/wcsing
+../ulib/malloc
+../ulib/fopen
+../ulib/fops
+../ulib/fstr
+../ulib/printf
+../ulib/fprintf

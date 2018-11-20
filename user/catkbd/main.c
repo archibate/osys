@@ -2,29 +2,22 @@
 #include <fsdefs.h>
 #include <stddef.h>
 
-void __attribute__((noreturn)) error(int res, const char *msg);
-
 int main(void)
 {
 	int i, j, c;
 
 	i = open("/dev/kbd0", OPEN_RD);
-	if (i < 0) { error(i, "open(/dev/kbd0)"); }
+	if (i < 0) exit(i);
 
-	j = open("/dev/mon0", OPEN_WR);
-	if (j < 0) { error(j, "open(/dev/mon0)"); }
+	j = open("/dev/vmon0", OPEN_WR);
+	if (j < 0) exit(j);
 
-	if (i == j) asm volatile ("cli; hlt");
-
-	while (EOF != (c = getch(i)))
+	while (EOF != (c = getch(i))) {
 		putch(j, c);
+		flush(j);
+	}
 
 	close(i);
 	close(j);
 	return 0;
-}
-
-void __attribute__((noreturn)) error(int res, const char *msg)
-{
-	exit(res);
 }

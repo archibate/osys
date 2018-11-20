@@ -14,10 +14,13 @@ unsigned int file_parse_oattr(FILE *f, const char *type)
 	if (strfind(type, 'w') != -1)
 		oattr |= OPEN_WR;
 
-	/*if (strfind(type, 'b') != -1) {
+	/*if (strfind(type, 'b') == -1) {
 		f->f_linebuf = malloc_for(FIFO);
 		fifo_init(f->f_linebuf);
 	}*/
+
+	f->f_bpos = 0;
+	f->f_bsize = 0;
 
 	return oattr;
 }
@@ -50,8 +53,10 @@ int fopen_s(FILE **pf, const char *name, const char *type)
 {
 	*pf = malloc_for(FILE);
 	int res = fopen_i(*pf, name, type);
-	if (res)
+	if (res) {
 		free(*pf);
+		*pf = 0;
+	}
 	return res;
 }
 

@@ -28,6 +28,8 @@ stbrk
 map
 psm
 dma
+vinfo
+txtdev
 welcome
 zero
 ramfs
@@ -44,6 +46,7 @@ irq
 kbc
 mouse
 onmouse
+vmon
 mklinbuf
 mon
 serial

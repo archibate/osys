@@ -8,14 +8,14 @@ extern
 int __attribute__((noreturn)) idle_func
 (void *__attribute__((unused)) unused);
 
-int __attribute__((noreturn)) test_func
+/*int __attribute__((noreturn)) test_func
 (void *__attribute__((unused)) unused)
 {
 	for (;;) {
 		printf("T");
 		asm volatile ("sti; hlt");
 	}
-}
+}*/
 
 #define INIT(x, ...) extern void init_##x(); init_##x(__VA_ARGS__);
 #ifdef TESTING
@@ -37,18 +37,18 @@ int main
 	INIT(timer, 100);
 	INIT(psm);
 	INIT(dma);
-	INIT(game);
 	INIT(slob);
 	INIT(sched);
 	create_thread(create_process(idle_func, 0));
-	//create_thread(create_process(test_func, 0));
 	INIT(ramfs);
 	INIT(devfs);
 	INIT(zero);
 	INIT(welcome);
+	INIT(vinfo);
 	INIT(vram);
 	INIT(kbd);
 	INIT(mon);
+	INIT(vmon);
 	INIT(tss);
 	INIT(shell);
 	process_exit(0);
@@ -68,6 +68,7 @@ struct VIDEO_INFO
 } __attribute__((packed));
 
 
+#if 0
 #include <map.h>
 #include <panic.h>
 
@@ -88,3 +89,4 @@ void init_game
 	/*for (int i = 0; i < video->xsiz * video->ysiz; i++)
 		video->buf[i] = (i % video->xsiz) % 0x10;*/
 }
+#endif

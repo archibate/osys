@@ -1,37 +1,32 @@
 #include <kern/sysapi.h>
 #include <fsdefs.h>
-
-struct VIDEO_INFO
-{
-	unsigned char *buf;
-	unsigned short xsiz;
-	unsigned short ysiz;
-	unsigned short vmode;
-	unsigned char bpp;
-	unsigned char mmodel;
-} __attribute__((packed));
+#include <vinfo.h>
 
 void error(char *s);
 unsigned char rgb2pal(int r, int g, int b, int x, int y);
 
 int main(void)
 {
-	struct VIDEO_INFO *video = (struct VIDEO_INFO *) 0x20000b00;
-	char *p, *winbuf = (void *) 0x80000000;//video->buf;//[1040 * 805];
-	//struct RGB picbuf[1024 * 768 * sizeof(struct RGB)], *q;
+	struct VIDEO_INFO video;
+	char *p, *winbuf = (void *) 0x80000000;
 	int i, j, xsize;
 	int r, g, b, s = 1;
 
+	i = open("/dev/vinfo", OPEN_RD);
+	if (i < 0) { error("can't open vinfo.\n"); return 3; }
+	read(i, &video, sizeof(VIDEO_INFO));
+	close(i);
+
 	i = open("/dev/vram", OPEN_WR);
-	if (i < 0) { error("can't open vram.\n"); return i; }
+	if (i < 0) { error("can't open vram.\n"); return 3; }
 	xsize = tellsize(i);
 	mmap(i, winbuf, xsize, MMAP_WR);
 	close(i);
 
 	p = winbuf;
-	for (i = 0; i < video->ysiz; i++) {
-		for (j = 0; j < video->xsiz; j++) {
-			r = g = (i * 255) / video->ysiz;
+	for (i = 0; i < video.ysiz; i++) {
+		for (j = 0; j < video.xsiz; j++) {
+			r = g = (i * 255) / video.ysiz;
 			s = s * 591245 + 125;
 			b = (s / 255) % 128;
 			*p++ = rgb2pal(r, g, b, j, i);

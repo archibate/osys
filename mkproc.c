@@ -7,7 +7,7 @@
 #include <panic.h>
 #include <pexit.h>
 #include <psm.h>
-#include <print.h>
+//#include <print.h>
 
 #define STACK_SIZE 8192
 
@@ -36,7 +36,7 @@ PCB *create_process
 	pcb->sp->eflags = 0x202;
 	pcb->sp->pc = (unsigned long) proc;
 
-	printf("create: %p:%p\n", pcb, pcb->sp);
+	//printf("create: %p:%p\n", pcb, pcb->sp);
 
 	unsigned long *pgd = (unsigned long *) alloc_ppage();
 	setup_pgd(pcb->pgd = pgd);

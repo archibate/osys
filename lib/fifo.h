@@ -4,10 +4,12 @@
 
 typedef unsigned int fifo_data_t;
 typedef unsigned char fifo_idx_t;
+#define FIFO_MAX 256
+#define fifo_workwell(fifo) (fifo_size(fifo) <= FIFO_MAX - 1)
 
 STRUCT(FIFO)
 {
-	fifo_data_t buf[256];
+	fifo_data_t buf[FIFO_MAX];
 	fifo_idx_t wr, rd; // hiahiahia~ korewa auto-wrap desu
 };
 

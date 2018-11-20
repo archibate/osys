@@ -2,3 +2,4 @@ start
 gview
 bmp
 jpeg
+../ulib/malloc

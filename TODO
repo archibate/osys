@@ -1,3 +1,4 @@
+fork() -> exec() -> wait()
 fread/fwrite: user impl. line buffering
 auto increase stack on page fault
 

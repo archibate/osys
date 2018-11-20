@@ -106,3 +106,10 @@ int sys_flush(int fd)
 
 	return flush(current->pcb->files[fd]);
 }
+
+int sys_chdir(const char *path)
+{
+	verify_ptr(path);
+
+	return chdir(path);
+}

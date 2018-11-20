@@ -11,8 +11,13 @@ void __attribute__((weak, noreturn)) crt_start(void)
 	init_heap();
 
 	stdin = fopen("/dev/kbd0", "r");
+#ifndef NO_VMON
+	stdout = fopen("/dev/vmon0", "w");
+	stderr = fopen("/dev/vmon0", "w");
+#else
 	stdout = fopen("/dev/mon0", "w");
 	stderr = fopen("/dev/mon0", "w");
+#endif
 
 	int res = main();
 

@@ -2,7 +2,7 @@
 #include <stbrk.h>
 #include <sched.h>
 #include <panic.h>
-#include <print.h>
+//#include <print.h>
 #include <map.h>
 #include <psm.h>
 
@@ -11,7 +11,7 @@ int setbrk(void *p)
 	unsigned long adr = (unsigned long) p;
 	unsigned long cur = current->pcb->brk;
 
-	printf("setbrk: %p -> %p\n", cur, adr);
+	//printf("setbrk: %p -> %p\n", cur, adr);
 
 	assert(!(cur & PGATTR));
 	if (cur < adr)

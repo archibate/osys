@@ -1,6 +1,6 @@
 #pragma once
 
-#define SYSCALL_MAX (11+1)
+#define SYSCALL_MAX (13+1)
 #define _SYS_undefined 0
 #define _SYS_exit 1
 #define _SYS_open 2
@@ -12,4 +12,6 @@
 #define _SYS_getch 8
 #define _SYS_putch 9
 #define _SYS_flush 10
-#define _SYS_setbrk 11
+#define _SYS_stexec 11
+#define _SYS_setbrk 12
+#define _SYS_chdir 13

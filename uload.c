@@ -25,6 +25,26 @@ void __attribute__((noreturn)) transfer_to_user(void)
 	move_to_user(&uregs);
 }
 
+int load_user_program_f(FILE *f)
+{
+	void *addr = (void *) USER_TEXT_BEG;
+
+	int res = mmap(f, addr, f->f_size, MMAP_USR | MMAP_WR);
+	if (res < 0)
+		goto out_close;
+	else
+		res = 0;
+
+	unsigned int pages = 0x5;//(name[5] == 'g' ? 0xd00 : 0x5);
+	unsigned long stkbtm = USER_STACK_END;
+	for (int i = 0; i < pages; i++)
+		map(stkbtm -= PGSIZE, alloc_ppage() | PG_P | PG_W | PG_U | PG_PSM);
+
+out_close:
+	close(f);
+	return res;
+}
+
 int load_user_program(const char *name)
 {
 	FILE *f = kmalloc_for(FILE);
@@ -32,24 +52,14 @@ int load_user_program(const char *name)
 	if (res)
 		goto out_free;
 
-	void *addr = (void *) USER_TEXT_BEG;
+	res = load_user_program_f(f);
 
-	map(0x20000000, 0x7000 | PG_P | PG_U); // emmm...VIDEO_INFO desu
-
-	res = mmap(f, addr, f->f_size, MMAP_USR | MMAP_WR);
-	if (res < 0)
-		goto out_close;
-	else
-		res = 0;
-
-	unsigned int pages = (name[5] == 'g' ? 0xd00 : 0x5);
-	unsigned long stkbtm = USER_STACK_END;
-	for (int i = 0; i < pages; i++)
-		map(stkbtm -= PGSIZE, alloc_ppage() | PG_P | PG_W | PG_U | PG_PSM);
-
-out_close:
-	close(f);
 out_free:
 	kfree(f);
 	return res;
+}
+
+void user_proc_destroy(void)
+{
+	unmap_free_psm_non_global_pages();
 }

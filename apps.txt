@@ -1,5 +1,7 @@
 true
 hello
+shell
+xfont
 catkbd
-splash
 gview
+splash

@@ -23,6 +23,9 @@ PHONY+=$A%
 $A%:
 	make -C $@ install
 
+PHONY+=apps
+apps: $(APPS:%=$A%)
+
 
 $(FDIMG): $(BOOTSECT) $(IMAGE) $(APPS:%=$A%)
 	dd if=/dev/zero of=$@ bs=$$((1440*1024)) count=1

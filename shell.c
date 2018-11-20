@@ -254,8 +254,9 @@ int shell_main(void)
 
 void init_shell(void)
 {
-	setcwd("/root");
-	//create_thread(create_process((void*)exec, "/bin/splash.com"));
-	//create_thread(create_process((void*)exec, "/bin/catkbd.com"));
-	create_thread(create_process((void*)exec, "/bin/hello.com"));
+	chdir("/root");
+	//stexec("/bin/splash.com");
+	//stexec("/bin/gview.com");
+	stexec("/bin/xfont.com");
+	stexec("/bin/shell.com");
 }

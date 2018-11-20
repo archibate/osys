@@ -9,4 +9,6 @@ tellsize
 getch
 putch
 flush
+stexec
 setbrk
+chdir

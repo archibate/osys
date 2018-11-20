@@ -11,7 +11,9 @@ extern int sys_tellsize();
 extern int sys_getch();
 extern int sys_putch();
 extern int sys_flush();
+extern int sys_stexec();
 extern int sys_setbrk();
+extern int sys_chdir();
 
 int (*syscall_table[SYSCALL_MAX])() = {
 	[_SYS_undefined] = &sys_undefined,
@@ -25,5 +27,7 @@ int (*syscall_table[SYSCALL_MAX])() = {
 	[_SYS_getch] = &sys_getch,
 	[_SYS_putch] = &sys_putch,
 	[_SYS_flush] = &sys_flush,
+	[_SYS_stexec] = &sys_stexec,
 	[_SYS_setbrk] = &sys_setbrk,
+	[_SYS_chdir] = &sys_chdir,
 };

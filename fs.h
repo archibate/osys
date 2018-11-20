@@ -37,6 +37,11 @@ STRUCT(MKLB_FILE_EX)
 	int (*fe_flush_cb)(struct FIFO *fifo);
 };
 
+STRUCT(TXTINFO_FILE_EX)
+{
+	const void *fe_data;
+};
+
 struct FILE // 表示一个文件
 {
 	LIST_NODE f_list;
@@ -52,6 +57,7 @@ struct FILE // 表示一个文件
 		FAT_FILE_EX f_fat;
 		MKEF_FILE_EX f_mkef;
 		MKLB_FILE_EX f_mklb;
+		TXTINFO_FILE_EX f_txtinfo;
 	};
 };
 
@@ -139,6 +145,11 @@ STRUCT(MKLB_INODE_EX)
 	int (*ie_flush_cb)(struct FIFO *fifo);
 };
 
+STRUCT(TXTINFO_INODE_EX)
+{
+	const void *ie_data;
+};
+
 struct INODE // 表示一个文件或者目录, 算是什么东西的最小单位吧
 {
 	LIST_NODE i_list;
@@ -162,6 +173,7 @@ struct INODE // 表示一个文件或者目录, 算是什么东西的最小单�
 		DEVDIR_INODE_EX i_devdir; // /dev目录这个节点的私有变量
 		MKEF_INODE_EX i_mkef; // /dev/*efifo节点的私有变量
 		MKLB_INODE_EX i_mklb; // /dev/*linbuf节点的私有变量
+		TXTINFO_INODE_EX i_txtinfo; // /dev/*txtinfo节点的私有变量
 	};
 };
 

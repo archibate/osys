@@ -95,6 +95,7 @@ FILE_OPS mkef_fops = {
 	.close = mkef_close,
 	.putch = mkef_putch,
 	.getch = mkef_getch,
+	.flush = mkef_flush,
 };
 
 static
