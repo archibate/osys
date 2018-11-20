@@ -9,14 +9,19 @@ static
 int mkef_putch(FILE *f, unsigned char ch)
 {
 	efifo_put(f->f_mkef.fe_efifo, ch);
+	efifo_flush(f->f_mkef.fe_efifo);
 	return 0;
 }
 
 static
-int mkef_flush(FILE *f)
+int mkef_write(FILE *f, const char *buf, size_t size)
 {
+	int i = 0;
+	while (i++ < size) {
+		efifo_put(f->f_mkef.fe_efifo, *buf++);
+	}
 	efifo_flush(f->f_mkef.fe_efifo);
-	return 0;
+	return i;
 }
 
 static
@@ -91,11 +96,11 @@ FILE_OPS mkef_fops = {
 	.open = mkef_open,
 	.glinesize = mkef_glinesize,
 	.getline = mkef_getline,
+	.write = mkef_write,
 	.read = mkef_read,
 	.close = mkef_close,
 	.putch = mkef_putch,
 	.getch = mkef_getch,
-	.flush = mkef_flush,
 };
 
 static
@@ -104,11 +109,11 @@ FILE_OPS mkef_e_fops = {
 	// TODO: below really needs under `f->f_ops = &mkef_fops;` had in mkef_e_open?
 	.glinesize = mkef_glinesize,
 	.getline = mkef_getline,
+	.write = mkef_write,
 	.read = mkef_read,
 	.close = mkef_close,
 	.putch = mkef_putch,
 	.getch = mkef_getch,
-	.flush = mkef_flush,
 };
 
 INODE *make_efifo_dev(const char *name, EFIFO *efifo, unsigned int iattr)

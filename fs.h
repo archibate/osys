@@ -31,10 +31,9 @@ STRUCT(MKEF_FILE_EX)
 	struct EFIFO *fe_efifo;
 };
 
-STRUCT(MKLB_FILE_EX)
+STRUCT(MKF_FILE_EX)
 {
 	struct FIFO *fe_fifo;
-	int (*fe_flush_cb)(struct FIFO *fifo);
 };
 
 STRUCT(TXTINFO_FILE_EX)
@@ -55,8 +54,8 @@ struct FILE // 表示一个文件
 
 	union {
 		FAT_FILE_EX f_fat;
+		MKF_FILE_EX f_mkf;
 		MKEF_FILE_EX f_mkef;
-		MKLB_FILE_EX f_mklb;
 		TXTINFO_FILE_EX f_txtinfo;
 	};
 };
@@ -74,7 +73,7 @@ struct DIR
 	INODE *d_inode;
 	unsigned int d_oattr;
 
-	LIST_HEAD d_ents; // TODO: put this in FAT_DIR_EX!
+	LIST_HEAD d_ents; // TODO: how about to put this in FAT_DIR_EX?
 	union {
 		FAT_DIR_EX d_fat;
 	};
@@ -100,8 +99,7 @@ struct FILE_OPS // 文件操作,读写之类的
 	size_t (*glinesize)(FILE *file); // 预估一行的最大容量(API要求的呗)
 	int (*seek)(FILE *file, long offset, int whence); // 定位到特定文件位置
 	//int (*tell)(FILE *file, int what); // 告知文件特定的偏移量信息
-	int (*flush)(FILE *file); // 刷新get端的数据,让他不再等待
-	//int (*fsync)(FILE *file); // 同步文件改动
+	int (*fsync)(FILE *file); // 同步文件改动
 	int (*close)(FILE *file); // 关闭文件(但是不释放FILE指针内存的那种)
 };
 
@@ -135,14 +133,14 @@ STRUCT(DEVDIR_INODE_EX)
 	LIST_HEAD ie_dents;
 };
 
+STRUCT(MKF_INODE_EX)
+{
+	struct FIFO *ie_fifo;
+};
+
 STRUCT(MKEF_INODE_EX)
 {
 	struct EFIFO *ie_efifo;
-};
-
-STRUCT(MKLB_INODE_EX)
-{
-	int (*ie_flush_cb)(struct FIFO *fifo);
 };
 
 STRUCT(TXTINFO_INODE_EX)
@@ -171,8 +169,8 @@ struct INODE // 表示一个文件或者目录, 算是什么东西的最小单�
 	union {
 		FAT_INODE_EX i_fat; // fat系统的私有变量, 存储起始clus号之类的
 		DEVDIR_INODE_EX i_devdir; // /dev目录这个节点的私有变量
+		MKF_INODE_EX i_mkf; // /dev/*fifo节点的私有变量
 		MKEF_INODE_EX i_mkef; // /dev/*efifo节点的私有变量
-		MKLB_INODE_EX i_mklb; // /dev/*linbuf节点的私有变量
 		TXTINFO_INODE_EX i_txtinfo; // /dev/*txtinfo节点的私有变量
 	};
 };
@@ -255,5 +253,5 @@ int putch(FILE *file, unsigned char ch);
 int seek(FILE *file, long offset, int whence);
 size_t glinesize(FILE *file);
 char *getline(FILE *file);
+int fsync(FILE *file);
 void close(FILE *file);
-int flush(FILE *file);

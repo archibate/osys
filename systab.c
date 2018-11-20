@@ -10,7 +10,7 @@ extern int sys_mmap();
 extern int sys_tellsize();
 extern int sys_getch();
 extern int sys_putch();
-extern int sys_flush();
+extern int sys_fsync();
 extern int sys_stexec();
 extern int sys_setbrk();
 extern int sys_chdir();
@@ -26,7 +26,7 @@ int (*syscall_table[SYSCALL_MAX])() = {
 	[_SYS_tellsize] = &sys_tellsize,
 	[_SYS_getch] = &sys_getch,
 	[_SYS_putch] = &sys_putch,
-	[_SYS_flush] = &sys_flush,
+	[_SYS_fsync] = &sys_fsync,
 	[_SYS_stexec] = &sys_stexec,
 	[_SYS_setbrk] = &sys_setbrk,
 	[_SYS_chdir] = &sys_chdir,

@@ -10,8 +10,9 @@ typedef unsigned short _fbuf_idx_t;
 
 STRUCT(FILE) {
 	int f_fd;
-	char f_buf[BUFSIZ];
+	unsigned int f_oattr;
 	_fbuf_idx_t f_bpos, f_bsize;
+	char f_buf[BUFSIZ];
 };
 
 extern FILE *stdin, *stdout, *stderr;
@@ -29,9 +30,18 @@ int fgetline(char *s, size_t size, FILE *f);
 int fgetc_ex(FILE *f, void (*will_wait_cb)(void));
 int fputs(const char *s, FILE *f);
 int fputc(int c, FILE *f);
+void file_chk_wr_flush(FILE *f);
+void file_wr_flush(FILE *f);
+void file_rd_flush(FILE *f);
 int fclose_i(FILE *f);
 int fclose(FILE *f);
 int fflush(FILE *f);
+
+static inline
+int __fputc(int c, FILE *f)
+{
+	return f->f_buf[f->f_bpos++] = c;
+}
 
 static inline
 int fgetc(FILE *f)

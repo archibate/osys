@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 static
-unsigned int file_parse_oattr(FILE *f, const char *type)
+void file_parse_oattr(FILE *f, const char *type)
 {
 	unsigned int oattr = 0;
 
@@ -14,24 +14,16 @@ unsigned int file_parse_oattr(FILE *f, const char *type)
 	if (strfind(type, 'w') != -1)
 		oattr |= OPEN_WR;
 
-	/*if (strfind(type, 'b') == -1) {
-		f->f_linebuf = malloc_for(FIFO);
-		fifo_init(f->f_linebuf);
-	}*/
-
-	f->f_bpos = 0;
-	f->f_bsize = 0;
-
-	return oattr;
+	f->f_oattr = oattr;
 }
 
 int fopen_i(FILE *f, const char *name, const char *type)
 {
-	unsigned int oattr = file_parse_oattr(f, type);
-
 	bzero(f, sizeof(FILE));
 
-	int res = f->f_fd = open(name, oattr);
+	file_parse_oattr(f, type);
+
+	int res = f->f_fd = open(name, f->f_oattr);
 	if (res > 0)
 		res = 0;
 

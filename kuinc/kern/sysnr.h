@@ -11,7 +11,7 @@
 #define _SYS_tellsize 7
 #define _SYS_getch 8
 #define _SYS_putch 9
-#define _SYS_flush 10
+#define _SYS_fsync 10
 #define _SYS_stexec 11
 #define _SYS_setbrk 12
 #define _SYS_chdir 13

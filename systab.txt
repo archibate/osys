@@ -8,7 +8,7 @@ mmap
 tellsize
 getch
 putch
-flush
+fsync
 stexec
 setbrk
 chdir

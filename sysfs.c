@@ -14,31 +14,37 @@
 #define verify_ptr(p) if ((unsigned long) p < DMA_END) return -E_SEG_FL
 #define verify_mappable_ptr(p) if ((unsigned long) (p) < USER_BEG || (unsigned long) (p) > USER_STACK_BEG) return -E_SEG_FL
 
+static
+int allocate_fd(void)
+{
+	for (fd = 0; fd < FILES_MAX; fd++) {
+		if (!current->pcb->files[fd]) {
+			return fd;
+		}
+	}
+	return -1;
+}
+
 int sys_open(const char *name, unsigned int oattr)
 {
 	verify_ptr(name);
 
-	int res = -E_OO_MAX, fd;
-
-	for (fd = 0; fd < FILES_MAX; fd++) {
-		if (!current->pcb->files[fd]) {
-			goto got_fd;
-		}
+	int fd = allocate_fd();
+	if (!fd) {
+		fd = -E_OO_MAX;
+		goto out;
 	}
-	goto out;
-got_fd:	res = 0;
+
 	current->pcb->files[fd] = kmalloc_for(FILE);
-	res = open(current->pcb->files[fd], name, oattr);
-	if (res)
-		goto out_free;
-	res = fd;
 
-	goto out;
+	int res = open(current->pcb->files[fd], name, oattr);
 
-out_free:
-	kfree(current->pcb->files[fd]);
-out:
-	return res;
+	if (res < 0) {
+		kfree(current->pcb->files[fd]);
+		fd = res;
+	}
+
+	return fd;
 }
 
 int sys_close(int fd)
@@ -100,11 +106,11 @@ unsigned int sys_getch(int fd)
 	return getch(current->pcb->files[fd]);
 }
 
-int sys_flush(int fd)
+int sys_fsync(int fd)
 {
 	verify_fd(fd);
 
-	return flush(current->pcb->files[fd]);
+	return fsync(current->pcb->files[fd]);
 }
 
 int sys_chdir(const char *path)

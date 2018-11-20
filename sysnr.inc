@@ -9,7 +9,7 @@ _SYS_mmap equ 6
 _SYS_tellsize equ 7
 _SYS_getch equ 8
 _SYS_putch equ 9
-_SYS_flush equ 10
+_SYS_fsync equ 10
 _SYS_stexec equ 11
 _SYS_setbrk equ 12
 _SYS_chdir equ 13

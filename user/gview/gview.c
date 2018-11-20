@@ -21,11 +21,13 @@ int decode0_JPEG(struct DLL_STRPICENV *env, int size, char *fp, int b_type, char
 
 unsigned char rgb2pal(int r, int g, int b, int x, int y);
 void error(char *s);
+int init_heap(void);
 
 int gview_main(const char *path)
 {
+	int unused = init_heap();
 	struct VIDEO_INFO video;
-	struct DLL_STRPICENV env;
+	struct DLL_STRPICENV *env = malloc(sizeof(struct DLL_STRPICENV));
 	char *filebuf = malloc(512 * 1024), *p;
 	char *winbuf = (void *) 0x80000000;//video.buf;//[1040 * 805];
 	int i, j, fsize, xsize, info[8];
@@ -51,9 +53,9 @@ int gview_main(const char *path)
 	close(i);
 
 	/* ファイルタイプチェック */
-	if (info_BMP(&env, info, fsize, filebuf) == 0) {
+	if (info_BMP(env, info, fsize, filebuf) == 0) {
 		/* BMPではなかった */
-		if (info_JPEG(&env, info, fsize, filebuf) == 0) {
+		if (info_JPEG(env, info, fsize, filebuf) == 0) {
 			/* JPEGでもなかった */
 			error("file type unknown.\n");
 			return 4;
@@ -79,11 +81,12 @@ int gview_main(const char *path)
 
 	/* ファイル内容を画像データに変換 */
 	if (info[0] == 1) {
-		i = decode0_BMP (&env, fsize, filebuf, 4, (char *) picbuf, 0);
+		i = decode0_BMP (env, fsize, filebuf, 4, (char *) picbuf, 0);
 	} else {
-		i = decode0_JPEG(&env, fsize, filebuf, 4, (char *) picbuf, 0);
+		i = decode0_JPEG(env, fsize, filebuf, 4, (char *) picbuf, 0);
 	}
 	free(filebuf);
+	free(env);
 	/* b_type = 4 は、 struct RGB 形式を意味する */
 	/* skipは0にしておけばよい */
 	if (i != 0) {

@@ -1,33 +1,48 @@
 #include <stdio.h>
 #include <unistd.h>
 
-int fflush(FILE *f)
+void file_wr_flush(FILE *f)
 {
-	return flush(f->f_fd);
+	write(f->f_fd, f->f_buf, f->f_bpos);
+	f->f_bpos = 0;
+}
+
+void file_chk_wr_flush(FILE *f)
+{
+	if (f->f_buf[f->f_bpos - 1] == '\n' || f->f_bpos >= BUFSIZ)
+		file_wr_flush(f);
 }
 
 int fputc(int c, FILE *f)
 {
-	int res = putch(f->f_fd, c);
-	if (c == '\n')
-		fflush(f); // TODO: use wr_check_refill_buf??
-	return res;
+	__fputc(c, f);
+	file_chk_wr_flush(f);
+	return c;
 }
 
-static
-void check_refill_buf(FILE *f, void (*will_wait_cb)(void))
+void file_rd_flush(FILE *f)
 {
-	if (f->f_bpos >= f->f_bsize) {
-		will_wait_cb();
-		f->f_bsize = read(f->f_fd, f->f_buf, BUFSIZ);
-		f->f_bpos = 0;
-	}
+	f->f_bsize = read(f->f_fd, f->f_buf, BUFSIZ);
+	f->f_bpos = 0;
 }
 
 int fgetc_ex(FILE *f, void (*will_wait_cb)(void))
 {
-	check_refill_buf(f, will_wait_cb);
+	if (f->f_bpos >= f->f_bsize) {
+		if (will_wait_cb)
+			will_wait_cb();
+		file_rd_flush(f);
+	}
 	return f->f_buf[f->f_bpos++];
+}
+
+int fflush(FILE *f)
+{
+	if (f->f_oattr & OPEN_WR)
+		file_wr_flush(f);
+	if (f->f_oattr & OPEN_RD)
+		file_rd_flush(f);
+	return 0;
 }
 
 int fread(void *p, size_t size, size_t count, FILE *f)

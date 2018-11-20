@@ -4,12 +4,14 @@
 #include <fifo.h>
 
 
-static FIFO my_fifo;
+#define PRINT_BUFSIZ BUFSIZ
+static char buf[PRINT_BUFSIZ];
+static int i;
 
-static void my_fputc(char c)
+static void my_sputc(char c)
 {
-	assert(fifo_workwell(&my_fifo));
-	fifo_put(&my_fifo, c);
+	assert();
+	buf[i++] = c;
 }
 
 int vfprintf
@@ -18,12 +20,15 @@ int vfprintf
 	, va_list ap
 	)
 {
-	fifo_init(&my_fifo);
-	int ret = vgprintf(my_fputc, fmt, ap);
-	int size = fifo_size(&my_fifo);
-	while (size--) {
-		fputc(fifo_get(&my_fifo), f);
-	}
+	i = 0;
+
+	int ret = vgprintf(my_sputc, fmt, ap);
+
+	for (int j = 0; j < i; j++)
+		__fputc(buf[j], f);
+
+	file_chk_wr_flush(f); // or fflush(f)?
+
 	return ret;
 }
 

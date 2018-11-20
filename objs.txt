@@ -47,7 +47,6 @@ kbc
 mouse
 onmouse
 vmon
-mklinbuf
 mon
 serial
 print

@@ -134,7 +134,7 @@ int inode_opendir(DIR *dir, INODE *inode, unsigned int oattr)
 		return -E_NO_RD;
 	}
 
-	return inode->i_dops->opendir(dir, inode, oattr);
+	return inode->i_dops->opendir(dir, inode, oattr | OPEN_DIR);
 }
 
 void close(FILE *file)
@@ -172,9 +172,9 @@ unsigned int getch(FILE *file)
 	return file->f_ops->getch(file);
 }
 
-int flush(FILE *file)
+int fsync(FILE *file)
 {
-	return file->f_ops->flush(file);
+	return file->f_ops->fsync(file);
 }
 
 int putch(FILE *file, unsigned char ch)

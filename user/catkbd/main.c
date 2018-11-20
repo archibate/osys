@@ -14,7 +14,7 @@ int main(void)
 
 	while (EOF != (c = getch(i))) {
 		putch(j, c);
-		flush(j);
+		fsync(j);
 	}
 
 	close(i);
