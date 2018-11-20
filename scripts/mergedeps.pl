@@ -80,6 +80,6 @@ close DEPFILE;
 rename("$maindeps.tmp", "$maindeps") or die "Can't overwrite $maindeps";
 
 # Finally, delete the new dependency files
-foreach $i (1 .. $#ARGV) {
-	unlink($ARGV[$i]) or print "Error removing $ARGV[$i]\n";
-}
+#foreach $i (1 .. $#ARGV) {
+#unlink($ARGV[$i]) or print "Error removing $ARGV[$i]\n";
+#}

@@ -70,7 +70,7 @@ int sys_mmap(int fd, void *p, size_t size, unsigned int mattr)
 	return mmap(current->pcb->files[fd], p, size, mattr);
 }
 
-int sys_read(int fd, char *buf, size_t size)
+int sys_read(int fd, void *buf, size_t size)
 {
 	verify_fd(fd);
 	verify_ptr(buf);
@@ -78,7 +78,7 @@ int sys_read(int fd, char *buf, size_t size)
 	return read(current->pcb->files[fd], buf, size);
 }
 
-int sys_write(int fd, const char *buf, size_t size)
+int sys_write(int fd, const void *buf, size_t size)
 {
 	verify_fd(fd);
 	verify_ptr(buf);

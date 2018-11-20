@@ -1,9 +1,7 @@
-#include <unistd.h>
-#include <string.h>
+#include <stdio.h>
 
 int main(void)
 {
-	const char s[] = "Hello, World\n";
-	write(1, s, strlen(s));
+	fputs("Hello, World\n", stdout);
 	return 0;
 }

@@ -1,7 +1,6 @@
-problem in malloc.c: page fault on c0000000
-
-setbrk (growing & shrinking heap)
+fread/fwrite: user impl. line buffering
 auto increase stack on page fault
+
 main(argc, argv)
 syspt.c::wait_exit.etc.
 hankaku,hanzi

@@ -1,9 +1,7 @@
 ifneq (B,)
-$B%: % $B
+$B%: %
 	@mkdir -p $(@D)
 	$Vcat $< > $@
-
-$B%: $B
 
 CLEAN+=$B
 $B:

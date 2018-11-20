@@ -3,8 +3,6 @@
 #include <memory.h>
 #include <malloc.h>
 #include <unistd.h>
-#include <fsdefs.h>
-#include <fifo.h>
 
 static
 unsigned int file_parse_oattr(FILE *f, const char *type)
@@ -16,10 +14,10 @@ unsigned int file_parse_oattr(FILE *f, const char *type)
 	if (strfind(type, 'w') != -1)
 		oattr |= OPEN_WR;
 
-	if (strfind(type, 'b') != -1) {
+	/*if (strfind(type, 'b') != -1) {
 		f->f_linebuf = malloc_for(FIFO);
 		fifo_init(f->f_linebuf);
-	}
+	}*/
 
 	return oattr;
 }
@@ -59,8 +57,8 @@ int fopen_s(FILE **pf, const char *name, const char *type)
 
 int fclose_i(FILE *f)
 {
-	if (f->f_linebuf)
-		free(f->f_linebuf);
+	/*if (f->f_linebuf)
+		free(f->f_linebuf);*/
 	return close(f->f_fd);
 }
 

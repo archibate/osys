@@ -18,6 +18,6 @@ include $Mmk-bin.mak
 include $Mautodep.mak
 
 
-PRECIOUS+=$B%
+PRECIOUS+=$B% $B%.o $B%.d
 
 include $Mendup.mak

@@ -4,7 +4,7 @@ $B%.o: $B%.c
 
 $B%.d: $B%.c
 	$E dep $(<F)
-	$V$(CC) -E -M -MT $B$*.o $(CFLAGS) $< > $@
+	$V$(CC) -E -M -MT "$B$*.d $B$*.o" $(CFLAGS) $< > $@
 
 $B%.o: $B%.s
 	$E cc $(<F)
