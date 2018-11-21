@@ -20,32 +20,6 @@ typedef struct FILE DIR;
 typedef struct FILE_OPS DIR_OPS;
 
 
-STRUCT(FAT_FILE_EX)
-{
-	unsigned int fe_cloff;
-	clus_t fe_clus;
-	clus_t fe_beg_clus;
-};
-
-STRUCT(MKEF_FILE_EX)
-{
-	struct EFIFO *fe_efifo;
-};
-
-STRUCT(MKF_FILE_EX)
-{
-	struct FIFO *fe_fifo;
-};
-
-STRUCT(TXTINFO_FILE_EX)
-{
-	const void *fe_data;
-};
-
-STRUCT(FAT_DIR_EX)
-{
-};
-
 struct FILE // 表示一个文件,或一个目录
 {union{
 	struct {
@@ -59,10 +33,15 @@ struct FILE // 表示一个文件,或一个目录
 		off_t f_size;
 
 		union {
-			FAT_FILE_EX f_fat;
-			MKF_FILE_EX f_mkf;
-			MKEF_FILE_EX f_mkef;
-			TXTINFO_FILE_EX f_txtinfo;
+			void *fe_priv_data;
+
+			struct FIFO *fe_fifo;
+			struct EFIFO *fe_efifo;
+
+			struct {
+				clus_t fe_clus;
+				unsigned int fe_cloff;
+			};
 		};
 	};
 
@@ -73,9 +52,10 @@ struct FILE // 表示一个文件,或一个目录
 		INODE *d_inode;
 		unsigned int d_oattr;
 
-		LIST_HEAD d_ents; // TODO: how about to put this in FAT_DIR_EX?
+		LIST_HEAD d_ents;
+
 		union {
-			FAT_DIR_EX d_fat;
+			void *d_priv_data;
 		};
 	};
 };};
@@ -127,32 +107,6 @@ struct INODE_OPS // inode(文件节点)操作,好像就创建删除之类的—�
 };
 
 
-STRUCT(FAT_INODE_EX)
-{
-	unsigned int ie_clus;
-	unsigned int ie_attr;
-};
-
-STRUCT(DEVDIR_INODE_EX)
-{
-	LIST_HEAD ie_dents;
-};
-
-STRUCT(MKF_INODE_EX)
-{
-	struct FIFO *ie_fifo;
-};
-
-STRUCT(MKEF_INODE_EX)
-{
-	struct EFIFO *ie_efifo;
-};
-
-STRUCT(TXTINFO_INODE_EX)
-{
-	const void *ie_data;
-};
-
 struct INODE // 表示一个文件或者目录, 算是什么东西的最小单位吧
 {
 	LIST_NODE i_list;
@@ -172,11 +126,15 @@ struct INODE // 表示一个文件或者目录, 算是什么东西的最小单�
 	off_t i_size; // 文件大小
 
 	union {
-		FAT_INODE_EX i_fat; // fat系统的私有变量, 存储起始clus号之类的
-		DEVDIR_INODE_EX i_devdir; // /dev目录这个节点的私有变量
-		MKF_INODE_EX i_mkf; // /dev/*fifo节点的私有变量
-		MKEF_INODE_EX i_mkef; // /dev/*efifo节点的私有变量
-		TXTINFO_INODE_EX i_txtinfo; // /dev/*txtinfo节点的私有变量
+		void *ie_priv_data;
+		LIST_HEAD ie_dents;
+		struct FIFO *ie_fifo;
+		struct EFIFO *ie_efifo;
+
+		struct {
+			unsigned int ie_clus;
+			unsigned int ie_attr;
+		};
 	};
 };
 
@@ -202,10 +160,6 @@ struct SUPER_OPS
 
 STRUCT(FAT_SUPER_EX)
 {
-	char *se_data;
-	clus_t *se_fat;
-	clus_t se_clusmax;
-	unsigned int se_clusiz;
 };
 
 struct SUPER // 表示一个具有文件系统的块, 比如: /dev/fd0具有fat12的文件系统
@@ -218,8 +172,14 @@ struct SUPER // 表示一个具有文件系统的块, 比如: /dev/fd0具有fat1
 
 	DIR *s_root;
 
-	struct {
-		FAT_SUPER_EX s_fat;
+	union {
+		void *se_priv;
+		struct {
+			char *se_ramdat;
+			clus_t *se_fat;
+			clus_t se_clusmax;
+			unsigned int se_clusiz;
+		};
 	};
 };
 

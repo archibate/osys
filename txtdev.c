@@ -15,7 +15,6 @@ int txtdev_open(FILE *f, INODE *inode, unsigned int oattr)
 
 	f->f_pos = 0;
 	f->f_size = inode->i_size;
-	f->f_txtinfo.fe_data = inode->i_txtinfo.ie_data;
 
 	return 0;
 }
@@ -33,7 +32,7 @@ int txtdev_read(FILE *f, char *buf, unsigned long size)
 		size = 0;
 	if (f->f_pos + size > f->f_size)
 		size = f->f_size - f->f_pos;
-	memcpy(buf, f->f_txtinfo.fe_data + f->f_pos, size);
+	memcpy(buf, f->f_inode->ie_data + f->f_pos, size);
 	f->f_pos += size;
 	return size;
 }
@@ -53,7 +52,7 @@ INODE *make_txtinfo_dev
 	)
 {
 	INODE *inode = register_dev(&txtdev_fops, name, INODE_CHR | INODE_RD);
-	inode->i_txtinfo.ie_data = data;
+	inode->ie_data = (void *) data;
 	inode->i_size = size;
 	return inode;
 }
