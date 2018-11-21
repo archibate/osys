@@ -255,8 +255,10 @@ int shell_main(void)
 void init_shell(void)
 {
 	chdir("/root");
-	//stexec("/bin/splash.com");
-	//stexec("/bin/gview.com");
-	stexec("/bin/xfont.com");
-	stexec("/bin/shell.com");
+	//stexec("/bin/splash.exf");
+	//stexec("/bin/gview.exf");
+	stexec("/bin/xfont.exf");
+	stexec("/bin/shell.exf");
+	//stexec("/bin/catkbd.exf");
+	//stexec("/bin/hello.exf");
 }

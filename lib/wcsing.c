@@ -66,6 +66,28 @@ int wcsfind(const wchar_t *src, wchar_t ch)
 	return -1;
 }
 
+int wcsfindl(const wchar_t *src, wchar_t ch)
+{
+	int i = 0;
+	while (*src) {
+		if (*src == ch)
+			return i;
+		i++, src++;
+	}
+	return i;
+}
+
+int wcsnfind(const wchar_t *src, wchar_t ch, unsigned long n)
+{
+	int i = 0;
+	while (n-- && *src) {
+		if (*src == ch)
+			return i;
+		i++, src++;
+	}
+	return -1;
+}
+
 wchar_t *wcsskip(const wchar_t *dst, const wchar_t *chrs)
 {
 	while (wcsfind(chrs, *dst) != -1)

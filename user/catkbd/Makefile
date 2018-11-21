@@ -1,6 +1,6 @@
 D=../../
 NAME=catkbd
-KTE=com
+KTE=exf
 
 default: all
 

@@ -1,6 +1,6 @@
 D=../../
 NAME=shell
-KTE=com
+KTE=exf
 
 default: all
 

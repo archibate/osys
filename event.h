@@ -7,6 +7,7 @@
 STRUCT(EVENT)
 {
 	TCB *waiting_head;
+	//TCB *feeder;
 };
 
 static inline
@@ -15,6 +16,7 @@ void event_init
 	)
 {
 	event->waiting_head = 0;
+	//event->feeder = 0;
 }
 
 extern

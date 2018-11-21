@@ -127,10 +127,10 @@ void _ramfs_rewind(FILE *f)
 }
 
 static
-int ramfs_seek(FILE *f, long offset, int whence)
+long ramfs_seek(FILE *f, long offset, int whence)
 {
 	SUPER *sb = f->f_inode->i_sb;
-	int res = SEEK_CUR;
+	int res = 0;
 
 	off_t maxoff = f->f_size - f->f_pos;
 
@@ -144,14 +144,14 @@ int ramfs_seek(FILE *f, long offset, int whence)
 	};
 
 	if (offset > maxoff) {
+		res = offset - maxoff;
 		offset = maxoff;
-		res = SEEK_END;
 	} else if (offset < 0) {
 		offset += f->f_pos;
 		_ramfs_rewind(f);
 		if (offset < 0) {
+			res = offset;
 			offset = 0;
-			res = SEEK_SET;
 		}
 	}
 

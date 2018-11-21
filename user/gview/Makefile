@@ -1,6 +1,6 @@
 D=../../
 NAME=gview
-KTE=com
+KTE=exf
 
 default: all
 

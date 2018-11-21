@@ -6,6 +6,14 @@ void memcpy(char *dst, const char *src, unsigned long n)
 		*dst++ = *src++;
 }
 
+void memrcpy(char *dst, const char *src, unsigned long n)
+{
+	dst += n;
+	src += n;
+	while (n--)
+		*--dst = *--src;
+}
+
 int memcmp(const char *dst, const char *src, unsigned long n)
 {
 	int res = 0;

@@ -4,6 +4,7 @@ open
 close
 read
 write
+seek
 mmap
 tellsize
 getch
@@ -12,3 +13,4 @@ fsync
 stexec
 setbrk
 chdir
+dirfind

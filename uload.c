@@ -1,5 +1,6 @@
 #include <vfs.h>
 #include <print.h>
+#include <panic.h>
 #include <kmalloc.h>
 #include <umemlay.h>
 #include <uload.h>
@@ -10,6 +11,7 @@
 #include <psm.h>
 #include <mmu.h>
 #include <memory.h>
+#include <exf.h>
 
 void __attribute__((noreturn)) transfer_to_user(void)
 {
@@ -25,23 +27,35 @@ void __attribute__((noreturn)) transfer_to_user(void)
 	move_to_user(&uregs);
 }
 
-int load_user_program_f(FILE *f)
+#define uload_map_psm_page(addr) map((addr), alloc_ppage() | PG_PSM | PG_P | PG_W | PG_U)
+
+int load_user_program_fc(FILE *f)
 {
 	void *addr = (void *) USER_TEXT_BEG;
 
-	int res = mmap(f, addr, f->f_size, MMAP_USR | MMAP_WR);
-	if (res < 0)
-		goto out_close;
-	else
+	assert((ssize_t) f->f_size > 0);
+
+	EXF_HEADER exfhdr;
+
+	int res = read(f, (void*)&exfhdr, sizeof(exfhdr));
+	assert(exfhdr.x_magic == EXF_MAGIC);
+	assert(res == sizeof(exfhdr));
+
+	for (size_t off = 0; off < exfhdr.x_size; off += PGSIZE)
+		uload_map_psm_page((unsigned long)addr + off);
+	res = seek(f, exfhdr.x_off, SEEK_SET);
+	assert(!res);
+	res = read(f, addr, exfhdr.x_size);
+	if (res > 0)
 		res = 0;
 
-	unsigned int pages = 0x5;//(name[5] == 'g' ? 0xd00 : 0x5);
-	unsigned long stkbtm = USER_STACK_END;
-	for (int i = 0; i < pages; i++)
-		map(stkbtm -= PGSIZE, alloc_ppage() | PG_P | PG_W | PG_U | PG_PSM);
-
-out_close:
 	close(f);
+	kfree(f);
+
+	unsigned long stkbtm = USER_STACK_END;
+	for (int i = 0; i < exfhdr.x_stkpgs; i++) // todo: move this to page_fault
+		uload_map_psm_page(stkbtm -= PGSIZE);
+
 	return res;
 }
 
@@ -52,8 +66,7 @@ int load_user_program(const char *name)
 	if (res)
 		goto out_free;
 
-	res = load_user_program_f(f);
-
+	res = load_user_program_fc(f);
 out_free:
 	kfree(f);
 	return res;

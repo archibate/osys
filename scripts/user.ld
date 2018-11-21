@@ -18,6 +18,12 @@ SECTIONS {
 		*(.sbss*)
 		*(COMMON)
 	}
+	.stab : {
+		*(.stab)
+	}
+	.stabstr : {
+		*(.stabstr)
+	}
 	/DISCARD/ : {
 		/**(.eh_frame*)
 		*(.note*)

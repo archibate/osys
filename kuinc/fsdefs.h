@@ -22,6 +22,7 @@
 // open.oattr:
 #define OPEN_RD  (1<<0)
 #define OPEN_WR  (1<<1)
+#define OPEN_DIR (1<<2)
 // seek.whence:
 #define SEEK_SET 0
 #define SEEK_CUR 1

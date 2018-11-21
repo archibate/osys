@@ -31,27 +31,27 @@ char *get_binary_name(const char *name)
 	char *path = malloc(5 + len + 4 + 1);
 	memcpy(path, "/bin/", 5);
 	memcpy(path + 5, name, len);
-	memcpy(path + 5 + len, ".com", 4);
+	memcpy(path + 5 + len, ".exf", 4);
 	path[5 + len + 4] = 0;
 	return path;
 }
 
 int run_cmd(int argc, char *const *argv)
 {
-#define SHCMD(name, argc_min, argc_max) {#name, shell_##name, argc_min, argc_max}
 	struct command {
 		char *name;
 		int (*fun)();
 		int argc_min, argc_max;
 	} shcmds[] = {
 		{"cd", chdir, 1,1},
+		{"echo", puts, 1,1},
 	};
 
 	char *name = argv[0]; argc--, argv++;
 	for (int i = 0; i < sizeof(shcmds) / sizeof(shcmds[0]); i++) {
 		if (!strcmp(shcmds[i].name, name)) {
 			if (argc > shcmds[i].argc_max || argc < shcmds[i].argc_min) {
-				fprintf(stderr, "sh: wrong arguments count\n");
+				printf("sh: wrong arguments count\n");
 				return -E_INVL_ARG;
 			}
 			return vacall(shcmds[i].fun, argc+1, (int*)argv);
@@ -63,9 +63,9 @@ int run_cmd(int argc, char *const *argv)
 	int res = stexec(path);
 
 	if (res == -E_NO_SRCH)
-		fprintf(stderr, "sh: command not found: %s\n", name);
+		printf("sh: command not found: %s\n", name);
 	else if (res)
-		fprintf(stderr, "sh: stexec(%s): %m\n", path, res);
+		printf("sh: stexec(%s): %m", path, res);
 
 	return res;
 }
@@ -81,9 +81,8 @@ int main(void)
 
 	while (1) {
 		printf("\n> ");
-		fflush(stdout);
 
-		fgetline(s, LINE_MAX, stdin);
+		fgets(s, LINE_MAX, stdin);
 
 		parse_argv(s, &argc, argv);
 		if (argv[0]) run_cmd(argc, argv);

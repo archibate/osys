@@ -27,7 +27,8 @@ LD=$C$(CC_PREFIX)ld$(CC_SUFFIX)
 OBJCOPY=$C$(CC_PREFIX)objcopy$(CC_SUFFIX)
 STRIP=$C$(CC_PREFIX)strip$(CC_SUFFIX)
 GDB=$C$(CC_PREFIX)gdb$(CC_SUFFIX)
-QEMU=qemu-system-i386#$(shell uname -m)
+# other tools
+QEMU=qemu-system-i386
 PYTHON=python
 PERL=perl
 BOCHS=bochs
@@ -35,3 +36,4 @@ DEL=rm -rf
 COPY=cp
 CAT=cat
 SH=sh
+MKEXFHDR=$(PYTHON) $Tmk-exf-header.py

@@ -1,6 +1,6 @@
 D=../../
 NAME=xfont
-KTE=com
+KTE=exf
 
 DEFINES+=NO_VMON=1
 

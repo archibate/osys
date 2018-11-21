@@ -16,5 +16,10 @@ void vfs_setroot(DIR *new_root)
 void vfs_mount(const char *name, SUPER *sb);
 DIRENT *locate_entry(const char *name);
 int open(FILE *file, const char *name, unsigned int oattr);
-int opendir(DIR *dir, const char *name, unsigned int oattr);
 int chdir(const char *path);
+
+static
+int opendir(DIR *dir, const char *name, unsigned int oattr)
+{
+	return open(dir, name, oattr | OPEN_DIR);
+}

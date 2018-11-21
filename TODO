@@ -1,6 +1,10 @@
-fflush() for fread/write!!!
+pipe!!!!
+event: 2-endpoint ipc: event_set_focus()????
+schedule: leveling please.
+shell: my readline() lib!
+opendir(), readdir(), seekdir(), /bin/ls.exf
+io-buffering for fread/write!!!
 fork() -> exec() -> wait()
-fread/fwrite: user impl. line buffering
 auto increase stack on page fault
 
 main(argc, argv)

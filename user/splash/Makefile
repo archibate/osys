@@ -1,6 +1,6 @@
 D=../../
 NAME=splash
-KTE=com
+KTE=exf
 
 default: all
 

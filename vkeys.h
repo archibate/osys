@@ -1,5 +1,6 @@
 #pragma once
 
+#define IS_VKEY(i) ((i)<0)
 #define _VKEY_OF(i) (-i)
 #define VK_F1 _VKEY_OF(0)
 #define VK_F2 _VKEY_OF(1)

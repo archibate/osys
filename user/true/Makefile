@@ -1,6 +1,6 @@
 D=../../
 NAME=true
-KTE=com
+KTE=exf
 
 default: all
 

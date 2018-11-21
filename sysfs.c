@@ -1,5 +1,6 @@
 #include <uregs.h>
 #include <print.h>
+#include <memory.h>
 #include <sched.h>
 #include <kmalloc.h>
 #include <vfs.h>
@@ -17,7 +18,7 @@
 static
 int allocate_fd(void)
 {
-	for (fd = 0; fd < FILES_MAX; fd++) {
+	for (int fd = 0; fd < FILES_MAX; fd++) {
 		if (!current->pcb->files[fd]) {
 			return fd;
 		}
@@ -30,9 +31,8 @@ int sys_open(const char *name, unsigned int oattr)
 	verify_ptr(name);
 
 	int fd = allocate_fd();
-	if (!fd) {
-		fd = -E_OO_MAX;
-		goto out;
+	if (fd == -1) {
+		return -E_OO_MAX;
 	}
 
 	current->pcb->files[fd] = kmalloc_for(FILE);
@@ -45,6 +45,21 @@ int sys_open(const char *name, unsigned int oattr)
 	}
 
 	return fd;
+}
+
+int sys_dirfind(DIRENT *res, int fd, const char *name)
+{ // here to go!!!
+	verify_fd(fd);
+	verify_ptr(res);
+	verify_ptr(name);
+
+	DIRENT *de = dirfind(current->pcb->files[fd], name);
+	if (!de)
+		return -E_NO_SRCH;
+
+	memcpy(res, de, sizeof(DIRENT));
+
+	return 0;
 }
 
 int sys_close(int fd)
@@ -90,6 +105,13 @@ int sys_write(int fd, const void *buf, size_t size)
 	verify_ptr(buf);
 
 	return write(current->pcb->files[fd], buf, size);
+}
+
+long sys_seek(int fd, long offset, int whence)
+{
+	verify_fd(fd);
+
+	return seek(current->pcb->files[fd], offset, whence);
 }
 
 int sys_putch(int fd, unsigned char ch)

@@ -65,6 +65,28 @@ int strfind(const char *src, char ch)
 	return -1;
 }
 
+int strfindl(const char *src, char ch)
+{
+	int i = 0;
+	while (*src) {
+		if (*src == ch)
+			return i;
+		i++, src++;
+	}
+	return i;
+}
+
+int strnfind(const char *src, char ch, unsigned long n)
+{
+	int i = 0;
+	while (n-- && *src) {
+		if (*src == ch)
+			return i;
+		i++, src++;
+	}
+	return -1;
+}
+
 int strfindin(const char *src, const char *chrs)
 {
 	int i = 0;

@@ -2,20 +2,19 @@
 #include <mkthrd.h>
 #include <mkproc.h>
 #include <pexit.h>
+#include <sched.h>
 
 
 extern
 int __attribute__((noreturn)) idle_func
 (void *__attribute__((unused)) unused);
 
-/*int __attribute__((noreturn)) test_func
+int __attribute__((noreturn)) idle_away_func
 (void *__attribute__((unused)) unused)
 {
-	for (;;) {
-		printf("T");
-		asm volatile ("sti; hlt");
-	}
-}*/
+	for (;;)
+		do_schedule();
+}
 
 #define INIT(x, ...) extern void init_##x(); init_##x(__VA_ARGS__);
 #ifdef TESTING

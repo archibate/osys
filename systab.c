@@ -6,6 +6,7 @@ extern int sys_open();
 extern int sys_close();
 extern int sys_read();
 extern int sys_write();
+extern int sys_seek();
 extern int sys_mmap();
 extern int sys_tellsize();
 extern int sys_getch();
@@ -14,6 +15,7 @@ extern int sys_fsync();
 extern int sys_stexec();
 extern int sys_setbrk();
 extern int sys_chdir();
+extern int sys_dirfind();
 
 int (*syscall_table[SYSCALL_MAX])() = {
 	[_SYS_undefined] = &sys_undefined,
@@ -22,6 +24,7 @@ int (*syscall_table[SYSCALL_MAX])() = {
 	[_SYS_close] = &sys_close,
 	[_SYS_read] = &sys_read,
 	[_SYS_write] = &sys_write,
+	[_SYS_seek] = &sys_seek,
 	[_SYS_mmap] = &sys_mmap,
 	[_SYS_tellsize] = &sys_tellsize,
 	[_SYS_getch] = &sys_getch,
@@ -30,4 +33,5 @@ int (*syscall_table[SYSCALL_MAX])() = {
 	[_SYS_stexec] = &sys_stexec,
 	[_SYS_setbrk] = &sys_setbrk,
 	[_SYS_chdir] = &sys_chdir,
+	[_SYS_dirfind] = &sys_dirfind,
 };

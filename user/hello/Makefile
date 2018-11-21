@@ -1,6 +1,6 @@
 D=../../
 NAME=hello
-KTE=com
+KTE=exf
 
 default: all
 

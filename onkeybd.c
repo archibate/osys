@@ -15,8 +15,6 @@ void on_keyboard_event
 	( unsigned char scancode
 	)
 {
-	prrdtsc("K");
-
 	keydowns[scancode & 0x7f] = (scancode & 0x80);
 
 	extern const int keymap[0x80];
@@ -25,11 +23,9 @@ void on_keyboard_event
 	if (scancode < 0x80)
 	{
 		efifo_put(&vmon_efifo, ch);
-		efifo_flush(&vmon_efifo);
-
 		efifo_put(&keybd_efifo, ch);
-		if (ch == '\n')
-			efifo_flush(&keybd_efifo);
+		efifo_flush(&vmon_efifo);
+		efifo_flush(&keybd_efifo);
 	}
 }
 

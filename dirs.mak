@@ -1,5 +1,6 @@
+B=bin/
 S=$Dscripts/
 M=$Dmakeinc/
-B=bin/
+T=$Dtools/
 N=$Disodir/
 A=$Duser/

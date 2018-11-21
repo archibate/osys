@@ -95,20 +95,11 @@ int open_in(FILE *file, DIR *indir, const char *name, unsigned int oattr)
 	return inode_open(file, de->e_inode, oattr);
 }
 
-int opendir_in(DIR *dir, DIR *indir, const char *name, unsigned int oattr)
-{
-	DIRENT *de = dir_locate_entry(indir, name);
-	if (!de)
-		return -E_NO_SRCH;
-
-	return inode_opendir(dir, de->e_inode, oattr);
-}
-
 
 
 int inode_open(FILE *file, INODE *inode, unsigned int oattr)
 {
-	if (inode->i_attr & INODE_DIR) {
+	if (!!(oattr & OPEN_DIR) != !!(inode->i_attr & INODE_DIR)) {
 		return -E_WRN_TYP;
 	}
 	if ((oattr & OPEN_WR) && !(inode->i_attr & INODE_WR)) {
@@ -121,33 +112,12 @@ int inode_open(FILE *file, INODE *inode, unsigned int oattr)
 	return inode->i_fops->open(file, inode, oattr);
 }
 
-
-int inode_opendir(DIR *dir, INODE *inode, unsigned int oattr)
-{
-	if (!(inode->i_attr & INODE_DIR)) {
-		return -E_WRN_TYP;
-	}
-	if ((oattr & OPEN_WR) && !(inode->i_attr & INODE_WR)) {
-		return -E_NO_WR;
-	}
-	if ((oattr & OPEN_RD) && !(inode->i_attr & INODE_RD)) {
-		return -E_NO_RD;
-	}
-
-	return inode->i_dops->opendir(dir, inode, oattr | OPEN_DIR);
-}
-
 void close(FILE *file)
 {
 	file->f_ops->close(file);
 }
 
-void closedir(DIR *dir)
-{
-	dir->d_ops->closedir(dir);
-}
-
-int seek(FILE *file, long offset, int whence)
+long seek(FILE *file, long offset, int whence)
 {
 	return file->f_ops->seek(file, offset, whence);
 }

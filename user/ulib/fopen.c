@@ -54,8 +54,6 @@ int fopen_s(FILE **pf, const char *name, const char *type)
 
 int fclose_i(FILE *f)
 {
-	/*if (f->f_linebuf)
-		free(f->f_linebuf);*/
 	return close(f->f_fd);
 }
 

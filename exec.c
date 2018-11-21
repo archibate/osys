@@ -7,19 +7,16 @@
 
 int exec(const char *name)
 {
-	printf("exec(%s)\n", name);
 	int res = load_user_program(name);
-	if (res) {
-		printf("exec(%s): %m\n", name, res);
+	if (res)
 		return res;
-	}
 
 	transfer_to_user();
 }
 
-int exec_f(FILE *f)
+int exec_fc(FILE *f)
 {
-	int res = load_user_program_f(f);
+	int res = load_user_program_fc(f);
 	if (res)
 		return res;
 
@@ -34,7 +31,7 @@ int stexec(const char *name)
 	if (res)
 		goto out_free;
 
-	create_thread(create_process((void*)exec_f, f));
+	create_thread(create_process((void*)exec_fc, f));
 
 	goto out;
 out_free:

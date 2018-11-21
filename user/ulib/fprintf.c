@@ -8,7 +8,7 @@
 static char buf[PRINT_BUFSIZ];
 static int i;
 
-static void my_sputc(char c)
+static void my_buf_putc(char c)
 {
 	assert();
 	buf[i++] = c;
@@ -22,12 +22,11 @@ int vfprintf
 {
 	i = 0;
 
-	int ret = vgprintf(my_sputc, fmt, ap);
+	int ret = vgprintf(my_buf_putc, fmt, ap);
 
-	for (int j = 0; j < i; j++)
-		__fputc(buf[j], f);
+	my_buf_putc(0);
 
-	file_chk_wr_flush(f); // or fflush(f)?
+	fputs(buf, f);
 
 	return ret;
 }

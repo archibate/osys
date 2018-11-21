@@ -8,15 +8,16 @@
 
 
 EXTSTRUCT(FILE);
-EXTSTRUCT(DIR);
 EXTSTRUCT(FILE_OPS);
-EXTSTRUCT(DIR_OPS);
 EXTSTRUCT(INODE_OPS);
 EXTSTRUCT(INODE);
 EXTSTRUCT(DIRENT);
 EXTSTRUCT(SUPER_OPS);
 EXTSTRUCT(SUPER);
 EXTSTRUCT(FSDRIVE);
+
+typedef struct FILE DIR;
+typedef struct FILE_OPS DIR_OPS;
 
 
 STRUCT(FAT_FILE_EX)
@@ -41,47 +42,56 @@ STRUCT(TXTINFO_FILE_EX)
 	const void *fe_data;
 };
 
-struct FILE // 表示一个文件
-{
-	LIST_NODE f_list;
-
-	FILE_OPS *f_ops; // 应该会在文件打开的时候指定
-	INODE *f_inode;
-	unsigned int f_oattr; // 文件open时的oattr
-
-	off_t f_pos;
-	off_t f_size;
-
-	union {
-		FAT_FILE_EX f_fat;
-		MKF_FILE_EX f_mkf;
-		MKEF_FILE_EX f_mkef;
-		TXTINFO_FILE_EX f_txtinfo;
-	};
-};
-
-
 STRUCT(FAT_DIR_EX)
 {
 };
 
-struct DIR
-{
-	LIST_NODE d_list;
+struct FILE // 表示一个文件,或一个目录
+{union{
+	struct {
+		LIST_NODE f_list;
 
-	DIR_OPS *d_ops;
-	INODE *d_inode;
-	unsigned int d_oattr;
+		FILE_OPS *f_ops; // 应该会在文件打开的时候指定
+		INODE *f_inode;
+		unsigned int f_oattr; // 文件open时的oattr哇
 
-	LIST_HEAD d_ents; // TODO: how about to put this in FAT_DIR_EX?
-	union {
-		FAT_DIR_EX d_fat;
+		off_t f_pos;
+		off_t f_size;
+
+		union {
+			FAT_FILE_EX f_fat;
+			MKF_FILE_EX f_mkf;
+			MKEF_FILE_EX f_mkef;
+			TXTINFO_FILE_EX f_txtinfo;
+		};
 	};
-};
+
+	struct {
+		LIST_NODE d_list;
+
+		DIR_OPS *d_ops;
+		INODE *d_inode;
+		unsigned int d_oattr;
+
+		LIST_HEAD d_ents; // TODO: how about to put this in FAT_DIR_EX?
+		union {
+			FAT_DIR_EX d_fat;
+		};
+	};
+};};
+
 
 struct FILE_OPS // 文件操作,读写之类的
 {
-	int (*open)(FILE *file, INODE *inode, unsigned int oattr); // 打开文件
+	union {
+		int (*open)(FILE *file, INODE *inode, unsigned int oattr); // 打开文件
+		int (*opendir)(DIR *dir, INODE *inode, unsigned int oattr); // 打开目录
+	};
+	union {
+		int (*close)(FILE *file); // 关闭文件(但是不释放FILE指针内存的那种)
+		int (*closedir)(DIR *dir);
+	};
+
 	int (*read)(FILE *file, char *buf, size_t size); // 读取文件
 	int (*write)(FILE *file, const char *buf, size_t size); // 写入文件
 	unsigned int (*getch)(FILE *file); // 读入一个字节
@@ -97,17 +107,12 @@ struct FILE_OPS // 文件操作,读写之类的
 		, unsigned int mattr // 映射要求页的属性? 只读? (pte的参数嘛)
 		);
 	size_t (*glinesize)(FILE *file); // 预估一行的最大容量(API要求的呗)
-	int (*seek)(FILE *file, long offset, int whence); // 定位到特定文件位置
+	long (*seek)(FILE *file, long offset, int whence); // 定位到特定文件位置
 	//int (*tell)(FILE *file, int what); // 告知文件特定的偏移量信息
 	int (*fsync)(FILE *file); // 同步文件改动
-	int (*close)(FILE *file); // 关闭文件(但是不释放FILE指针内存的那种)
-};
 
-struct DIR_OPS // 对目录的操作,删除啊遍历啊之类的
-{
-	int (*opendir)(DIR *dir, INODE *inode, unsigned int oattr); // 打开目录
+	// 以下是一些对目录的操作,删除啊遍历啊之类的
 	DIRENT *(*dirfind)(DIR *dir, const char *name);
-	int (*closedir)(DIR *dir);
 };
 
 
@@ -237,9 +242,7 @@ void free_inode(INODE *inode);
 DIRENT *dir_find_entry(LIST_HEAD dents, const char *name);
 DIRENT *dir_locate_entry(DIR *_dir, const char *_name);
 int inode_open(FILE *file, INODE *inode, unsigned int oattr);
-int inode_opendir(DIR *dir, INODE *inode, unsigned int oattr);
 int open_in(FILE *file, DIR *indir, const char *name, unsigned int oattr);
-int opendir_in(DIR *dir, DIR *indir, const char *name, unsigned int oattr);
 void closedir(DIR *file);
 DIRENT *dirfind(DIR *dir, const char *name);
 DIRENT *simple_dirfind(DIR *dir, const char *name);
@@ -250,8 +253,20 @@ int write(FILE *file, const char *buf, size_t size);
 int mmap(FILE *f, void *p, size_t size, unsigned int mattr);
 unsigned int getch(FILE *file);
 int putch(FILE *file, unsigned char ch);
-int seek(FILE *file, long offset, int whence);
+long seek(FILE *file, long offset, int whence);
 size_t glinesize(FILE *file);
 char *getline(FILE *file);
 int fsync(FILE *file);
 void close(FILE *file);
+
+static inline
+int inode_opendir(DIR *dir, INODE *inode, unsigned int oattr)
+{
+	return inode_open(dir, inode, oattr | OPEN_DIR);
+}
+
+static inline
+int opendir_in(DIR *dir, DIR *indir, const char *name, unsigned int oattr)
+{
+	return open_in(dir, indir, name, oattr | OPEN_DIR);
+}

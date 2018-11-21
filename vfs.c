@@ -43,21 +43,14 @@ void vfs_mount(const char *name, SUPER *sb)
 
 int open(FILE *file, const char *name, unsigned int oattr)
 {
+	if (name[0] == '.' && name[1] == 0)
+		return inode_open(file, cdir->d_inode, oattr);
+	if (name[0] == '/' && name[1] == 0)
+		return inode_open(file, root->d_inode, oattr);
+
 	DIRENT *de = locate_entry(name);
 	if (!de)
 		return -E_NO_SRCH;
 
 	return inode_open(file, de->e_inode, oattr);
-}
-
-int opendir(DIR *dir, const char *name, unsigned int oattr)
-{
-	if (name[0] == '.' && name[1] == 0)
-		inode_opendir(dir, cdir->d_inode, oattr);
-
-	DIRENT *de = locate_entry(name);
-	if (!de)
-		return -E_NO_SRCH;
-
-	return inode_opendir(dir, de->e_inode, oattr);
 }
