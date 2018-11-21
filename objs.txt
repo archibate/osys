@@ -37,6 +37,9 @@ vfs
 fs
 devfs
 mkefifo
+pipe
+pip0
+mkpipe
 shell
 keymap
 kbd

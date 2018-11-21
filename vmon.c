@@ -1,6 +1,5 @@
 #include <fs.h>
 #include <devfs.h>
-#include <memory.h>
 #include <mkefifo.h>
 #include <print.h>
 

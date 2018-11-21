@@ -20,3 +20,7 @@ extern
 void task_run
 	( TCB *next
 	);
+
+void run_pcb
+	( PCB *next
+	);

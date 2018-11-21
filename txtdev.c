@@ -32,7 +32,7 @@ int txtdev_read(FILE *f, char *buf, unsigned long size)
 		size = 0;
 	if (f->f_pos + size > f->f_size)
 		size = f->f_size - f->f_pos;
-	memcpy(buf, f->f_inode->ie_data + f->f_pos, size);
+	memcpy(buf, f->f_inode->ie_priv_data + f->f_pos, size);
 	f->f_pos += size;
 	return size;
 }
@@ -52,7 +52,7 @@ INODE *make_txtinfo_dev
 	)
 {
 	INODE *inode = register_dev(&txtdev_fops, name, INODE_CHR | INODE_RD);
-	inode->ie_data = (void *) data;
+	inode->ie_priv_data = (void *) data;
 	inode->i_size = size;
 	return inode;
 }

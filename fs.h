@@ -130,6 +130,7 @@ struct INODE // 表示一个文件或者目录, 算是什么东西的最小单�
 		LIST_HEAD ie_dents;
 		struct FIFO *ie_fifo;
 		struct EFIFO *ie_efifo;
+		struct PIPE *ie_pipe;
 
 		struct {
 			unsigned int ie_clus;

@@ -2,9 +2,11 @@
 #include <print.h>
 #include <efifo.h>
 #include <vkeys.h>
+#include <pipe.h>
 
 
 EFIFO keybd_efifo;
+//extern PIPE vmon_pipe;
 extern EFIFO vmon_efifo;
 
 
@@ -22,10 +24,13 @@ void on_keyboard_event
 
 	if (scancode < 0x80)
 	{
-		efifo_put(&vmon_efifo, ch);
+		//char c = ch;
+		//pipe_write(&vmon_pipe, &c, 1, 0);
+
 		efifo_put(&keybd_efifo, ch);
-		efifo_flush(&vmon_efifo);
+		efifo_put(&vmon_efifo, ch);
 		efifo_flush(&keybd_efifo);
+		efifo_flush(&vmon_efifo);
 	}
 }
 

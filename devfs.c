@@ -55,7 +55,7 @@ int devfs_devdir_closedir(DIR *dir)
 int devfs_devdir_opendir(DIR *dir, INODE *inode, unsigned int oattr)
 {
 	dir->d_ops = &devfs_devdir_dops;
-	dir->d_ents = inode->i_devdir.ie_dents;
+	dir->d_ents = inode->ie_dents;
 	return 0;
 }
 
@@ -76,7 +76,7 @@ SUPER *devfs_load_super
 	sb->s_inode->i_attr = INODE_RD | INODE_WR;
 	sb->s_inode->i_type = INODE_DIR;
 	sb->s_inode->i_dops = &devfs_devdir_dops;
-	sb->s_inode->i_devdir.ie_dents = 0;
+	sb->s_inode->ie_dents = 0;
 
 	return sb;
 }
@@ -105,7 +105,7 @@ INODE *register_dev
 	de->e_inode->i_attr = iattr;
 	de->e_inode->i_fops = fops;
 
-	list_add_head_n(&dev_super->s_inode->i_devdir.ie_dents, &de->e_list);
+	list_add_head_n(&dev_super->s_inode->ie_dents, &de->e_list);
 
 	return de->e_inode;
 }

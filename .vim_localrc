@@ -6,8 +6,8 @@ nnoremap <F5> :wa<CR>:!make -Bj4 NODEP=1 run<CR><CR>
 nnoremap <F6> :wa<CR>:!make -Bj4 NODEP=1 DEBUG=1 debug<CR><CR>
 nnoremap <F7> :wa<CR>:!make -Bj4 NODEP=1 bochsrun<CR><CR>
 
-nnoremap <F5> :wa<CR>:make run<CR><CR><CR>
-nnoremap cn :wa<CR>:cn<CR>
+"nnoremap <F5> :wa<CR>:make run<CR><CR><CR>
+"nnoremap cn :wa<CR>:cn<CR>
 
 set fdm=marker
 

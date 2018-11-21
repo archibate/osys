@@ -13,10 +13,11 @@ set architecture i386
 # For kernel debugging
 # Add KERNEL file for debugging information
 add-symbol-file bin/kernel.elf 0x100000
-#add-symbol-file user/xfont/bin/xfont.elf 0x10000000
-add-symbol-file user/shell/bin/shell.elf 0x10000000
+add-symbol-file user/xfont/bin/xfont.elf 0x10000000
+#add-symbol-file user/shell/bin/shell.elf 0x10000000
 #add-symbol-file user/gview/bin/gview.elf 0x10000000
 #add-symbol-file user/catkbd/bin/catkbd.elf 0x10000000
+#add-symbol-file user/hello/bin/hello.elf 0x10000000
 
 # For both ;)
 set disassemble-next-line on
@@ -32,8 +33,10 @@ define bc
 	continue
 end
 
+b panic
 #bc panic
 #bc main
 #bc set_break
 #bc load_user_program_fc
-bc fgets
+#bc fgets
+bc pipe_read

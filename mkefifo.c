@@ -8,9 +8,18 @@
 static
 int mkef_putch(FILE *f, unsigned char ch)
 {
-	efifo_put(f->f_mkef.fe_efifo, ch);
-	efifo_flush(f->f_mkef.fe_efifo);
+	efifo_put(f->fe_efifo, ch);
+	efifo_flush(f->fe_efifo);
 	return 0;
+}
+
+EFIFO *need_flush_efifo;
+
+void new_need_flush_efifo(EFIFO *efifo)
+{
+	if (need_flush_efifo)
+		efifo_flush(need_flush_efifo);
+	need_flush_efifo = efifo;
 }
 
 static
@@ -18,24 +27,24 @@ int mkef_write(FILE *f, const char *buf, size_t size)
 {
 	int i = 0;
 	while (i++ < size) {
-		efifo_put(f->f_mkef.fe_efifo, *buf++);
+		efifo_put(f->fe_efifo, *buf++);
 	}
-	efifo_flush(f->f_mkef.fe_efifo);
+	new_need_flush_efifo(f->fe_efifo);
 	return i;
 }
 
 static
 unsigned int mkef_getch(FILE *f)
 {
-	return efifo_wait_get(f->f_mkef.fe_efifo);
+	return efifo_wait_get(f->fe_efifo);
 }
 
 static
 char *mkef_getline(FILE *f)
 {
-	size_t size = efifo_wait_size(f->f_mkef.fe_efifo);
+	size_t size = efifo_wait_size(f->fe_efifo);
 	char *buf = kmalloc(size + 1);
-	__efifo_readline(f->f_mkef.fe_efifo, buf, size);
+	__efifo_readline(f->fe_efifo, buf, size);
 	buf[size] = 0;
 	return buf;
 }
@@ -43,16 +52,16 @@ char *mkef_getline(FILE *f)
 static
 size_t mkef_glinesize(FILE *f)
 {
-	return efifo_wait_size(f->f_mkef.fe_efifo);
+	return efifo_wait_size(f->fe_efifo);
 }
 
 static
 int mkef_read(FILE *f, char *buf, size_t size)
 {
-	int maxsize = efifo_wait_size(f->f_mkef.fe_efifo);
+	int maxsize = efifo_wait_size(f->fe_efifo);
 	if (size > maxsize)
 		size = maxsize;
-	__efifo_readline(f->f_mkef.fe_efifo, buf, size);
+	__efifo_readline(f->fe_efifo, buf, size);
 	return size;
 }
 
@@ -67,15 +76,14 @@ int mkef_open(FILE *f, INODE *inode, unsigned int oattr)
 	f->f_inode = inode;
 	f->f_pos = 0;
 	f->f_size = -1;
-	f->f_mkef.fe_efifo = kmalloc_for(EFIFO);
-	efifo_init(f->f_mkef.fe_efifo);
+	f->fe_efifo = kmalloc_for(EFIFO);
+	efifo_init(f->fe_efifo);
 	return 0;
 }
 
 static
 int mkef_close(FILE *f)
 {
-	kfree(f->f_mkef.fe_efifo);
 	return 0;
 }
 
@@ -87,7 +95,7 @@ int mkef_e_open(FILE *f, INODE *inode, unsigned int oattr)
 	f->f_inode = inode;
 	f->f_pos = 0;
 	f->f_size = -1;
-	f->f_mkef.fe_efifo = inode->i_mkef.ie_efifo;
+	f->fe_efifo = inode->ie_efifo;
 	return 0;
 }
 
@@ -121,7 +129,7 @@ INODE *make_efifo_dev(const char *name, EFIFO *efifo, unsigned int iattr)
 	INODE *inode = register_dev(&mkef_fops, name, iattr);
 	if (efifo) {
 		inode->i_fops = &mkef_e_fops;
-		inode->i_mkef.ie_efifo = efifo;
+		inode->ie_efifo = efifo;
 	} else {
 		inode->i_fops = &mkef_fops;
 	}

@@ -62,23 +62,23 @@ int ramfs_read(FILE *f, char *buf, size_t size)
 
 	int i = 0;
 	while (1) {
-		if (f->f_fat.fe_clus >= sb->s_fat.se_clusmax)
+		if (f->fe_clus >= sb->se_clusmax)
 			return -E_BAD_BLK;
 
-		off_t off = f->f_fat.fe_clus * sb->s_fat.se_clusiz + f->f_fat.fe_cloff;
+		off_t off = f->fe_clus * sb->se_clusiz + f->fe_cloff;
 
-		while (i < size && f->f_fat.fe_cloff < sb->s_fat.se_clusiz)
+		while (i < size && f->fe_cloff < sb->se_clusiz)
 		{
 			if (f->f_pos >= f->f_size)
 				return i;
-			i++, f->f_pos++, f->f_fat.fe_cloff++;
-			*buf++ = sb->s_fat.se_data[off++];
+			i++, f->f_pos++, f->fe_cloff++;
+			*buf++ = sb->se_ramdat[off++];
 		}
 		if (i >= size)
 			return i;
 
-		f->f_fat.fe_clus = sb->s_fat.se_fat[f->f_fat.fe_clus];
-		f->f_fat.fe_cloff = 0;
+		f->fe_clus = sb->se_fat[f->fe_clus];
+		f->fe_cloff = 0;
 	}
 }
 
@@ -92,29 +92,29 @@ int ramfs_mmap(FILE *f, void *p, size_t size, unsigned int mattr)
 	SUPER *sb = f->f_inode->i_sb;
 
 	// 有些小纠结的事情呢..
-	if (f->f_fat.fe_cloff != 0)
+	if (f->fe_cloff != 0)
 		return -E_NO_IMPL;
-	if (sb->s_fat.se_clusiz != PGSIZE)
+	if (sb->se_clusiz != PGSIZE)
 		return -E_NO_IMPL;
 
 	int i = 0;
 	while (1) {
-		if (f->f_fat.fe_clus >= sb->s_fat.se_clusmax)
+		if (f->fe_clus >= sb->se_clusmax)
 			return -E_BAD_BLK;
 
-		off_t off = f->f_fat.fe_clus * sb->s_fat.se_clusiz;
-		const char *src = sb->s_fat.se_data + off;
+		off_t off = f->fe_clus * sb->se_clusiz;
+		const char *src = sb->se_ramdat + off;
 
 		map(addr, (unsigned long) src | mattr | PG_P);
 
 		addr += PGSIZE;
-		f->f_pos += sb->s_fat.se_clusiz;
-		i += sb->s_fat.se_clusiz;
+		f->f_pos += sb->se_clusiz;
+		i += sb->se_clusiz;
 
 		if (f->f_pos >= f->f_size || i >= size)
 			return i > size ? size : i;
 
-		f->f_fat.fe_clus = sb->s_fat.se_fat[f->f_fat.fe_clus];
+		f->fe_clus = sb->se_fat[f->fe_clus];
 	}
 }
 
@@ -122,8 +122,8 @@ static
 void _ramfs_rewind(FILE *f)
 {
 	f->f_pos = 0;
-	f->f_fat.fe_clus = f->f_inode->i_fat.ie_clus;
-	f->f_fat.fe_cloff = 0;
+	f->fe_clus = f->f_inode->ie_clus;
+	f->fe_cloff = 0;
 }
 
 static
@@ -155,19 +155,19 @@ long ramfs_seek(FILE *f, long offset, int whence)
 		}
 	}
 
-	int rest = sb->s_fat.se_clusiz - f->f_fat.fe_cloff;
+	int rest = sb->se_clusiz - f->fe_cloff;
 	if (offset < rest) {
-		f->f_fat.fe_cloff += offset;
+		f->fe_cloff += offset;
 		f->f_pos += offset;
 	} else {
-		div_t di = div(offset - rest, sb->s_fat.se_clusiz);
+		div_t di = div(offset - rest, sb->se_clusiz);
 		while (di.quot-- > 0) {
-			f->f_fat.fe_clus = sb->s_fat.se_fat[f->f_fat.fe_clus];
-			if (f->f_fat.fe_clus >= sb->s_fat.se_clusmax)
+			f->fe_clus = sb->se_fat[f->fe_clus];
+			if (f->fe_clus >= sb->se_clusmax)
 				return -E_BAD_BLK;
-			f->f_pos += sb->s_fat.se_clusiz;
+			f->f_pos += sb->se_clusiz;
 		}
-		f->f_fat.fe_cloff = di.rem;
+		f->fe_cloff = di.rem;
 		f->f_pos += di.rem;
 	}
 
@@ -218,9 +218,9 @@ int ramfs_opendir(DIR *dir, INODE *inode, unsigned int oattr)
 	dir->d_ops = &ramfs_dops;
 	dir->d_inode = inode;
 
-	char *buf = inode->i_sb->s_fat.se_data;
-	buf += inode->i_fat.ie_clus * inode->i_sb->s_fat.se_clusiz;
-	unsigned int ents = inode->i_sb->s_fat.se_clusiz / sizeof(FAT_DIRENT);
+	char *buf = inode->i_sb->se_ramdat;
+	buf += inode->ie_clus * inode->i_sb->se_clusiz;
+	unsigned int ents = inode->i_sb->se_clusiz / sizeof(FAT_DIRENT);
 	ramfs_decode_fatents(inode->i_sb, dir, (FAT_DIRENT *) buf, ents);
 
 	return 0;
@@ -349,7 +349,7 @@ unsigned char get_short_name_chksum(const char *s)
 static
 void copy_fate_to_inode(const FAT_DIRENT *fe, INODE *inode)
 {
-	inode->i_fat.ie_attr = fe->e_attr;
+	inode->ie_attr = fe->e_attr;
 
 	inode->i_attr |= INODE_RD;
 	if (!(fe->e_attr & FAT_RDONLY))
@@ -362,9 +362,9 @@ void copy_fate_to_inode(const FAT_DIRENT *fe, INODE *inode)
 
 	inode->i_size = fe->e_size;
 
-	inode->i_fat.ie_clus = fe->e_clus_hi;
-       	inode->i_fat.ie_clus <<= 16;
-	inode->i_fat.ie_clus += fe->e_clus_lo;
+	inode->ie_clus = fe->e_clus_hi;
+       	inode->ie_clus <<= 16;
+	inode->ie_clus += fe->e_clus_lo;
 }
 
 static
@@ -445,23 +445,22 @@ STRUCT(RAMFS_LOADING)
 static
 void ramfs_decode_mbr(RAMFS_LOADING *es)
 {
-	FAT_SUPER_EX *s_fat = &es->sb->s_fat;
 #define FAQ(x, y) ((x)      = (typeof(x)) (y)) // LETHER_MAN!!
 	FAQ(es->mbr         , es->data);
 	unsigned int bps    = es->mbr->bpb_bytes_per_sec;
-	s_fat->se_clusiz    = es->mbr->bpb_sec_per_clus * bps;
+	es->sb->se_clusiz   = es->mbr->bpb_sec_per_clus * bps;
 	FAQ(es->fat12       , es->data + bps * es->mbr->bpb_rsvd_secs);
 	FAQ(es->rootdir     , es->data + bps *
 			    ( es->mbr->bpb_rsvd_secs
 			    + es->mbr->bpb_fat_size16 * es->mbr->bpb_num_fats
 			    //+ es->mbr->bpb_hidd_secs
 			    ));
-	FAQ(s_fat->se_data  , (char *) es->rootdir
+	FAQ(es->sb->se_ramdat, (char *) es->rootdir
 			    + es->mbr->bpb_root_ents * sizeof(FAT_DIRENT)
-			    - 2 * s_fat->se_clusiz
+			    - 2 * es->sb->se_clusiz
 			    //+ bps * es->mbr->bpb_hidd_secs
 			    );
-	s_fat->se_clusmax   = 0xff7;
+	es->sb->se_clusmax  = 0xff7;
 	es->fat_ents        = (bps * es->mbr->bpb_fat_size16 * 2) / 3;
 	es->rootdir_ents    = es->mbr->bpb_root_ents;
 
@@ -471,7 +470,7 @@ void ramfs_decode_mbr(RAMFS_LOADING *es)
 	printf("  OEM NAME  %.8s\n", es->mbr->bs_oem_name);
 	printf("  FAT ENTS  %d\n", es->fat_ents);
 	printf("  ROOT MAX  %d\n", es->rootdir_ents);
-	printf("  CLU SIZE  %d\n", s_fat->se_clusiz);
+	printf("  CLU SIZE  %d\n", es->sb->se_clusiz);
 }
 
 // reference: https://github.com/archibate/OSASK/blob/master/src/haribote/file.c
@@ -526,8 +525,8 @@ SUPER *ramfs_load_super(void *ramdisk)
 	ramfs_decode_mbr(es);
 	ramfs_decode_fatents(es->sb, es->sb->s_root, es->rootdir, es->rootdir_ents);
 
-	es->sb->s_fat.se_fat = kmalloc((es->fat_ents + 1) * sizeof(clus_t));
-	uncompress_fat12(es->sb->s_fat.se_fat, es->fat12, es->fat_ents);
+	es->sb->se_fat = kmalloc((es->fat_ents + 1) * sizeof(clus_t));
+	uncompress_fat12(es->sb->se_fat, es->fat12, es->fat_ents);
 
 	es->sb->s_ops = &ramfs_super_ops;
 

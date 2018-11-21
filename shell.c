@@ -257,8 +257,8 @@ void init_shell(void)
 	chdir("/root");
 	//stexec("/bin/splash.exf");
 	//stexec("/bin/gview.exf");
-	stexec("/bin/xfont.exf");
 	stexec("/bin/shell.exf");
 	//stexec("/bin/catkbd.exf");
 	//stexec("/bin/hello.exf");
+	stexec("/bin/xfont.exf");
 }

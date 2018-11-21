@@ -111,3 +111,12 @@ void do_schedule
 	assert(current);
 	task_run(current->next);
 }
+
+void run_pcb
+	( PCB *next
+	)
+{
+	PCB *prev = current->pcb;
+	current->pcb = next;
+	switch_from_to(prev, next);
+}
