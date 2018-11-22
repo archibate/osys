@@ -13,7 +13,7 @@ int mkef_putch(FILE *f, unsigned char ch)
 	return 0;
 }
 
-EFIFO *need_flush_efifo;
+/*EFIFO *need_flush_efifo;
 
 static
 void will_flush_efifo(EFIFO *efifo)
@@ -21,7 +21,7 @@ void will_flush_efifo(EFIFO *efifo)
 	if (need_flush_efifo)
 		efifo_flush(need_flush_efifo);
 	need_flush_efifo = efifo;
-}
+}*/
 
 static
 int mkef_write(FILE *f, const char *buf, size_t size)
@@ -30,7 +30,8 @@ int mkef_write(FILE *f, const char *buf, size_t size)
 	while (i++ < size) {
 		efifo_put(f->fe_efifo, *buf++);
 	}
-	will_flush_efifo(f->fe_efifo);
+	//will_flush_efifo(f->fe_efifo);
+	efifo_flush(f->fe_efifo);
 	return i;
 }
 
@@ -67,20 +68,7 @@ int mkef_read(FILE *f, char *buf, size_t size)
 }
 
 static
-FILE_OPS mkef_fops, mkef_e_fops;
-
-static
-int mkef_open(FILE *f, INODE *inode, unsigned int oattr)
-{
-	f->f_ops = &mkef_fops;
-	f->f_oattr = oattr;
-	f->f_inode = inode;
-	f->f_pos = 0;
-	f->f_size = -1;
-	f->fe_efifo = kmalloc_for(EFIFO);
-	efifo_init(f->fe_efifo);
-	return 0;
-}
+FILE_OPS mkef_fops;
 
 static
 int mkef_close(FILE *f)
@@ -89,7 +77,7 @@ int mkef_close(FILE *f)
 }
 
 static
-int mkef_e_open(FILE *f, INODE *inode, unsigned int oattr)
+int mkef_open(FILE *f, INODE *inode, unsigned int oattr)
 {
 	f->f_ops = &mkef_fops;
 	f->f_oattr = oattr;
@@ -112,27 +100,10 @@ FILE_OPS mkef_fops = {
 	.getch = mkef_getch,
 };
 
-static
-FILE_OPS mkef_e_fops = {
-	.open = mkef_e_open,
-	// TODO: below really needs under `f->f_ops = &mkef_fops;` had in mkef_e_open?
-	.glinesize = mkef_glinesize,
-	.getline = mkef_getline,
-	.write = mkef_write,
-	.read = mkef_read,
-	.close = mkef_close,
-	.putch = mkef_putch,
-	.getch = mkef_getch,
-};
-
 INODE *make_efifo_dev(const char *name, EFIFO *efifo, unsigned int iattr)
 {
 	INODE *inode = register_dev(&mkef_fops, name, iattr);
-	if (efifo) {
-		inode->i_fops = &mkef_e_fops;
-		inode->ie_efifo = efifo;
-	} else {
-		inode->i_fops = &mkef_fops;
-	}
+	inode->i_fops = &mkef_fops;
+	inode->ie_efifo = efifo;
 	return inode;
 }

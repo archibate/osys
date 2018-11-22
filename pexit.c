@@ -3,12 +3,15 @@
 #include <panic.h>
 #include <print.h>
 #include <uload.h>
+#include <sched.h>
 
 static
 EVENT eve_zack;
 
 void __attribute__((noreturn)) thread_exit(int val)
 {
+	trig_up(&current->eve_exited);
+
 	wait_on(&eve_zack);
 	panic("thread exited with %d\n", val);
 }

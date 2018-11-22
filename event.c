@@ -27,8 +27,8 @@ void trig_up
 	//event->feeder = current;
 	if (event->waiting_head) {
 		TCB *next = tcb_shift_forward_ch(&event->waiting_head);
-		tcb_insert_after_ch(next, &current);
-		assert(current->next == next);
-		task_run(current->next);
+		tcb_insert_before_ch(next, &current);
+		assert(current->prev == next);
+		task_run(current->prev);
 	}
 }

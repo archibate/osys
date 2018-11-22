@@ -2,12 +2,11 @@
 
 
 #include <struct.h>
-#include <tcb.h>
 
 STRUCT(EVENT)
 {
-	TCB *waiting_head;
-	//TCB *feeder;
+	struct TCB *waiting_head;
+	//struct TCB *feeder;
 };
 
 static inline
