@@ -10,9 +10,9 @@ int __attribute__((noreturn)) sys_undefined(void)
 #define verify_ptr(p) if ((unsigned long) (p) < DMA_END) return -E_SEG_FL
 
 
-int sys_stexec(const char *name)
+int sys_stexecv1(const char *name, const char *arg)
 {
-	return stexec(name);
+	return stexecv1(name, arg);
 }
 
 void __attribute__((noreturn)) sys_exit(int status)

@@ -4,6 +4,15 @@
 #include <string.h>
 #include <memory.h>
 
+int fflush(FILE *f)
+{
+	if (f->f_oattr & OPEN_WR)
+		file_wr_flush(f);
+	if (f->f_oattr & OPEN_RD)
+		file_rd_flush(f);
+	return 0;
+}
+
 const char *fgetrdbuf(FILE *f)
 {
 	if (f->f_bpos >= f->f_bsize)
@@ -51,15 +60,15 @@ int fputs(const char *s, FILE *f)
 	return need_fl;
 }
 
+int file_need_wr_flush(FILE *f)
+{
+	return f->f_buf[f->f_bpos - 1] == '\n' || f->f_bpos >= BUFSIZ;
+}
+
 void file_wr_flush(FILE *f)
 {
 	write(f->f_fd, f->f_buf, f->f_bpos);
 	f->f_bpos = 0;
-}
-
-int file_need_wr_flush(FILE *f)
-{
-	return f->f_buf[f->f_bpos - 1] == '\n' || f->f_bpos >= BUFSIZ;
 }
 
 void file_rd_flush(FILE *f)

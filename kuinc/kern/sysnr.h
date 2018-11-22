@@ -13,7 +13,7 @@
 #define _SYS_getch 9
 #define _SYS_putch 10
 #define _SYS_fsync 11
-#define _SYS_stexec 12
+#define _SYS_stexecv1 12
 #define _SYS_setbrk 13
 #define _SYS_chdir 14
 #define _SYS_dirfind 15

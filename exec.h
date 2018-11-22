@@ -2,6 +2,5 @@
 
 struct FILE;
 
-int exec(const char *name);
-int stexec(const char *name);
-int exec_fc(struct FILE *f);
+int stexecv1(const char *name, const char *arg);
+#define stexec(name) stexecv1((name), "")

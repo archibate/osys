@@ -32,6 +32,7 @@ int fputs(const char *s, FILE *f);
 int file_need_wr_flush(FILE *f);
 void file_wr_flush(FILE *f);
 void file_rd_flush(FILE *f);
+int fflush(FILE *f);
 int fclose_i(FILE *f);
 int fclose(FILE *f);
 

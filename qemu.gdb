@@ -13,10 +13,10 @@ set architecture i386
 # For kernel debugging
 # Add KERNEL file for debugging information
 add-symbol-file bin/kernel.elf 0x100000
-add-symbol-file user/xfont/bin/xfont.elf 0x10000000
-#add-symbol-file user/shell/bin/shell.elf 0x10000000
+#add-symbol-file user/xfont/bin/xfont.elf 0x10000000
+#add-symbol-file user/echo/bin/echo.elf 0x10000000
+add-symbol-file user/shell/bin/shell.elf 0x10000000
 #add-symbol-file user/gview/bin/gview.elf 0x10000000
-#add-symbol-file user/catkbd/bin/catkbd.elf 0x10000000
 #add-symbol-file user/hello/bin/hello.elf 0x10000000
 
 # For both ;)
@@ -38,5 +38,17 @@ b panic
 #bc main
 #bc set_break
 #bc load_user_program_fc
+#bc pipe_read
 #bc fgets
-bc pipe_read
+#bc __crt_start
+#c
+#c
+#b my_buf_putc
+#bc fprintf.c:25
+#define cp
+  #c
+  #p c
+#end
+bc sys_stexecv1
+b exec_fc
+bc main.c:72

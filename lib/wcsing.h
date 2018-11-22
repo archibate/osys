@@ -15,6 +15,7 @@ int wcsfind(const wchar_t *src, wchar_t ch);
 int wcsfindl(const wchar_t *src, wchar_t ch);
 int wcsnfind(const wchar_t *src, wchar_t ch, unsigned long n);
 int wcsfindin(const wchar_t *src, const wchar_t *chrs);
-wchar_t *wcsskip(const wchar_t *dst, const wchar_t *chrs);
+int wcsfindinl(const wchar_t *src, const wchar_t *chrs);
+wchar_t *wcsskipin(const wchar_t *dst, const wchar_t *chrs);
 int wcschop(wchar_t *dst, const wchar_t *chrs);
 wchar_t *wcstrim(wchar_t *dst, const wchar_t *chrs);

@@ -2,6 +2,6 @@
 
 int main(void)
 {
-	fputs("Hello, World\n", stdout);
+	puts("Hello, World\n");
 	return 0;
 }

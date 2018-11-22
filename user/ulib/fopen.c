@@ -54,6 +54,7 @@ int fopen_s(FILE **pf, const char *name, const char *type)
 
 int fclose_i(FILE *f)
 {
+	fflush(f);
 	return close(f->f_fd);
 }
 

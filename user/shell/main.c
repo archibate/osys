@@ -8,22 +8,7 @@
 #include <unistd.h>
 
 #define LINE_MAX 1024
-#define ARGC_MAX 10
 #define CSPACE " \t\n"
-
-void parse_argv(char *cmd, int *pargc, char **argv)
-{
-	int i, argc = 0;
-	cmd = strtrim(cmd, CSPACE);
-	while ((i = strfindin(cmd, CSPACE)) != -1) {
-		assert(argc < ARGC_MAX);
-		cmd[i] = 0;
-		argv[argc++] = cmd;
-		cmd = strskip(cmd + i + 1, CSPACE);
-	}
-	argv[argc++] = cmd;
-	argv[*pargc = argc] = 0;
-}
 
 char *get_binary_name(const char *name)
 {
@@ -36,36 +21,42 @@ char *get_binary_name(const char *name)
 	return path;
 }
 
-int run_cmd(int argc, char *const *argv)
+int echo(const char *s)
+{
+	printf("%s\n", s);
+	return 0;
+}
+
+int run_cmd(char *cmdl)
 {
 	struct command {
 		char *name;
-		int (*fun)();
-		int argc_min, argc_max;
+		int (*fun)(const char *arg);
 	} shcmds[] = {
-		{"cd", chdir, 1,1},
-		{"echo", puts, 1,1},
+		{"cd", chdir},
+		//{"echo", echo},
 	};
 
-	char *name = argv[0]; argc--, argv++;
-	for (int i = 0; i < sizeof(shcmds) / sizeof(shcmds[0]); i++) {
+	int i = strfindlin(cmdl, CSPACE);
+	const char *arg = strskipin(cmdl + i, CSPACE);
+
+	cmdl[i] = 0;
+	const char *name = cmdl;
+
+	for (i = 0; i < sizeof(shcmds) / sizeof(shcmds[0]); i++) {
 		if (!strcmp(shcmds[i].name, name)) {
-			if (argc > shcmds[i].argc_max || argc < shcmds[i].argc_min) {
-				printf("sh: wrong arguments count\n");
-				return -E_INVL_ARG;
-			}
-			return vacall(shcmds[i].fun, argc+1, (int*)argv);
+			return shcmds[i].fun(arg);
 		}
 	}
 
 	char *path = get_binary_name(name);
 
-	int res = stexec(path);
+	int res = stexecv1(path, arg);
 
 	if (res == -E_NO_SRCH)
 		printf("sh: command not found: %s\n", name);
 	else if (res)
-		printf("sh: stexec(%s): %m", path, res);
+		printf("sh: %s: %m\n", path, res);
 
 	return res;
 }
@@ -75,17 +66,13 @@ int main(void)
 {
 	printf("\nOSYS shell v0.1\n");
 
-	char s[LINE_MAX + 1];
-	char *(argv[ARGC_MAX + 1]);
-	int argc;
+	char cmdl[LINE_MAX + 1];
 
 	while (1) {
 		printf("\n> ");
 
-		fgets(s, LINE_MAX, stdin);
-
-		parse_argv(s, &argc, argv);
-		if (argv[0]) run_cmd(argc, argv);
+		fgets(cmdl, LINE_MAX, stdin);
+		run_cmd(strtrim(cmdl, CSPACE));
 	}
 
 	return 0;

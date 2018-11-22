@@ -1,12 +1,12 @@
 ; vim: ft=nasm ai
 
 	GLOBAL _start
-	EXTERN crt_start
+	EXTERN __crt_start
 
 [SECTION .text]
 [BITS 32]
 
 _start:
-	jmp crt_start
+	call __crt_start
 	cli
 	hlt

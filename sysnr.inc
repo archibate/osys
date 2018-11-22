@@ -11,7 +11,7 @@ _SYS_tellsize equ 8
 _SYS_getch equ 9
 _SYS_putch equ 10
 _SYS_fsync equ 11
-_SYS_stexec equ 12
+_SYS_stexecv1 equ 12
 _SYS_setbrk equ 13
 _SYS_chdir equ 14
 _SYS_dirfind equ 15

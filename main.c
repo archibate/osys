@@ -48,7 +48,6 @@ int main
 	INIT(kbd);
 	INIT(mon);
 	INIT(vmon);
-	INIT(pip0);
 	INIT(tss);
 	INIT(shell);
 	process_exit(0);

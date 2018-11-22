@@ -1,15 +1,15 @@
+uload/exec: main(argc, argv)
+fs: opendir(), readdir(), seekdir(), /bin/ls.exf
+syspt: fork() -> exec() -> wait()
+shell: my readline() lib!
+ulib: io-buffering for fread/write!!!
+sysmm: auto increase stack on page fault.
+schedule: prio for different task.
+xfont: hankaku -> hanzi
+
+syspt.c::wait_exit.etc.
 pipe!!!!
 event: 2-endpoint ipc: event_set_focus()????
-schedule: leveling please.
-shell: my readline() lib!
-opendir(), readdir(), seekdir(), /bin/ls.exf
-io-buffering for fread/write!!!
-fork() -> exec() -> wait()
-auto increase stack on page fault
-
-main(argc, argv)
-syspt.c::wait_exit.etc.
-hankaku,hanzi
 
 map.c:干脆考虑把所有在USER_BEG以后,且物理地址在PSM管辖范围内的页都free了?
 better thread_exit

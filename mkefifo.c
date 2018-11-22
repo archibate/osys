@@ -15,7 +15,8 @@ int mkef_putch(FILE *f, unsigned char ch)
 
 EFIFO *need_flush_efifo;
 
-void new_need_flush_efifo(EFIFO *efifo)
+static
+void will_flush_efifo(EFIFO *efifo)
 {
 	if (need_flush_efifo)
 		efifo_flush(need_flush_efifo);
@@ -29,7 +30,7 @@ int mkef_write(FILE *f, const char *buf, size_t size)
 	while (i++ < size) {
 		efifo_put(f->fe_efifo, *buf++);
 	}
-	new_need_flush_efifo(f->fe_efifo);
+	will_flush_efifo(f->fe_efifo);
 	return i;
 }
 

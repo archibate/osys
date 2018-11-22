@@ -22,5 +22,5 @@ __SYS_STATIC syscall2(int,putch,(int fd, unsigned char ch), fd, ch);
 __SYS_STATIC syscall1(unsigned int,getch,(int fd), fd);
 __SYS_STATIC syscall1(int,fsync,(int fd), fd);
 __SYS_STATIC syscall1(int,setbrk,(void *p), p);
-__SYS_STATIC syscall1(int,stexec,(const char *name), name);
+__SYS_STATIC syscall2(int,stexecv1,(const char *name, const char *arg), name, arg);
 __SYS_STATIC syscall1(int,chdir,(const char *path), path);

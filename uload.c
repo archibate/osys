@@ -4,7 +4,6 @@
 #include <kmalloc.h>
 #include <umemlay.h>
 #include <uload.h>
-#include <umove.h>
 #include <sched.h>
 #include <schpcb.h>
 #include <map.h>
@@ -12,20 +11,6 @@
 #include <mmu.h>
 #include <memory.h>
 #include <exf.h>
-
-void __attribute__((noreturn)) transfer_to_user(void)
-{
-	static IF_REGS uregs = {
-		.pc = USER_TEXT_BEG,
-		.sp = USER_STACK_END,
-		.eflags = 0x202,
-		.cs = 0x001b,
-		.ss = 0x0023,
-		.ds = 0x0023,
-		.es = 0x0023,
-	};
-	move_to_user(&uregs);
-}
 
 #define uload_map_psm_page(addr) map((addr), alloc_ppage() | PG_PSM | PG_P | PG_W | PG_U)
 
@@ -53,7 +38,7 @@ int load_user_program_fc(FILE *f)
 	kfree(f);
 
 	unsigned long stkbtm = USER_STACK_END;
-	for (int i = 0; i < exfhdr.x_stkpgs; i++) // todo: move this to page_fault
+	for (int i = 0; i < exfhdr.x_stkpgs + 1; i++) // todo: move this to page_fault
 		uload_map_psm_page(stkbtm -= PGSIZE);
 
 	return res;

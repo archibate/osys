@@ -27,10 +27,10 @@ void on_keyboard_event
 		//char c = ch;
 		//pipe_write(&vmon_pipe, &c, 1, 0);
 
-		efifo_put(&keybd_efifo, ch);
 		efifo_put(&vmon_efifo, ch);
-		efifo_flush(&keybd_efifo);
+		efifo_put(&keybd_efifo, ch);
 		efifo_flush(&vmon_efifo);
+		efifo_flush(&keybd_efifo);
 	}
 }
 

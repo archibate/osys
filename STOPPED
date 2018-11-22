@@ -1,3 +1,5 @@
+qemu.gdb
+uload.c & user/shell/main.c:63
 sysfs.c:50
 
 splash.com caused machine reset

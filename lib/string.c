@@ -98,7 +98,18 @@ int strfindin(const char *src, const char *chrs)
 	return -1;
 }
 
-char *strskip(const char *dst, const char *chrs)
+int strfindlin(const char *src, const char *chrs)
+{
+	int i = 0;
+	while (*src) {
+		if (strfind(chrs, *src) != -1)
+			return i;
+		i++, src++;
+	}
+	return i;
+}
+
+char *strskipin(const char *dst, const char *chrs)
 {
 	while (strfind(chrs, *dst) != -1)
 		dst++;
@@ -118,7 +129,7 @@ int strchop(char *dst, const char *chrs)
 
 char *strtrim(char *dst, const char *chrs)
 {
-	dst = strskip(dst, chrs);
+	dst = strskipin(dst, chrs);
 	strchop(dst, chrs);
 	return dst;
 }

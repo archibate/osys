@@ -88,7 +88,7 @@ int wcsnfind(const wchar_t *src, wchar_t ch, unsigned long n)
 	return -1;
 }
 
-wchar_t *wcsskip(const wchar_t *dst, const wchar_t *chrs)
+wchar_t *wcsskipin(const wchar_t *dst, const wchar_t *chrs)
 {
 	while (wcsfind(chrs, *dst) != -1)
 		dst++;
@@ -106,6 +106,17 @@ int wcsfindin(const wchar_t *src, const wchar_t *chrs)
 	return -1;
 }
 
+int wcsfindinl(const wchar_t *src, const wchar_t *chrs)
+{
+	int i = 0;
+	while (*src) {
+		if (wcsfind(chrs, *src) != -1)
+			return i;
+		i++, src++;
+	}
+	return i;
+}
+
 int wcschop(wchar_t *dst, const wchar_t *chrs)
 {
 	int i = 0;
@@ -119,7 +130,7 @@ int wcschop(wchar_t *dst, const wchar_t *chrs)
 
 wchar_t *wcstrim(wchar_t *dst, const wchar_t *chrs)
 {
-	dst = wcsskip(dst, chrs);
+	dst = wcsskipin(dst, chrs);
 	wcschop(dst, chrs);
 	return dst;
 }

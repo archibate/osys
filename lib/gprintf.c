@@ -167,7 +167,7 @@ prstr:
 				gputtimes(putch, algnr - len, prefill);
 			}
 			len = 0;
-			while ((c = *s++) && maxlen--)
+			while (maxlen-- && (c = *s++))
 				putch(c), len++;
 			if (algnr && rightalg) {
 				gputtimes(putch, algnr - len, prefill);
@@ -181,7 +181,7 @@ prstr:
 				gputtimes(putch, algnr - len, prefill);
 			}
 			len = 0;
-			while ((wc = *ws++) && maxlen--)
+			while (maxlen-- && (wc = *ws++))
 				putch(wch2cch(wc)), len++;
 			if (algnr && rightalg) {
 				gputtimes(putch, algnr - len, prefill);
