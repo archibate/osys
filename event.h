@@ -3,27 +3,25 @@
 
 #include <struct.h>
 
+typedef unsigned int eve_val_t;
+
 STRUCT(EVENT)
 {
 	struct TCB *waiting_head;
-	//struct TCB *feeder;
+	eve_val_t e_val;
 };
 
 static inline
-void event_init
-	( EVENT *event
-	)
+void event_init(EVENT *event)
 {
 	event->waiting_head = 0;
-	//event->feeder = 0;
 }
 
-extern
-void wait_on
-	( EVENT *event
-	);
+eve_val_t wait_on(EVENT *event);
+void trig_up(EVENT *event, eve_val_t val);
 
-extern
-void trig_up
-	( EVENT *event
-	);
+STRUCT(IEVENT)
+{
+	EVENT eve;
+	eve_val_t val;
+};

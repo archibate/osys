@@ -15,9 +15,9 @@ set architecture i386
 add-symbol-file bin/kernel.elf 0x100000
 #add-symbol-file user/xfont/bin/xfont.elf 0x10000000
 #add-symbol-file user/echo/bin/echo.elf 0x10000000
-add-symbol-file user/shell/bin/shell.elf 0x10000000
+#add-symbol-file user/shell/bin/shell.elf 0x10000000
 #add-symbol-file user/gview/bin/gview.elf 0x10000000
-#add-symbol-file user/hello/bin/hello.elf 0x10000000
+add-symbol-file user/hello/bin/hello.elf 0x10000000
 
 # For both ;)
 set disassemble-next-line on
@@ -49,6 +49,7 @@ b panic
   #c
   #p c
 #end
-bc sys_stexecv1
-b exec_fc
-bc main.c:72
+#bc sys_stexecv1
+#b exec_fc
+#bc main.c:72
+bc __crt_start

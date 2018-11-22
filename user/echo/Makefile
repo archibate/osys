@@ -1,6 +1,7 @@
 D=../../
 NAME=echo
 KTE=exf
+#DEFINES+=NO_IN=1
 
 default: all
 

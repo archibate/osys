@@ -1,4 +1,5 @@
 #include <fs.h>
+#include <print.h>
 #include <efifo.h>
 #include <kmalloc.h>
 #include <devfs.h>

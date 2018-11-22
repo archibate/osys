@@ -1,7 +1,7 @@
 uload/exec: main(argc, argv)
 fs: opendir(), readdir(), seekdir(), /bin/ls.exf
 syspt: fork() -> exec() -> wait()
-shell: my readline() lib!
+shell: my getline(), readline() lib!!!!!
 ulib: io-buffering for fread/write!!!
 sysmm: auto increase stack on page fault.
 schedule: prio for different task.

@@ -55,8 +55,10 @@ int run_cmd(char *cmdl)
 
 	if (res == -ENOENT)
 		printf("sh: command not found: %s\n", name);
-	else if (res)
+	else if (res < 0)
 		printf("sh: %s: %m\n", path, res);
+	else
+		res = waitpid(res);
 
 	return res;
 }

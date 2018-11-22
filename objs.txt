@@ -15,6 +15,7 @@ sysfs
 sysentry
 systab
 syspt
+pid
 pexit
 exec
 uload

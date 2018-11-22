@@ -28,7 +28,9 @@ void __attribute__((weak, noreturn)) __crt_start(size_t _arglen, ...)
 
 	init_heap();
 
+#ifndef NO_IN
 	stdin = fopen("/dev/kbd0", "r");
+#endif
 #ifndef NO_VMON
 	stdout = fopen("/dev/vmon0", "w");
 	stderr = fopen("/dev/vmon0", "w");
@@ -39,7 +41,9 @@ void __attribute__((weak, noreturn)) __crt_start(size_t _arglen, ...)
 
 	int res = main();
 
+#ifndef NO_IN
 	fclose(stdin);
+#endif
 	fclose(stdout);
 	fclose(stderr);
 

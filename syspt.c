@@ -16,7 +16,7 @@ int sys_undefined(void)
 #define verify_eveid(pid) if ((eveid) >= EVE_MAX) return -EINVAL
 
 
-int sys_wait(int pid, unsigned int eveid)
+int sys_waiton(int pid, unsigned int eveid)
 {
 	verify_pid(pid);
 	verify_eveid(eveid);
@@ -24,8 +24,8 @@ int sys_wait(int pid, unsigned int eveid)
 	TCB *proc = get_proc(pid);
 	if (!proc)
 		return -ESRCH;
-	wait_on(&proc->events[eveid]);
-	return 0;
+
+	return wait_on(&proc->events[eveid]);
 }
 
 int sys_stexecv1(const char *name, const char *arg)

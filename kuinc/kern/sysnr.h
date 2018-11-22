@@ -1,6 +1,6 @@
 #pragma once
 
-#define SYSCALL_MAX (15+1)
+#define SYSCALL_MAX (16+1)
 #define _SYS_undefined 0
 #define _SYS_exit 1
 #define _SYS_open 2
@@ -14,6 +14,7 @@
 #define _SYS_putch 10
 #define _SYS_fsync 11
 #define _SYS_stexecv1 12
-#define _SYS_setbrk 13
-#define _SYS_chdir 14
-#define _SYS_dirfind 15
+#define _SYS_waiton 13
+#define _SYS_setbrk 14
+#define _SYS_chdir 15
+#define _SYS_dirfind 16

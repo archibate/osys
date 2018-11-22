@@ -4,9 +4,7 @@
 #include <print.h>
 
 
-void wait_on
-	( EVENT *event
-	)
+eve_val_t wait_on(EVENT *event)
 {
 	/*if (event->feeder && event->feeder != current) {
 		printf("!!has feeder %p(cur=%p)\n", event->feeder, current);
@@ -17,14 +15,13 @@ void wait_on
 	tcb_remove(current);
 	tcb_insert_after_ch(current, &event->waiting_head);
 	task_run(next);
+	return event->e_val;
 }
 
 
-void trig_up
-	( EVENT *event
-	)
+void trig_up(EVENT *event, eve_val_t val)
 {
-	//event->feeder = current;
+	event->e_val = val;
 	if (event->waiting_head) {
 		TCB *next = tcb_shift_forward_ch(&event->waiting_head);
 		tcb_insert_before_ch(next, &current);
