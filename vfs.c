@@ -50,7 +50,7 @@ int open(FILE *file, const char *name, unsigned int oattr)
 
 	DIRENT *de = locate_entry(name);
 	if (!de)
-		return -E_NO_SRCH;
+		return -ENOENT;
 
 	return inode_open(file, de->e_inode, oattr);
 }

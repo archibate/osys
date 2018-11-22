@@ -21,26 +21,19 @@ const char *strerror(int err);
 EOF
 ;
 
-sub trim
-{
-	my $x = shift;
-	$x =~ s/^\s+//;
-	$x =~ s/\s+$//;
-	return $x;
-}
 
 my $i = 0;
 while (<I>)
 {
 	$i++;
 
-	my @x = split /:/;
-	continue unless length @x;
-	my ($err, $msg) = @x;
-	$err = trim $err;
-	$msg = trim $msg;
+	my ($err, $msg) = map {
+		s/^\s+//;
+		s/\s+$//;
+		$_;
+	} split /:/;
 
-	print H qq[#define E_$err $i // $msg\n];
+	print H qq[#define $err\t$i\t// $msg\n];
 	print M qq[\t"$msg",\n];
 }
 

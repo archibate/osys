@@ -11,9 +11,9 @@
 #include <umemlay.h>
 #include <kern/sysapi.h>
 
-#define verify_fd(fd) if ((fd) < 0 || (fd) > FILES_MAX || !current->pcb->files[(fd)]) return -E_BAD_FD
-#define verify_ptr(p) if ((unsigned long) p < DMA_END) return -E_SEG_FL
-#define verify_mappable_ptr(p) if ((unsigned long) (p) < USER_BEG || (unsigned long) (p) > USER_STACK_BEG) return -E_SEG_FL
+#define verify_fd(fd) if ((fd) < 0 || (fd) > FILES_MAX || !current->pcb->files[(fd)]) return -EBADFD
+#define verify_ptr(p) if ((unsigned long) p < DMA_END) return -EFAULT
+#define verify_mappable_ptr(p) if ((unsigned long) (p) < USER_BEG || (unsigned long) (p) > USER_STACK_BEG) return -EFAULT
 
 static
 int allocate_fd(void)
@@ -32,7 +32,7 @@ int sys_open(const char *name, unsigned int oattr)
 
 	int fd = allocate_fd();
 	if (fd == -1) {
-		return -E_OO_MAX;
+		return -EMFILE;
 	}
 
 	current->pcb->files[fd] = kmalloc_for(FILE);
@@ -55,7 +55,7 @@ int sys_dirfind(DIRENT *res, int fd, const char *name)
 
 	DIRENT *de = dirfind(current->pcb->files[fd], name);
 	if (!de)
-		return -E_NO_SRCH;
+		return -ENOENT;
 
 	memcpy(res, de, sizeof(DIRENT));
 

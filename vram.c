@@ -49,7 +49,7 @@ int vram_mmap(FILE *f, void *p, size_t size, unsigned int mattr)
 
 	unsigned char *src = video->buf + f->f_pos;
 	if ((unsigned long) src & PGATTR)
-		return -E_INVL_ARG;
+		return -EINVAL;
 
 	int i = 0;
 	while (i < size) {

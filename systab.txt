@@ -11,6 +11,7 @@ getch
 putch
 fsync
 stexecv1
+waitpid
 setbrk
 chdir
 dirfind

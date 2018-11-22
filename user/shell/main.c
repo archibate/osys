@@ -53,7 +53,7 @@ int run_cmd(char *cmdl)
 
 	int res = stexecv1(path, arg);
 
-	if (res == -E_NO_SRCH)
+	if (res == -ENOENT)
 		printf("sh: command not found: %s\n", name);
 	else if (res)
 		printf("sh: %s: %m\n", path, res);

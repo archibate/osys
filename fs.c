@@ -90,7 +90,7 @@ int open_in(FILE *file, DIR *indir, const char *name, unsigned int oattr)
 {
 	DIRENT *de = dir_locate_entry(indir, name);
 	if (!de)
-		return -E_NO_SRCH;
+		return -ENOENT;
 
 	return inode_open(file, de->e_inode, oattr);
 }
@@ -99,14 +99,17 @@ int open_in(FILE *file, DIR *indir, const char *name, unsigned int oattr)
 
 int inode_open(FILE *file, INODE *inode, unsigned int oattr)
 {
-	if (!!(oattr & OPEN_DIR) != !!(inode->i_attr & INODE_DIR)) {
-		return -E_WRN_TYP;
+	if ((oattr & OPEN_DIR) && !(inode->i_attr & INODE_DIR)) {
+		return -ENOTDIR;
+	}
+	if (!(oattr & OPEN_DIR) && (inode->i_attr & INODE_DIR)) {
+		return -EISDIR;
 	}
 	if ((oattr & OPEN_WR) && !(inode->i_attr & INODE_WR)) {
-		return -E_NO_WR;
+		return -EACCES;
 	}
 	if ((oattr & OPEN_RD) && !(inode->i_attr & INODE_RD)) {
-		return -E_NO_RD;
+		return -EACCES;
 	}
 
 	return inode->i_fops->open(file, inode, oattr);
@@ -165,7 +168,7 @@ char *getline(FILE *file)
 int mmap(FILE *f, void *p, size_t size, unsigned int mattr)
 {
 	if ((((unsigned long)p) & PGATTR) != 0)
-		return -E_INVL_ARG;
+		return -EINVAL;
 
 	return f->f_ops->mmap(f, p, size, mattr);
 }

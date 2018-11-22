@@ -10,7 +10,7 @@ EVENT eve_zack;
 
 void __attribute__((noreturn)) thread_exit(int val)
 {
-	trig_up(&current->eve_exited);
+	trig_up(&current->events[EVE_EXIT]);
 
 	wait_on(&eve_zack);
 	panic("thread exited with %d\n", val);

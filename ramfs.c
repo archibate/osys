@@ -63,7 +63,7 @@ int ramfs_read(FILE *f, char *buf, size_t size)
 	int i = 0;
 	while (1) {
 		if (f->fe_clus >= sb->se_clusmax)
-			return -E_BAD_BLK;
+			return -EBADF;
 
 		off_t off = f->fe_clus * sb->se_clusiz + f->fe_cloff;
 
@@ -93,14 +93,14 @@ int ramfs_mmap(FILE *f, void *p, size_t size, unsigned int mattr)
 
 	// 有些小纠结的事情呢..
 	if (f->fe_cloff != 0)
-		return -E_NO_IMPL;
+		return -EINVAL;
 	if (sb->se_clusiz != PGSIZE)
-		return -E_NO_IMPL;
+		return -EINVAL;
 
 	int i = 0;
 	while (1) {
 		if (f->fe_clus >= sb->se_clusmax)
-			return -E_BAD_BLK;
+			return -EBADF;
 
 		off_t off = f->fe_clus * sb->se_clusiz;
 		const char *src = sb->se_ramdat + off;
@@ -164,7 +164,7 @@ long ramfs_seek(FILE *f, long offset, int whence)
 		while (di.quot-- > 0) {
 			f->fe_clus = sb->se_fat[f->fe_clus];
 			if (f->fe_clus >= sb->se_clusmax)
-				return -E_BAD_BLK;
+				return -EBADF;
 			f->f_pos += sb->se_clusiz;
 		}
 		f->fe_cloff = di.rem;

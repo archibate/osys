@@ -3,7 +3,7 @@
 #include <umemlay.h>
 #include <errno.h>
 
-#define verify_addr(p) if ((p)<USER_STACK_BEG || (p)>USER_STACK_END) return -E_SEG_FL
+#define verify_addr(p) if ((p)<USER_STACK_BEG || (p)>USER_STACK_END) return -EFAULT
 
 int sys_setbrk(void *p)
 {
