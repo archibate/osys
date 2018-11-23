@@ -1,4 +1,5 @@
 #include <schpcb.h>
+#include <print.h>
 
 
 extern
@@ -12,9 +13,11 @@ void switch_from_to
 	, PCB *next
 	)
 {
-	switch_pgd(next->pgd);
+	printf("[%p:%p] %s -> [%p:%p] %s\n",
+			prev, prev->sp, prev->name ? prev->name : "(noname)",
+			next, next->sp, next->name ? next->name : "(noname)");
 
-	//printf("%p:%p -> %p:%p\n", prev, prev->sp, next, next->sp);
+	switch_pgd(next->pgd);
 	if (prev != next)
 		__switch_from_to(&prev->sp, &next->sp);
 }

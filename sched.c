@@ -1,4 +1,5 @@
 #include <sched.h>
+#include <print.h>
 #include <schpcb.h>
 #include <memory.h>
 #include <panic.h>
@@ -77,6 +78,7 @@ void init_sched
 	static TCB tcb0;
 	static PCB pcb0;
 
+	pcb0.name = "(init)";
 	pcb0.sp = (KS_REGS *) (kstk0 + sizeof(kstk0) - sizeof(KS_REGS));
 	bzero(pcb0.sp, sizeof(KS_REGS));
 

@@ -8,7 +8,7 @@
 #include <panic.h>
 #include <pexit.h>
 #include <psm.h>
-//#include <print.h>
+#include <print.h>
 
 #define STACK_SIZE 8192
 
@@ -20,13 +20,15 @@ void __attribute__((noreturn)) __process_exit(void)
 }
 
 
-PCB *create_process
-	( int (*proc)()
+PCB *create_process_ex
+	( const char *name
+	, int (*proc)()
 	, void *arg
 	)
 {
 	PCB *pcb = kmalloc(STACK_SIZE);
 	bzero(pcb, sizeof(PCB));
+	pcb->name = name;
 
 	unsigned long *sp = (unsigned long*)((char*)pcb + STACK_SIZE);
 	*--sp = (unsigned long) arg;
@@ -38,7 +40,6 @@ PCB *create_process
 	pcb->sp->pc = (unsigned long) proc;
 
 	//printf("create: %p:%p\n", pcb, pcb->sp);
-
 	unsigned long *pgd = (unsigned long *) alloc_ppage();
 	memset(pgd, 0, PGSIZE);
 	setup_pgd(pcb->pgd = pgd);

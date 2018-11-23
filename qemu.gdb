@@ -92,5 +92,13 @@ b exp14
 #bc exec_user_program_fc
 #bc __crt_start
 #c
-bc execap
-bc exec.c:60
+#bc execap
+#bc exec.c:60
+#bc schpcb.c:17
+#c
+#c
+#c
+#bc kmalloc
+#bt
+#bc mkproc.c:47
+bc __syscall_entry

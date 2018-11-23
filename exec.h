@@ -9,4 +9,4 @@ static inline int exec(const char *name)
 	return execap(name, "");
 }
 
-#define stexec(name) create_thread(create_process(exec, name))
+#define stexec(name) create_thread(create_process_ex(name, exec, name))

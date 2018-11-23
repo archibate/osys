@@ -13,6 +13,8 @@ STRUCT(PCB)
 
 	unsigned long brk;
 
+	const char *name;
+
 	union {
 		struct FILE *files[FILES_MAX];
 		struct DIR *dirs[FILES_MAX];

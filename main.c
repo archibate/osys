@@ -3,6 +3,7 @@
 #include <mkproc.h>
 #include <pexit.h>
 #include <sched.h>
+#include <memlay.h>
 
 
 extern
@@ -14,6 +15,13 @@ int __attribute__((noreturn)) idle_away_func
 {
 	for (;;)
 		do_schedule();
+}
+
+void create_idle_thread(void)
+{
+	PCB *idle_pcb = create_process_ex("(idle)", idle_func, 0);
+	//idle_pcb->sp = (void*)(IFRAME_TOP-2);
+	create_thread(idle_pcb);
 }
 
 #define INIT(x, ...) extern void init_##x(); init_##x(__VA_ARGS__);
@@ -38,9 +46,7 @@ int main
 	INIT(dma);
 	INIT(slob);
 	INIT(sched);
-	create_thread(create_process(idle_func, 0));
-	create_thread(create_process(idle_func, 0));
-	create_thread(create_process(idle_func, 0));
+	create_idle_thread();
 	INIT(ramfs);
 	INIT(devfs);
 	INIT(zero);
