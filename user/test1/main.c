@@ -5,12 +5,10 @@ int main(void)
 {
 	int pid = fork();
 	if (!pid) {
-		printf("child process!\n");
-		exit(execap("/bin/die.exf", ""));
+		printf("child process!\n");//: upcb[20] = %p!\n", upcb[20]);
+		exit(execap("/bin/true.exf", ""));
 	}
-	unsigned long *upcb = (unsigned long *) 0x80000000;
-	map_upcb(pid, upcb, MMAP_WR);
-	printf("upcb.brk = %p!\n", upcb[0]);
-	waiton(pid, EVE_EXIT);
+	int exit_res = waiton(pid, EVE_EXIT);
+	printf("child exited with %d\n", exit_res);
 	return 0;
 }

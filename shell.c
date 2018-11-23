@@ -259,6 +259,6 @@ void init_shell(void)
 	//stexec("/bin/true.exf");
 	//stexec("/bin/hello.exf");
 	stexec("/bin/xfont.exf");
-	//stexec("/bin/shell.exf");
-	stexec("/bin/test1.exf");
+	stexec("/bin/shell.exf");
+	//stexec("/bin/test1.exf");
 }

@@ -2,8 +2,10 @@
 
 #include <fs.h>
 
-INODE *make_txtinfo_dev
-	( const char *name
-	, const void *data
+void setup_txtinfo_dev
+	( INODE *inode
+	, const char *data
 	, size_t size
 	);
+extern
+FILE_OPS txtdev_fops;

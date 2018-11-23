@@ -19,7 +19,6 @@ const char *fgetrdbuf(FILE *f)
 		file_rd_flush(f);
 	f->f_buf[f->f_bsize] = 0;
 	const char *s = f->f_buf + f->f_bpos;
-	f->f_bpos = f->f_bsize;
 	return s;
 }
 
@@ -32,8 +31,13 @@ int fgets(char *s, size_t size, FILE *f)
 
 	do {
 		buf = fgetrdbuf(f);
-		if (!(i = strfind(buf, '\n') + 1))
+		if (!(i = strfind(buf, '\n') + 1)) {
 			i = strlen(buf);
+			if (!i)
+				return 0;
+		}
+
+		f->f_bpos += i;
 
 		if (i > n) i = n;
 		memcpy(s, buf, i);

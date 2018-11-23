@@ -10,5 +10,6 @@ EFIFO keybd_efifo;
 
 void init_kbd(void)
 {
-	make_efifo_dev("kbd0", &keybd_efifo, INODE_CHR | INODE_RD);
+	INODE *inode = dir_new_entry(dev_super->s_inode, "kbd0", INODE_CHR | INODE_RD);
+	setup_efifo_dev(inode, &keybd_efifo);
 }

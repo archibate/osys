@@ -7,6 +7,24 @@
 #include <print.h>
 
 
+DIRENT *__dir_new_entry
+	( INODE *dir_inode
+	, const char *name
+	, unsigned int iattr
+	)
+{
+	DIRENT *de = kmalloc_for(DIRENT);
+	if (name)
+		strcpy(de->e_name, name);
+
+	de->e_inode = alloc_inode(dir_inode->i_sb);
+	de->e_inode->i_attr = iattr;
+
+	list_add_head_n(&dir_inode->ie_dents, &de->e_list);
+
+	return de;
+}
+
 /*INODE *create_inode(SUPER *sb)
 {
 	INODE *inode = alloc_inode(sb);
@@ -36,8 +54,27 @@ void destroy_inode(INODE *inode)
 	return 0;
 }*/
 
+int simple_open(FILE *f, INODE *inode, unsigned int oattr)
+{
+	f->f_ops = inode->i_fops;
+	f->f_inode = inode;
+	f->f_oattr = oattr;
+
+	f->f_pos = 0;
+	f->f_size = inode->i_size;
+
+	return 0;
+}
+
 int simple_close(__attribute__((unused)) FILE *f)
 {
+	return 0;
+}
+
+int simple_opendir(DIR *dir, INODE *inode, unsigned int oattr)
+{
+	dir->d_ops = inode->i_dops;
+	dir->d_ents = inode->ie_dents;
 	return 0;
 }
 

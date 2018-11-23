@@ -31,7 +31,9 @@ map
 psm
 dma
 vinfo
+procfs
 txtdev
+numdev
 welcome
 zero
 ramfs
@@ -58,6 +60,7 @@ int3
 gen.expdfldoes
 gen.irqdfldoes
 lib/gprintf
+lib/sprintf
 lib/atoi
 lib/div
 lib/vacall

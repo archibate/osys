@@ -54,7 +54,8 @@ int fopen_s(FILE **pf, const char *name, const char *type)
 
 int fclose_i(FILE *f)
 {
-	file_wr_flush(f);
+	if (f->f_oattr & OPEN_WR)
+		file_wr_flush(f);
 	return close(f->f_fd);
 }
 

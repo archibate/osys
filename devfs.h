@@ -7,3 +7,5 @@ INODE *register_dev
 	, const char *name
 	, unsigned int iattr
 	);
+extern
+SUPER *dev_super, *proc_super;

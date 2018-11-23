@@ -101,10 +101,16 @@ FILE_OPS mkef_fops = {
 	.getch = mkef_getch,
 };
 
-INODE *make_efifo_dev(const char *name, EFIFO *efifo, unsigned int iattr)
+INODE *setup_efifo_dev(INODE *inode, EFIFO *efifo)
 {
-	INODE *inode = register_dev(&mkef_fops, name, iattr);
 	inode->i_fops = &mkef_fops;
 	inode->ie_efifo = efifo;
+	return inode;
+}
+
+INODE *make_efifo_dev(const char *name, EFIFO *efifo, unsigned int iattr)
+{
+	INODE *inode = dir_new_entry(dev_super->s_inode, name, iattr);
+	setup_efifo_dev(inode, efifo);
 	return inode;
 }

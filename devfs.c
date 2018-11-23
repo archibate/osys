@@ -45,24 +45,9 @@ SUPER_OPS devfs_super_ops = {
 
 
 static
-DIR_OPS devfs_devdir_dops;
-
-int devfs_devdir_closedir(DIR *dir)
-{
-	return 0;
-}
-
-int devfs_devdir_opendir(DIR *dir, INODE *inode, unsigned int oattr)
-{
-	dir->d_ops = &devfs_devdir_dops;
-	dir->d_ents = inode->ie_dents;
-	return 0;
-}
-
-static
 DIR_OPS devfs_devdir_dops = {
-	.opendir = devfs_devdir_opendir,
-	.closedir = devfs_devdir_closedir,
+	.opendir = simple_opendir,
+	.closedir = simple_closedir,
 	.dirfind = simple_dirfind,
 };
 
@@ -88,9 +73,7 @@ FSDRIVE devfs_drive = {
 };
 
 
-
-
-SUPER *dev_super;
+SUPER *dev_super, *proc_super;
 
 INODE *register_dev
 	( FILE_OPS *fops
@@ -98,16 +81,9 @@ INODE *register_dev
 	, unsigned int iattr
 	)
 {
-	DIRENT *de = kmalloc_for(DIRENT);
-	strcpy(de->e_name, name);
-
-	de->e_inode = alloc_inode(dev_super);
-	de->e_inode->i_attr = iattr;
-	de->e_inode->i_fops = fops;
-
-	list_add_head_n(&dev_super->s_inode->ie_dents, &de->e_list);
-
-	return de->e_inode;
+	INODE *inode = dir_new_entry(dev_super->s_inode, name, iattr);
+	inode->i_fops = fops;
+	return inode;
 }
 
 void init_devfs(void)
@@ -115,6 +91,7 @@ void init_devfs(void)
 	add_fsdrive(&devfs_drive);
 
 	dev_super = load_super("devfs", 0);
-
+	proc_super = load_super("devfs", 0);
 	vfs_mount("/dev", dev_super);
+	vfs_mount("/proc", proc_super);
 }

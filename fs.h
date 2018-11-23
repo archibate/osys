@@ -207,6 +207,8 @@ int open_in(FILE *file, DIR *indir, const char *name, unsigned int oattr);
 void closedir(DIR *file);
 DIRENT *dirfind(DIR *dir, const char *name);
 DIRENT *simple_dirfind(DIR *dir, const char *name);
+int simple_open(FILE *f, INODE *inode, unsigned int oattr);
+int simple_opendir(DIR *dir, INODE *inode, unsigned int oattr);
 int simple_close(__attribute__((unused)) FILE *f);
 int simple_closedir(__attribute__((unused)) DIR *d);
 int read(FILE *file, char *buf, size_t size);
@@ -219,6 +221,12 @@ size_t glinesize(FILE *file);
 char *getline(FILE *file);
 int fsync(FILE *file);
 void close(FILE *file);
+DIRENT *__dir_new_entry
+	( INODE *dir_inode
+	, const char *name
+	, unsigned int iattr
+	);
+#define dir_new_entry(dir_inode, name, iattr) (__dir_new_entry(dir_inode, name, iattr)->e_inode)
 
 static inline
 int inode_opendir(DIR *dir, INODE *inode, unsigned int oattr)

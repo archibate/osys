@@ -3,7 +3,7 @@
 #include <stdarg.h>
 #include <crt.h>
 
-extern int main(void);
+extern int main(const char *arg, size_t arglen);
 extern void init_heap(void); // malloc.c
 
 FILE *stdin, *stdout, *stderr;
@@ -39,7 +39,7 @@ void __attribute__((weak, noreturn)) __crt_start(size_t _arglen, ...)
 	stderr = fopen("/dev/mon0", "w");
 #endif
 
-	int res = main();
+	int res = main(arg, arglen);
 
 #ifndef NO_IN
 	fclose(stdin);

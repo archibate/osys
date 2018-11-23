@@ -94,6 +94,18 @@ void _$LMETH(link3)
 
 
 static inline
+void _$LMETH(link3_s2)
+	( LIST *prev
+	, LIST *node
+	, LIST *next
+	)
+{
+	_$LMETH(link)(prev, node);
+	_$LMETH(link_s2)(node, next);
+}
+
+
+static inline
 void _$LMETH(remove)
 	( LIST *node
 	)
@@ -182,6 +194,40 @@ void _$LMETH(insert_after)
 	)
 {
 	_$LMETH(link3)(node, new_node, node->next);
+}
+
+
+static inline
+void _$LMETH(insert_after_s2)
+	( LIST *new_node
+	, LIST *node
+	)
+{
+	_$LMETH(link3_s2)(node, new_node, node->next);
+}
+
+
+static inline
+void _$LMETH(insert_after_ph)
+	( LIST *new_node
+	, LIST **pnode
+	)
+{
+	if (*pnode)
+		*pnode = new_node;
+	else
+		_$LMETH(insert_after_s2)(*pnode, new_node);
+}
+
+
+static inline
+void _$LMETH(insert_at_ph)
+	( LIST *node
+	, LIST **pnode
+	)
+{
+	_$LMETH(link_s2)(node, *pnode);
+	*pnode = node;
 }
 
 
