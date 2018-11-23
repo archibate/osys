@@ -1,11 +1,8 @@
 #pragma once
 
 
-#include <tcb.h>
-
-
 extern
-TCB *current;
+struct TCB *current;
 
 extern
 void do_schedule
@@ -13,10 +10,12 @@ void do_schedule
 
 extern
 void add_task
-	( TCB *tcb
+	( struct TCB *tcb
 	);
 
 extern
 void task_run
-	( TCB *next
+	( struct TCB *next
 	);
+
+#include <tcb.h>

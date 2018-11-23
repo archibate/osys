@@ -4,13 +4,12 @@
 #include <print.h>
 
 
-void wait_on(EVENT *event)
+void wait_on_ex(EVENT *event, TCB *next)
 {
 	if (event->trig_count) {
 		event->trig_count--;
 		return;
 	}
-	TCB *next = current->next;
 	assert(next != current);
 	tcb_remove(current);
 	tcb_insert_after_ch(current, &event->waiting_head);

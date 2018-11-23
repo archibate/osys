@@ -26,7 +26,8 @@ int sys_waiton(int pid, unsigned int eveid)
 	if (!proc)
 		return -ESRCH;
 
-	wait_on(&proc->events[eveid]);
+	// TODO: assert(proc->state != PROC_WAITING)
+	wait_on_ex(&proc->events[eveid], proc);
 	return proc->exit_res;
 }
 
