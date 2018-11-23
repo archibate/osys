@@ -1,3 +1,4 @@
+becoming an microkernel??
 syspt: fork() -> exec() -> wait()
 reconsider pgd_* and mmu_reflush structure (tlb)!
 fs: opendir(), readdir(), seekdir(), /bin/ls.exf

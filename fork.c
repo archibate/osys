@@ -1,5 +1,6 @@
 #include <tss.h>
 #include <pid.h>
+#include <memlay.h>
 #include <print.h>
 #include <sched.h>
 #include <umove.h>
@@ -115,7 +116,7 @@ int __attribute__((noreturn)) forked_entry_fc(IF_REGS *uregs)
 
 int sys_fork(void)
 {
-	IF_REGS *if_regs = (IF_REGS*)tss0.ts_esp0 - 1;
+	IF_REGS *if_regs = (IF_REGS*)IFRAME_TOP - 1;
 	IF_REGS *uregs = kmalloc_for(IF_REGS);
 	memcpy(uregs, if_regs, sizeof(IF_REGS));
 	PCB *pcb = create_process(forked_entry_fc, uregs);

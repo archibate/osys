@@ -4,7 +4,7 @@
 	GLOBAL int_return
 	GLOBAL move_to_user
 	GLOBAL kfree
-	EXTERN tss0
+	;;EXTERN tss0
 	EXTERN irq_table
 
 [SECTION .rodata]
@@ -37,12 +37,12 @@ irq_common:
 	;add esp, 8
 
 int_return:
-	mov dword [tss0 + 4], esp
-	add dword [tss0 + 4], 68
-	;add dword [tss0 + 4], 60
-	;test dword [esp + 52], 3
-	;jz .cont
-	;add dword [tss0 + 4], 8
+	;;mov dword [tss0 + 4], esp
+	;;add dword [tss0 + 4], 68
+	;;;add dword [tss0 + 4], 60
+	;;;test dword [esp + 52], 3
+	;;;jz .cont
+	;;;add dword [tss0 + 4], 8
 ;.cont:
 	popad
 	pop dword es

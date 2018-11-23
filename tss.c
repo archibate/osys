@@ -2,6 +2,7 @@
 #include <stddef.h> // offsetof
 #include <segdesc.h>
 #include <struct.h>
+#include <memlay.h>
 
 void set_tss_seg(TSS *tss, unsigned int limit)
 {
@@ -27,10 +28,9 @@ void set_tss_data(TSS *tss, unsigned long esp, unsigned int iomap_off)
 	tss->ts_iomaps[0] = 0xff; // for now
 }
 
-TSS tss0;
-
 void init_tss(void)
 {
-	set_tss_seg(&tss0, sizeof(tss0));
-	set_tss_data(&tss0, 0, 0);
+	TSS *tss = (TSS *) TSS0_ADDR;
+	set_tss_seg(tss, sizeof(tss));
+	set_tss_data(tss, IFRAME_TOP, 0);
 }

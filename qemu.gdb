@@ -88,7 +88,7 @@ b exp14
 #bc user_space_copy_to
 #b init_heap
 #bc run_cmd
-bc sys_execap
-bc exec_user_program_fc
+#bc sys_execap
+#bc exec_user_program_fc
 #bc __crt_start
 #c
