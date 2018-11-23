@@ -97,6 +97,8 @@ void user_space_copy_to(unsigned long *to_pgd)
 	l2_copy_pages(to_pgd, USER_CODE_BEG,   USER_CODE_END);
 	l1_copy_pages(to_pgd, USER_MMAP_BEG,   USER_MMAP_END);
 	l2_copy_pages(to_pgd, USER_STACK_BEG, USER_STACK_END);
+	UPCB *upcb = UPCB_OF_PGD(pcb->pgd);
+	memcpy(upcb, curr_upcb, sizeof(UPCB));
 }
 
 
@@ -121,8 +123,6 @@ int sys_fork(void)
 	memcpy(uregs, if_regs, sizeof(IF_REGS));
 	PCB *pcb = create_process_ex(current->pcb->name, forked_entry_fc, uregs);
 	user_space_copy_to(pcb->pgd);
-	pcb->brk = current->pcb->brk;
-	memcpy(pcb->files, current->pcb->files, sizeof(pcb->files));
 	int pid = new_proc(create_thread(pcb));
 	return pid;
 }

@@ -12,6 +12,7 @@
 #include <umove.h>
 #include <pid.h>
 #include <mmu.h>
+#include <upcb.h>
 
 
 typedef struct exec_fc_args {
@@ -39,7 +40,7 @@ int execap(const char *name, const char *arg)
 	if (res)
 		goto out;
 
-	current->pcb->brk = USER_STACK_BEG;
+	curr_upcb.brk = USER_STACK_BEG;
 
 	unsigned long *sp = (unsigned long*)
 		(USER_STACK_END - arglen);

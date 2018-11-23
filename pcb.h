@@ -3,7 +3,6 @@
 
 #include <regs.h>
 #include <struct.h>
-#include <pcbdefs.h>
 
 STRUCT(PCB)
 {
@@ -11,12 +10,7 @@ STRUCT(PCB)
 
 	unsigned long *pgd;
 
-	unsigned long brk;
-
 	const char *name;
-
-	union {
-		struct FILE *files[FILES_MAX];
-		struct DIR *dirs[FILES_MAX];
-	};
 };
+
+#include <upcb.h>

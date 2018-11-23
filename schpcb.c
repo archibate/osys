@@ -4,8 +4,8 @@
 
 extern
 void __attribute__((fastcall)) __switch_from_to
-	( KS_REGS **prev
-	, KS_REGS **next
+	( PCB *prev
+	, PCB *next
 	);
 
 void switch_from_to
@@ -19,6 +19,5 @@ void switch_from_to
 			next, next->sp, next->name ? next->name : "(noname)");
 
 	setup_pgd(next->pgd);
-	//if (prev != next)
-	__switch_from_to(&prev->sp, &next->sp);
+	__switch_from_to(prev, next);
 }

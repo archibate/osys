@@ -11,7 +11,7 @@
 #include <umemlay.h>
 #include <kern/sysapi.h>
 
-#define verify_fd(fd) if ((fd) < 0 || (fd) > FILES_MAX || !current->pcb->files[(fd)]) return -EBADFD
+#define verify_fd(fd) if ((fd) < 0 || (fd) > FILES_MAX || !curr_upcb.files[(fd)]) return -EBADFD
 #define verify_ptr(p) if ((unsigned long) p < DMA_END) return -EFAULT
 #define verify_mappable_ptr(p) if ((unsigned long) (p) < USER_BEG || (unsigned long) (p) > USER_STACK_BEG) return -EFAULT
 
@@ -19,7 +19,7 @@ static
 int allocate_fd(void)
 {
 	for (int fd = 0; fd < FILES_MAX; fd++) {
-		if (!current->pcb->files[fd]) {
+		if (!curr_upcb.files[fd]) {
 			return fd;
 		}
 	}
@@ -35,12 +35,12 @@ int sys_open(const char *name, unsigned int oattr)
 		return -EMFILE;
 	}
 
-	current->pcb->files[fd] = kmalloc_for(FILE);
+	curr_upcb.files[fd] = kmalloc_for(FILE);
 
-	int res = open(current->pcb->files[fd], name, oattr);
+	int res = open(curr_upcb.files[fd], name, oattr);
 
 	if (res < 0) {
-		kfree(current->pcb->files[fd]);
+		kfree(curr_upcb.files[fd]);
 		fd = res;
 	}
 
@@ -53,7 +53,7 @@ int sys_dirfind(DIRENT *res, int fd, const char *name)
 	verify_ptr(res);
 	verify_ptr(name);
 
-	DIRENT *de = dirfind(current->pcb->files[fd], name);
+	DIRENT *de = dirfind(curr_upcb.files[fd], name);
 	if (!de)
 		return -ENOENT;
 
@@ -66,10 +66,10 @@ int sys_close(int fd)
 {
 	verify_fd(fd);
 
-	close(current->pcb->files[fd]);
-	kfree(current->pcb->files[fd]);
+	close(curr_upcb.files[fd]);
+	kfree(curr_upcb.files[fd]);
 
-	current->pcb->files[fd] = 0;
+	curr_upcb.files[fd] = 0;
 
 	return 0;
 }
@@ -78,7 +78,7 @@ long sys_tellsize(int fd)
 {
 	verify_fd(fd);
 
-	return current->pcb->files[fd]->f_size;
+	return curr_upcb.files[fd]->f_size;
 }
 
 int sys_mmap(int fd, void *p, size_t size, unsigned int mattr)
@@ -88,7 +88,7 @@ int sys_mmap(int fd, void *p, size_t size, unsigned int mattr)
 
 	mattr |= MMAP_USR;
 
-	return mmap(current->pcb->files[fd], p, size, mattr);
+	return mmap(curr_upcb.files[fd], p, size, mattr);
 }
 
 int sys_read(int fd, void *buf, size_t size)
@@ -96,7 +96,7 @@ int sys_read(int fd, void *buf, size_t size)
 	verify_fd(fd);
 	verify_ptr(buf);
 
-	return read(current->pcb->files[fd], buf, size);
+	return read(curr_upcb.files[fd], buf, size);
 }
 
 int sys_write(int fd, const void *buf, size_t size)
@@ -104,35 +104,35 @@ int sys_write(int fd, const void *buf, size_t size)
 	verify_fd(fd);
 	verify_ptr(buf);
 
-	return write(current->pcb->files[fd], buf, size);
+	return write(curr_upcb.files[fd], buf, size);
 }
 
 long sys_seek(int fd, long offset, int whence)
 {
 	verify_fd(fd);
 
-	return seek(current->pcb->files[fd], offset, whence);
+	return seek(curr_upcb.files[fd], offset, whence);
 }
 
 int sys_putch(int fd, unsigned char ch)
 {
 	verify_fd(fd);
 
-	return putch(current->pcb->files[fd], ch);
+	return putch(curr_upcb.files[fd], ch);
 }
 
 unsigned int sys_getch(int fd)
 {
 	verify_fd(fd);
 
-	return getch(current->pcb->files[fd]);
+	return getch(curr_upcb.files[fd]);
 }
 
 int sys_fsync(int fd)
 {
 	verify_fd(fd);
 
-	return fsync(current->pcb->files[fd]);
+	return fsync(curr_upcb.files[fd]);
 }
 
 int sys_chdir(const char *path)

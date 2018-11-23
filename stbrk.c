@@ -9,7 +9,7 @@
 int setbrk(void *p)
 {
 	unsigned long adr = (unsigned long) p;
-	unsigned long cur = current->pcb->brk;
+	unsigned long cur = curr_upcb.brk;
 
 	//printf("setbrk: %p -> %p\n", cur, adr);
 
@@ -25,7 +25,7 @@ int setbrk(void *p)
 		    free_ppage(PGMASK & unmap(cur));
 	}
 
-	current->pcb->brk = cur;
+	curr_upcb.brk = cur;
 
 	return 0;
 }

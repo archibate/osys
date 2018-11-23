@@ -10,6 +10,7 @@
 #include <panic.h>
 #include <pexit.h>
 #include <psm.h>
+#include <upcb.h>
 #include <print.h>
 
 #define STACK_SIZE 8192
@@ -45,10 +46,13 @@ PCB *create_process_ex
 	memset(pgd, 0, PGSIZE);
 	setup_pgd(pcb->pgd = pgd);
 
-	for (int va = IFRAME_BOTT; va < IFRAME_TOP; va += PGSIZE)
-		pgd_map(pgd, va, alloc_ppage() | PG_PSM | PG_P | PG_W);
+	for (int va = IFRAME_BOTT; va < IFRAME_TOP; va += PGSIZE) {
+		unsigned long pgaddr = alloc_ppage();
+		memset((void*)pgaddr, 0, PGSIZE);
+		pgd_map(pgd, va, pgaddr | PG_PSM | PG_P | PG_W);
+	}
 
-	pcb->brk = USER_STACK_BEG;
+	UPCB_OF(pcb)->brk = USER_STACK_BEG;
 
 	return pcb;
 }
