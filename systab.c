@@ -18,6 +18,7 @@ extern int sys_fork();
 extern int sys_execap();
 extern int sys_waiton();
 extern int sys_setbrk();
+extern int sys_map_upcb();
 
 int (*syscall_table[SYSCALL_MAX])() = {
 	[_SYS_undefined] = &sys_undefined,
@@ -38,4 +39,5 @@ int (*syscall_table[SYSCALL_MAX])() = {
 	[_SYS_execap] = &sys_execap,
 	[_SYS_waiton] = &sys_waiton,
 	[_SYS_setbrk] = &sys_setbrk,
+	[_SYS_map_upcb] = &sys_map_upcb,
 };

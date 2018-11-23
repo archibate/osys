@@ -1,6 +1,6 @@
 #pragma once
 
-#define SYSCALL_MAX (17+1)
+#define SYSCALL_MAX (18+1)
 #define _SYS_undefined 0
 #define _SYS_exit 1
 #define _SYS_open 2
@@ -19,3 +19,4 @@
 #define _SYS_execap 15
 #define _SYS_waiton 16
 #define _SYS_setbrk 17
+#define _SYS_map_upcb 18

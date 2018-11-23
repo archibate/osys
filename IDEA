@@ -1,1 +1,5 @@
 make the IF_REGS change with pgd, while keep tss0.ts_esp0 unchanged?
+hope that UPCB of user can be visible for server.
+
+when one wanna open a file, like open("/dev/welcome"), first get coresponding inode to /dev/welcome, then use the attribute of inode, i.e. inode->open(...)
+process is file: /proc/1/23/mem, like a tree, child-process like dir-entries

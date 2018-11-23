@@ -15,6 +15,7 @@ sysfs
 sysentry
 systab
 syspt
+sysipc
 pid
 fork
 pexit

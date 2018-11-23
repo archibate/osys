@@ -12,7 +12,7 @@ int sys_undefined(void)
 	return -ENOSYS;
 }
 
-#define verify_ptr(p) if ((unsigned long) (p) < DMA_END) return -EFAULT
+#define verify_ptr(p) if ((unsigned long) (p) < USER_BEG) return -EFAULT
 #define verify_pid(pid) if ((pid) < 0 || (pid) > PID_MAX) return -EINVAL
 #define verify_eveid(pid) if ((eveid) >= EVE_MAX) return -EINVAL
 
@@ -32,6 +32,9 @@ int sys_waiton(int pid, unsigned int eveid)
 
 int sys_execap(const char *name, const char *arg)
 {
+	verify_ptr(name);
+	verify_ptr(arg);
+
 	return execap(name, arg);
 }
 

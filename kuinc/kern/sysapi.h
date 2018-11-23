@@ -26,3 +26,4 @@ __SYS_STATIC syscall2(int,execap,(const char *name, const char *arg), name, arg)
 __SYS_STATIC syscall2(int,waiton,(int pid, unsigned int eveid), pid, eveid);
 __SYS_STATIC syscall1(int,chdir,(const char *path), path);
 __SYS_STATIC syscall0(int,fork,(void));
+__SYS_STATIC syscall3(int,map_upcb,(int pid, void *p, unsigned int mattr), pid, p, mattr);

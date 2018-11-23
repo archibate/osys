@@ -12,7 +12,7 @@
 #include <kern/sysapi.h>
 
 #define verify_fd(fd) if ((fd) < 0 || (fd) > FILES_MAX || !curr_upcb.files[(fd)]) return -EBADFD
-#define verify_ptr(p) if ((unsigned long) p < DMA_END) return -EFAULT
+#define verify_ptr(p) if ((unsigned long) p < USER_BEG) return -EFAULT
 #define verify_mappable_ptr(p) if ((unsigned long) (p) < USER_BEG || (unsigned long) (p) > USER_STACK_BEG) return -EFAULT
 
 static

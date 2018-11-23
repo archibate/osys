@@ -1,4 +1,4 @@
-SYSCALL_MAX equ (17+1)
+SYSCALL_MAX equ (18+1)
 _SYS_undefined equ 0
 _SYS_exit equ 1
 _SYS_open equ 2
@@ -17,3 +17,4 @@ _SYS_fork equ 14
 _SYS_execap equ 15
 _SYS_waiton equ 16
 _SYS_setbrk equ 17
+_SYS_map_upcb equ 18

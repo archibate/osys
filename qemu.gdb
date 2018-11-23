@@ -103,4 +103,5 @@ b exp14
 #bt
 #bc mkproc.c:47
 #bc __syscall_entry
-bc _start
+#bc _start
+bc sys_map_upcb
