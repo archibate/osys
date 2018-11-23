@@ -52,7 +52,7 @@ PCB *create_process_ex
 		pgd_map(pgd, va, pgaddr | PG_PSM | PG_P | PG_W);
 	}
 
-	UPCB_OF(pcb)->brk = USER_STACK_BEG;
+	UPCB_OF(pcb->pgd)->brk = USER_STACK_BEG;
 
 	return pcb;
 }

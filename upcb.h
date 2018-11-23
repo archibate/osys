@@ -15,4 +15,4 @@ STRUCT(UPCB)
 
 #include <memlay.h>
 #define curr_upcb (*(UPCB *) IFRAME_BOTT)
-#define UPCB_OF_PGD(pgd) ((UPCB *) (pgd_getmap((pgd), IFRAME_BOTT) & PGMASK))
+#define UPCB_OF(pgd) ((UPCB *) (pgd_getmap((pgd), IFRAME_BOTT) & PGMASK))
