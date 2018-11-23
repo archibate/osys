@@ -13,11 +13,12 @@ void switch_from_to
 	, PCB *next
 	)
 {
+	if (0)
 	printf("[%p:%p] %s -> [%p:%p] %s\n",
 			prev, prev->sp, prev->name ? prev->name : "(noname)",
 			next, next->sp, next->name ? next->name : "(noname)");
 
-	switch_pgd(next->pgd);
-	if (prev != next)
-		__switch_from_to(&prev->sp, &next->sp);
+	setup_pgd(next->pgd);
+	//if (prev != next)
+	__switch_from_to(&prev->sp, &next->sp);
 }

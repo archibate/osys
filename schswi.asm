@@ -12,8 +12,12 @@ __switch_from_to:
 	push esi
 	push ebx
 	cli
+	mov eax, cr3
 	mov [ecx], esp
+	mov [ecx + 4], eax
+	mov eax, [edx + 4]
 	mov esp, [edx]
+	mov cr3, eax
 	pop ebx
 	pop esi
 	pop edi

@@ -8,8 +8,8 @@ int setup_pgd(unsigned long *pgd)
 {
 	unsigned long *old_pgd = (unsigned long *) mmu_get_pd();
 
-	if (pgd == old_pgd)
-		return 0;
+	/*if (pgd == old_pgd)
+		return 0;*/
 
 	memcpy(pgd, old_pgd, USER_BEG >> (PGSHIFT + PTSHIFT));
 	return 1;

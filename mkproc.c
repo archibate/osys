@@ -3,6 +3,8 @@
 #include <page.h>
 #include <memory.h>
 #include <umemlay.h>
+#include <memlay.h>
+#include <map.h>
 #include <kmalloc.h>
 #include <schpcb.h>
 #include <panic.h>
@@ -39,10 +41,12 @@ PCB *create_process_ex
 	pcb->sp->eflags = 0x002;
 	pcb->sp->pc = (unsigned long) proc;
 
-	//printf("create: %p:%p\n", pcb, pcb->sp);
 	unsigned long *pgd = (unsigned long *) alloc_ppage();
 	memset(pgd, 0, PGSIZE);
 	setup_pgd(pcb->pgd = pgd);
+
+	for (int va = IFRAME_BOTT; va < IFRAME_TOP; va += PGSIZE)
+		pgd_map(pgd, va, alloc_ppage() | PG_PSM | PG_P | PG_W);
 
 	pcb->brk = USER_STACK_BEG;
 
