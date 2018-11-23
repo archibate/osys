@@ -15,9 +15,11 @@ set architecture i386
 add-symbol-file bin/kernel.elf 0x100000
 #add-symbol-file user/xfont/bin/xfont.elf 0x10000000
 #add-symbol-file user/echo/bin/echo.elf 0x10000000
-#add-symbol-file user/shell/bin/shell.elf 0x10000000
+add-symbol-file user/shell/bin/shell.elf 0x10000000
 #add-symbol-file user/gview/bin/gview.elf 0x10000000
-add-symbol-file user/hello/bin/hello.elf 0x10000000
+#add-symbol-file user/hello/bin/hello.elf 0x10000000
+#add-symbol-file user/true/bin/true.elf 0x10000000
+#add-symbol-file user/exectest/bin/exectest.elf 0x10000000
 
 # For both ;)
 set disassemble-next-line on
@@ -33,7 +35,13 @@ define bc
 	continue
 end
 
+define xs
+	x/6wx $esp
+end
+
 b panic
+b exp14
+#b do_break_point
 #bc panic
 #bc main
 #bc set_break
@@ -52,4 +60,35 @@ b panic
 #bc sys_stexecv1
 #b exec_fc
 #bc main.c:72
-bc __crt_start
+#bc sys_execap
+#bc _start
+#b l2_copy_pages
+#b l1_copy_pages
+#bc sys_fork
+#b fork.c:41
+#bc forked_entry_fc
+#bc sys_execap
+#bc _start
+#bc sys_exit
+#bc pexit.c:17
+#bc fork.c:106
+#bc int_return
+#bc sys_fork
+#bc sys_fork
+#bc __crt_start
+#c
+#bc forked_entry_fc
+#bc int_return
+#bc __crt_start
+#bc crt.c:45
+#bc free
+#bc __crt_start
+#bc __crt_start
+#c
+#bc user_space_copy_to
+#b init_heap
+#bc run_cmd
+bc sys_execap
+bc exec_user_program_fc
+#bc __crt_start
+#c

@@ -1,12 +1,12 @@
 ; vim: ft=nasm ai
 
-CYLS	equ	15
+CYLS	equ	30
 KERNADR	equ	0x100000
 VINFO	equ	0x7b00
 VGAMODE equ	0x13
 ;VBEMODE equ	0x118
-;VBEMODE equ	0x103
-VBEMODE equ	0x13
+VBEMODE equ	0x103
+;VBEMODE equ	0x13
 
 	org 0x7c00
 

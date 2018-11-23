@@ -39,6 +39,8 @@ int main
 	INIT(slob);
 	INIT(sched);
 	create_thread(create_process(idle_func, 0));
+	create_thread(create_process(idle_func, 0));
+	create_thread(create_process(idle_func, 0));
 	INIT(ramfs);
 	INIT(devfs);
 	INIT(zero);

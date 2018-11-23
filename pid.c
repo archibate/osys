@@ -6,7 +6,7 @@ TCB *proc_table[PID_MAX];
 static
 int alloc_pid(void)
 {
-	for (int i = 0; i < PID_MAX; i++) {
+	for (int i = 1; i < PID_MAX; i++) {
 		if (!proc_table[i])
 			return i;
 	}

@@ -46,26 +46,28 @@ unsigned long pgd_map
 }
 
 
-void pgd_unmap_free_psm_non_global_pages
+void pgd_unmap_free_psm_pages // TODO: rewrite me!!
 	( unsigned long *pgd
+	, unsigned long beg_addr
+	, unsigned long end_addr
 	, int invalidate
 	) // TODO: 干脆考虑把所有在USER_BEG以后,且物理地址在PSM管辖范围内的页都free了?
 {
 	unsigned long pde, pte, *pt;
 	int i, j;
 
-	for (i = 0; i < PTSIZE; i++)
+	beg_addr >>= PTSHIFT + PGSHIFT;
+	end_addr >>= PGSHIFT;
+	end_addr += PTSIZE - 1;
+	end_addr >>= PTSHIFT;
+
+	for (i = beg_addr; i < end_addr; i++)
 	{
 		pde = pgd[i];
 
 		if ((pde & (PG_P | PG_G)) != PG_P)
 			continue;
 
-		if (pde & PG_PDM)
-		{
-			//free_ppage(pde & PGMASK);
-			//pgd[i] = 0;
-		}
 		if (/*1 || (*/pde & PG_PSM/*)*/)
 		{
 			pt = (unsigned long *) (pde & PGMASK);
@@ -83,6 +85,11 @@ void pgd_unmap_free_psm_non_global_pages
 						mmu_invalidate(pte & PGMASK);
 				}
 			}
+		}
+		if ((pde & (PG_PDM | PG_G)) == PG_PDM)
+		{
+			//free_ppage(pde & PGMASK);
+			//pgd[i] = 0;
 		}
 	}
 }

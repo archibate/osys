@@ -1,6 +1,7 @@
 #include <panic.h>
 #include <print.h>
 #include <stdarg.h>
+#include <memory.h>
 
 static
 void __attribute__((noreturn)) cpu_halt(void)
@@ -18,6 +19,8 @@ void __attribute__((noreturn)) halt(void)
 	unsigned long cr2;
 	asm volatile ("movl %%cr2, %%eax\n" : "=a" (cr2));
 	printf("cr2=%p\n", cr2);
+
+	memset((char *) 0xa0000, 0x0c, 320 * 1);
 
 	cpu_halt();
 }

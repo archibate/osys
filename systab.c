@@ -12,11 +12,12 @@ extern int sys_tellsize();
 extern int sys_getch();
 extern int sys_putch();
 extern int sys_fsync();
-extern int sys_stexecv1();
+extern int sys_dirfind();
+extern int sys_chdir();
+extern int sys_fork();
+extern int sys_execap();
 extern int sys_waiton();
 extern int sys_setbrk();
-extern int sys_chdir();
-extern int sys_dirfind();
 
 int (*syscall_table[SYSCALL_MAX])() = {
 	[_SYS_undefined] = &sys_undefined,
@@ -31,9 +32,10 @@ int (*syscall_table[SYSCALL_MAX])() = {
 	[_SYS_getch] = &sys_getch,
 	[_SYS_putch] = &sys_putch,
 	[_SYS_fsync] = &sys_fsync,
-	[_SYS_stexecv1] = &sys_stexecv1,
+	[_SYS_dirfind] = &sys_dirfind,
+	[_SYS_chdir] = &sys_chdir,
+	[_SYS_fork] = &sys_fork,
+	[_SYS_execap] = &sys_execap,
 	[_SYS_waiton] = &sys_waiton,
 	[_SYS_setbrk] = &sys_setbrk,
-	[_SYS_chdir] = &sys_chdir,
-	[_SYS_dirfind] = &sys_dirfind,
 };

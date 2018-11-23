@@ -1,5 +1,6 @@
 #include <vfs.h>
 #include <uload.h>
+#include <sched.h>
 #include <umemlay.h>
 #include <print.h>
 #include <mkproc.h>
@@ -10,6 +11,7 @@
 #include <stddef.h>
 #include <umove.h>
 #include <pid.h>
+#include <mmu.h>
 
 
 typedef struct exec_fc_args {
@@ -19,22 +21,34 @@ typedef struct exec_fc_args {
 } exec_fc_args_t;
 
 
-static
-int exec_fc(exec_fc_args_t *earg)
+int execap(const char *name, const char *arg)
 {
+	FILE *f = kmalloc_for(FILE);
+	int res = open(f, name, OPEN_RD);
+	if (res) {
+		kfree(f);
+		goto out;
+	}
+
+	size_t arglen = strlen(arg) + 1;
+	char *arg2 = kmalloc(arglen);
+	memcpy(arg2, arg, arglen);
+
 	// close & kfree for f done in load_user_program_fc()
-	int res = load_user_program_fc(earg->f);
+	res = exec_user_program_fc(f);
 	if (res)
-		return res;
+		goto out;
+
+	current->pcb->brk = USER_STACK_BEG;
 
 	unsigned long *sp = (unsigned long*)
-		(USER_STACK_END - earg->arglen - 1);
-	memcpy(sp, earg->arg, earg->arglen);
-	*--sp = earg->arglen;
-	kfree(earg);
+		(USER_STACK_END - arglen);
+	memcpy(sp, arg2, arglen);
+	kfree(arg2);
+	*--sp = arglen - 1;
 
 	IF_REGS uregs = {
-		.pc = USER_TEXT_BEG,
+		.pc = USER_CODE_BEG,
 		.sp = (unsigned long) sp,
 		.eflags = 0x202,
 		.cs = 0x001b,
@@ -43,26 +57,7 @@ int exec_fc(exec_fc_args_t *earg)
 		.es = 0x0023,
 	};
 	move_to_user(&uregs);
-}
 
-
-int stexecv1(const char *name, const char *arg)
-{
-	FILE *f = kmalloc_for(FILE);
-	int res = open(f, name, OPEN_RD);
-	if (res) {
-		kfree(f);
-		return res;
-	}
-
-	size_t arglen = strlen(arg);
-	exec_fc_args_t *earg = kmalloc(offsetof(exec_fc_args_t, arg) + arglen);
-	memcpy(earg->arg, arg, arglen);
-	earg->arglen = arglen;
-	earg->f = f;
-
-	// close & kfree in exec_fc()
-	res = new_proc(create_thread(create_process((void*)exec_fc, earg)));
-
+out:
 	return res;
 }

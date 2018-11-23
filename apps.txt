@@ -1,4 +1,7 @@
+true
 echo
 hello
 shell
 xfont
+gview
+splash

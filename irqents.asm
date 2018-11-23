@@ -1,8 +1,9 @@
 ; vim: ft=nasm ai
 
 	GLOBAL irq_ents
-	GLOBAL move_to_user
 	GLOBAL int_return
+	GLOBAL move_to_user
+	GLOBAL kfree
 	EXTERN tss0
 	EXTERN irq_table
 
@@ -59,4 +60,7 @@ move_to_user:
 	mov esi, [ebp + 8]
 	cld
 	rep movsb
+	;push [ebp + 12]
+	;call kfree
+	;add esp, 4
 	jmp int_return

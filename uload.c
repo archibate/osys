@@ -13,10 +13,11 @@
 #include <exf.h>
 
 #define uload_map_psm_page(addr) map((addr), alloc_ppage() | PG_PSM | PG_P | PG_W | PG_U)
+#define uload_unmap_psm_page(addr) free_ppage(unmap(addr))
 
-int load_user_program_fc(FILE *f)
+int exec_user_program_fc(FILE *f)
 {
-	void *addr = (void *) USER_TEXT_BEG;
+	void *addr = (void *) USER_CODE_BEG;
 
 	assert((ssize_t) f->f_size > 0);
 
@@ -26,8 +27,13 @@ int load_user_program_fc(FILE *f)
 	assert(exfhdr.x_magic == EXF_MAGIC);
 	assert(res == sizeof(exfhdr));
 
+	user_space_destroy(); // destroy current proc
+
 	for (size_t off = 0; off < exfhdr.x_size; off += PGSIZE)
 		uload_map_psm_page((unsigned long)addr + off);
+
+	mmu_set_pd(mmu_get_pd());
+
 	res = seek(f, exfhdr.x_off, SEEK_SET);
 	assert(!res);
 	res = read(f, addr, exfhdr.x_size);
@@ -41,23 +47,17 @@ int load_user_program_fc(FILE *f)
 	for (int i = 0; i < exfhdr.x_stkpgs + 1; i++) // todo: move this to page_fault
 		uload_map_psm_page(stkbtm -= PGSIZE);
 
+	mmu_set_pd(mmu_get_pd());
+
+	printf("shcmd[0]:%p\n", *(int*)0x10005a80);
+
 	return res;
 }
 
-int load_user_program(const char *name)
-{
-	FILE *f = kmalloc_for(FILE);
-	int res = open(f, name, OPEN_RD);
-	if (res)
-		goto out_free;
 
-	res = load_user_program_fc(f);
-out_free:
-	kfree(f);
-	return res;
-}
-
-void user_proc_destroy(void)
+void user_space_destroy(void)
 {
-	unmap_free_psm_non_global_pages();
+	unmap_free_psm_pages(USER_CODE_BEG,   USER_CODE_END);
+	unmap_free_psm_pages(USER_STACK_BEG, USER_STACK_END);
+	unmap_free_psm_pages(USER_MMAP_BEG,   USER_MMAP_END);
 }

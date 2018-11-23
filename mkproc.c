@@ -1,5 +1,6 @@
 #include <pcb.h>
 #include <mkproc.h> // impelementation
+#include <page.h>
 #include <memory.h>
 #include <umemlay.h>
 #include <kmalloc.h>
@@ -39,6 +40,7 @@ PCB *create_process
 	//printf("create: %p:%p\n", pcb, pcb->sp);
 
 	unsigned long *pgd = (unsigned long *) alloc_ppage();
+	memset(pgd, 0, PGSIZE);
 	setup_pgd(pcb->pgd = pgd);
 
 	pcb->brk = USER_STACK_BEG;

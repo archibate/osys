@@ -1,3 +1,8 @@
+user/shell/main.c:57
+FIXME: death after three cmds
+
+qemu bug with my exec()????
+grep 'user_space_' *
 qemu.gdb
 uload.c & user/shell/main.c:63
 sysfs.c:50

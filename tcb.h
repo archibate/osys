@@ -12,6 +12,8 @@ STRUCT(TCB)
 
 	PCB *pcb;
 
+	int exit_res;
+
 	EVENT events[EVE_MAX];
 };
 #define LIST TCB

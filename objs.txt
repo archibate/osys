@@ -16,6 +16,7 @@ sysentry
 systab
 syspt
 pid
+fork
 pexit
 exec
 uload

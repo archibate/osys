@@ -10,8 +10,9 @@ tellsize
 getch
 putch
 fsync
-stexecv1
+dirfind
+chdir
+fork
+execap
 waiton
 setbrk
-chdir
-dirfind

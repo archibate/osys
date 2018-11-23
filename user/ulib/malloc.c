@@ -20,7 +20,7 @@ STRUCT(HNODE) {
 #include <list.h> // define the list_* methods for HNODE
 
 static
-HNODE *heap_head = (HNODE*)SLOB_BEG;
+HNODE *heap_head;
 
 static
 void set_break(void *p)
@@ -33,9 +33,11 @@ void set_break(void *p)
 
 void init_heap(void)
 {
+	heap_head = (HNODE*)SLOB_BEG;
 	set_break((void *)(PGMASK & (PGSIZE - 1 + (addr_t) heap_head)));
 	heap_head->allocated = 0;
 	heap_head->next = 0;
+	heap_head->prev = 0;
 }
 
 #ifdef tprintf

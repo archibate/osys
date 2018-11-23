@@ -7,13 +7,11 @@
 [BITS 32]
 
 _start:
-	push path
+	pop ecx
+	push esp
 	call gview_main
 	mov ecx, eax
 	mov eax, 1
 	int 0x80
 	cli
 	hlt
-
-[SECTION .rodata]
-path:	db "/root/2s2s.jpg", 0

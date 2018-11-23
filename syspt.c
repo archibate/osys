@@ -4,6 +4,7 @@
 #include <pid.h>
 #include <event.h>
 #include <panic.h>
+#include <print.h>
 
 int sys_undefined(void)
 {
@@ -25,12 +26,13 @@ int sys_waiton(int pid, unsigned int eveid)
 	if (!proc)
 		return -ESRCH;
 
-	return wait_on(&proc->events[eveid]);
+	wait_on(&proc->events[eveid]);
+	return proc->exit_res;
 }
 
-int sys_stexecv1(const char *name, const char *arg)
+int sys_execap(const char *name, const char *arg)
 {
-	return stexecv1(name, arg);
+	return execap(name, arg);
 }
 
 void __attribute__((noreturn)) sys_exit(int status)

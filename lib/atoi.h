@@ -6,3 +6,5 @@ unsigned long strtol
 	, const char **endp
 	, int base
 	);
+
+#define atoi(s) strtol((s), 0, 10)

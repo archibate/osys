@@ -6,20 +6,10 @@
 #include <errno.h>
 #include <assert.h>
 #include <unistd.h>
+#include <atoi.h>
 
 #define LINE_MAX 1024
 #define CSPACE " \t\n"
-
-char *get_binary_name(const char *name)
-{
-	unsigned long len = strlen(name);
-	char *path = malloc(5 + len + 4 + 1);
-	memcpy(path, "/bin/", 5);
-	memcpy(path + 5, name, len);
-	memcpy(path + 5 + len, ".exf", 4);
-	path[5 + len + 4] = 0;
-	return path;
-}
 
 int echo(const char *s)
 {
@@ -27,40 +17,80 @@ int echo(const char *s)
 	return 0;
 }
 
+int __attribute__((noreturn)) shexit(const char *val)
+{
+	exit(atoi(val));
+}
+
+void __attribute__((noreturn)) shexecap(const char *name, const char *arg)
+{
+	static char path[LINE_MAX];
+	unsigned long len = strlen(name);
+	memcpy(path, "/bin/", 5);
+	memcpy(path + 5, name, len);
+	memcpy(path + 5 + len, ".exf", 4);
+	path[5 + len + 4] = 0;
+
+	int res = execap(path, arg);
+
+	if (res == -ENOENT)
+		printf("sh: command not found: %d\n", name, res);
+	else
+		printf("sh: execap(%s): %m\n", path, res);
+	exit(res);
+}
+
+const char *get_name_arg(char *cmdl) //{{{
+{
+	int i = strfindlin(cmdl, CSPACE);
+	const char *arg = strskipin(cmdl + i, CSPACE);
+	cmdl[i] = 0;
+	return arg;
+} //}}}
+
+int start(char *cmdl) //{{{
+{
+	const char *arg = get_name_arg(cmdl);
+	const char *name = cmdl;
+
+	int pid = fork();
+
+	if (!pid)
+		shexecap(name, arg);
+
+	static int started_nr = 0;
+	printf("[%d] %d\n", ++started_nr, pid);
+
+	return 0;
+} //}}}
+
 int run_cmd(char *cmdl)
 {
-	struct command {
+	static struct command {
 		char *name;
 		int (*fun)(const char *arg);
 	} shcmds[] = {
 		{"cd", chdir},
-		//{"echo", echo},
+		{"echo", echo},
+		{"start", (void*)start},
+		{"exit", shexit},
 	};
 
-	int i = strfindlin(cmdl, CSPACE);
-	const char *arg = strskipin(cmdl + i, CSPACE);
-
-	cmdl[i] = 0;
+	const char *arg = get_name_arg(cmdl);
 	const char *name = cmdl;
 
-	for (i = 0; i < sizeof(shcmds) / sizeof(shcmds[0]); i++) {
+	for (int i = 0; i < sizeof(shcmds) / sizeof(shcmds[0]); i++) {
 		if (!strcmp(shcmds[i].name, name)) {
 			return shcmds[i].fun(arg);
 		}
 	}
 
-	char *path = get_binary_name(name);
+	int pid = fork();
 
-	int res = stexecv1(path, arg);
+	if (!pid)
+		shexecap(name, arg);
 
-	if (res == -ENOENT)
-		printf("sh: command not found: %s\n", name);
-	else if (res < 0)
-		printf("sh: %s: %m\n", path, res);
-	else
-		res = waitpid(res);
-
-	return res;
+	return waiton(pid, EVE_EXIT);
 }
 
 

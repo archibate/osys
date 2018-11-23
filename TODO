@@ -1,6 +1,6 @@
-uload/exec: main(argc, argv)
-fs: opendir(), readdir(), seekdir(), /bin/ls.exf
 syspt: fork() -> exec() -> wait()
+reconsider pgd_* and mmu_reflush structure (tlb)!
+fs: opendir(), readdir(), seekdir(), /bin/ls.exf
 shell: my getline(), readline() lib!!!!!
 ulib: io-buffering for fread/write!!!
 sysmm: auto increase stack on page fault.

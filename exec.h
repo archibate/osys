@@ -2,5 +2,11 @@
 
 struct FILE;
 
-int stexecv1(const char *name, const char *arg);
-#define stexec(name) stexecv1((name), "")
+int execap(const char *name, const char *arg);
+
+static inline int exec(const char *name)
+{
+	return execap(name, "");
+}
+
+#define stexec(name) create_thread(create_process(exec, name))

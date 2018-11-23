@@ -43,13 +43,13 @@ fifo_data_t efifo_wait_get(EFIFO *ef)
 	return fifo_get(&ef->fifo);
 }
 
-static
+/*static
 fifo_data_t efifo_wf_get(EFIFO *ef)
 {
 	if (fifo_empty(&ef->fifo))
 		return wait_on(&ef->eve_wr);
 	return fifo_get(&ef->fifo);
-}
+}*/
 
 static inline
 void efifo_put(EFIFO *ef, fifo_data_t data)
@@ -60,16 +60,16 @@ void efifo_put(EFIFO *ef, fifo_data_t data)
 static inline
 void efifo_flush(EFIFO *ef)
 {
-	trig_up(&ef->eve_wr, 0x80);
+	trig_up(&ef->eve_wr/*, 0x80*/);
 }
 
-static inline
+/*static inline
 void efifo_wf_flush(EFIFO *ef)
 {
 	trig_up(&ef->eve_wr, fifo_get(&ef->fifo));
-}
+}*/
 
-static inline
+/*static inline
 void efifo_wf_put_flush(EFIFO *ef, fifo_data_t data) // wf-system remains todo
 {
 	if (!fifo_empty(&ef->fifo)) {
@@ -77,4 +77,4 @@ void efifo_wf_put_flush(EFIFO *ef, fifo_data_t data) // wf-system remains todo
 		data = 0x80;
 	}
 	trig_up(&ef->eve_wr, data);
-}
+}*/

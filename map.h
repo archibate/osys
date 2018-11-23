@@ -12,8 +12,10 @@ unsigned long pgd_map
 	);
 
 extern
-void pgd_unmap_free_psm_non_global_pages
+void pgd_unmap_free_psm_pages
 	( unsigned long *pgd
+	, unsigned long beg_addr
+	, unsigned long end_addr
 	, int invalidate
 	);
 
@@ -39,10 +41,13 @@ unsigned long map
 }
 
 static inline
-void unmap_free_psm_non_global_pages(void)
+void unmap_free_psm_pages
+	( unsigned long beg_addr
+	, unsigned long end_addr
+	)
 {
 	unsigned long *pgd = (unsigned long *) mmu_get_pd();
-	pgd_unmap_free_psm_non_global_pages(pgd, 1);
+	pgd_unmap_free_psm_pages(pgd, beg_addr, end_addr, 1);
 }
 
 #define unmap(pa)  map(pa, 0)

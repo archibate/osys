@@ -56,6 +56,7 @@ void init_slob(void)
 	curr_brk = PGMASK & (PGSIZE - 1 + (unsigned long) slob_head);
 	slob_head->allocated = 0;
 	slob_head->next = 0;
+	slob_head->prev = 0;
 }
 
 static

@@ -1,4 +1,4 @@
-SYSCALL_MAX equ (16+1)
+SYSCALL_MAX equ (17+1)
 _SYS_undefined equ 0
 _SYS_exit equ 1
 _SYS_open equ 2
@@ -11,8 +11,9 @@ _SYS_tellsize equ 8
 _SYS_getch equ 9
 _SYS_putch equ 10
 _SYS_fsync equ 11
-_SYS_stexecv1 equ 12
-_SYS_waiton equ 13
-_SYS_setbrk equ 14
-_SYS_chdir equ 15
-_SYS_dirfind equ 16
+_SYS_dirfind equ 12
+_SYS_chdir equ 13
+_SYS_fork equ 14
+_SYS_execap equ 15
+_SYS_waiton equ 16
+_SYS_setbrk equ 17
