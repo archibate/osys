@@ -120,8 +120,8 @@ int sys_fork(void)
 	IF_REGS *if_regs = (IF_REGS*)IFRAME_TOP - 1;
 	IF_REGS *uregs = kmalloc_for(IF_REGS);
 	memcpy(uregs, if_regs, sizeof(IF_REGS));
-	PCB *pcb = create_process_ex(current->pcb->name, forked_entry_fc, uregs);
-	user_space_copy_to(pcb->pgd);
-	int pid = new_proc(create_thread(pcb));
-	return pid;
+	TCB *tcb = create_process_ex(current->pcb.name, forked_entry_fc, uregs);
+	user_space_copy_to(tcb->pcb.pgd);
+	add_task(tcb);
+	return new_proc(tcb);
 }

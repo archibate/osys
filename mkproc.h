@@ -1,10 +1,10 @@
 #pragma once
 
 
-#include <pcb.h>
+#include <tcb.h>
 
 extern
-PCB *create_process_ex
+TCB *create_process_ex
 	( const char *name
 	, int (*proc)()
 	, void *arg

@@ -1,8 +1,8 @@
 #include <vfs.h>
 #include <print.h>
-#include <mkthrd.h>
 #include <mkproc.h>
 #include <exec.h>
+#include <sched.h>
 
 #if 0 // {{{
 int gview_main(const char *name);

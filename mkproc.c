@@ -23,28 +23,28 @@ void __attribute__((noreturn)) __process_exit(void)
 }
 
 
-PCB *create_process_ex
+TCB *create_process_ex
 	( const char *name
 	, int (*proc)()
 	, void *arg
 	)
 {
-	PCB *pcb = kmalloc(STACK_SIZE);
-	bzero(pcb, sizeof(PCB));
-	pcb->name = name;
+	TCB *tcb = kmalloc(STACK_SIZE);
+	bzero(tcb, sizeof(PCB));
+	tcb->pcb.name = name;
 
-	unsigned long *sp = (unsigned long*)((char*)pcb + STACK_SIZE);
+	unsigned long *sp = (unsigned long*)((char*)tcb + STACK_SIZE);
 	*--sp = (unsigned long) arg;
 	*--sp = (unsigned long) __process_exit;
 
-	pcb->sp = (KS_REGS *) sp;
-	bzero(--pcb->sp, sizeof(KS_REGS));
-	pcb->sp->eflags = 0x002;
-	pcb->sp->pc = (unsigned long) proc;
+	tcb->pcb.sp = (KS_REGS *) sp;
+	bzero(--tcb->pcb.sp, sizeof(KS_REGS));
+	tcb->pcb.sp->eflags = 0x002;
+	tcb->pcb.sp->pc = (unsigned long) proc;
 
 	unsigned long *pgd = (unsigned long *) alloc_ppage();
 	memset(pgd, 0, PGSIZE);
-	setup_pgd(pcb->pgd = pgd);
+	setup_pgd(pgd);
 
 	for (int va = IFRAME_BOTT; va < IFRAME_TOP; va += PGSIZE) {
 		unsigned long pgaddr = alloc_ppage();
@@ -52,7 +52,9 @@ PCB *create_process_ex
 		pgd_map(pgd, va, pgaddr | PG_PSM | PG_P | PG_W);
 	}
 
-	UPCB_OF(pcb->pgd)->brk = USER_STACK_BEG;
+	UPCB_OF(pgd)->brk = USER_STACK_BEG;
 
-	return pcb;
+	tcb->pcb.pgd = pgd;
+
+	return tcb;
 }

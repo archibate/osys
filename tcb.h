@@ -10,7 +10,7 @@ STRUCT(TCB)
 {
 	TCB *next, *prev;
 
-	PCB *pcb;
+	PCB pcb;
 
 	int exit_res;
 

@@ -63,7 +63,7 @@ void print_sched_status
 	tprintf("sched status:\n");
 	TCB *curr = current;
 	do {
-		tprintf("t%p p%p: sp=%p\n", curr, curr->pcb, curr->pcb->sp);
+		tprintf("t%p: sp=%p\n", curr, curr->pcb.sp);
 		curr = curr->next;
 	} while (curr != current);
 	tprintf("sched status end\n");
@@ -76,14 +76,12 @@ void init_sched
 {
 	static char kstk0[1024];
 	static TCB tcb0;
-	static PCB pcb0;
 
-	pcb0.name = "(init)";
-	pcb0.sp = (KS_REGS *) (kstk0 + sizeof(kstk0) - sizeof(KS_REGS));
-	bzero(pcb0.sp, sizeof(KS_REGS));
+	tcb0.pcb.name = "(init)";
+	tcb0.pcb.sp = (KS_REGS *) (kstk0 + sizeof(kstk0) - sizeof(KS_REGS));
+	bzero(tcb0.pcb.sp, sizeof(KS_REGS));
 
 	tcb0.next = tcb0.prev = &tcb0;
-	tcb0.pcb = &pcb0;
 	current = &tcb0;
 }
 
@@ -103,7 +101,7 @@ void task_run
 	TCB *prev = current;
 	current = next;
 
-	switch_from_to(prev->pcb, next->pcb);
+	switch_from_to(&prev->pcb, &next->pcb);
 }
 
 
@@ -112,13 +110,4 @@ void do_schedule
 {
 	assert(current);
 	task_run(current->next);
-}
-
-void run_pcb
-	( PCB *next
-	)
-{
-	PCB *prev = current->pcb;
-	current->pcb = next;
-	switch_from_to(prev, next);
 }

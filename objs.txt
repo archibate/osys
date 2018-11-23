@@ -21,7 +21,6 @@ pexit
 exec
 uload
 mkproc
-mkthrd
 tss
 slob
 vram
