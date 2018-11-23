@@ -3,5 +3,5 @@
 #include <kern/sysapi.h>
 #include <fsdefs.h>
 #include <pcbdefs.h>
-#include <tcbdefs.h>
+#include <evedefs.h>
 #include <piddefs.h>

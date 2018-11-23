@@ -77,9 +77,9 @@ void init_sched
 	static char kstk0[1024];
 	static TCB tcb0;
 
-	tcb0.pcb.name = "(init)";
-	tcb0.pcb.sp = (KS_REGS *) (kstk0 + sizeof(kstk0) - sizeof(KS_REGS));
-	bzero(tcb0.pcb.sp, sizeof(KS_REGS));
+	tcb0.name = "(init)";
+	tcb0.sp = (KS_REGS *) (kstk0 + sizeof(kstk0) - sizeof(KS_REGS));
+	bzero(tcb0.sp, sizeof(KS_REGS));
 
 	tcb0.next = tcb0.prev = &tcb0;
 	current = &tcb0;
@@ -101,7 +101,7 @@ void task_run
 	TCB *prev = current;
 	current = next;
 
-	switch_from_to(&prev->pcb, &next->pcb);
+	switch_from_to(prev, next);
 }
 
 

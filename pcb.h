@@ -6,11 +6,6 @@
 
 STRUCT(PCB)
 {
-	KS_REGS *sp;
-
-	unsigned long *pgd;
-
-	const char *name;
 };
 
 #include <upcb.h>

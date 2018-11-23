@@ -1,12 +1,12 @@
 #pragma once
 
 
-#include <pcb.h>
+#include <tcb.h>
 
 extern
 void switch_from_to
-	( PCB *prev
-	, PCB *next
+	( TCB *prev
+	, TCB *next
 	);
 extern
 void switch_pgd

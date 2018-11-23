@@ -31,16 +31,16 @@ TCB *create_process_ex
 {
 	TCB *tcb = kmalloc(STACK_SIZE);
 	bzero(tcb, sizeof(PCB));
-	tcb->pcb.name = name;
+	tcb->name = name;
 
 	unsigned long *sp = (unsigned long*)((char*)tcb + STACK_SIZE);
 	*--sp = (unsigned long) arg;
 	*--sp = (unsigned long) __process_exit;
 
-	tcb->pcb.sp = (KS_REGS *) sp;
-	bzero(--tcb->pcb.sp, sizeof(KS_REGS));
-	tcb->pcb.sp->eflags = 0x002;
-	tcb->pcb.sp->pc = (unsigned long) proc;
+	tcb->sp = (KS_REGS *) sp;
+	bzero(--tcb->sp, sizeof(KS_REGS));
+	tcb->sp->eflags = 0x002;
+	tcb->sp->pc = (unsigned long) proc;
 
 	unsigned long *pgd = (unsigned long *) alloc_ppage();
 	memset(pgd, 0, PGSIZE);
@@ -54,7 +54,7 @@ TCB *create_process_ex
 
 	UPCB_OF(pgd)->brk = USER_STACK_BEG;
 
-	tcb->pcb.pgd = pgd;
+	tcb->pgd = pgd;
 
 	return tcb;
 }

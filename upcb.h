@@ -2,6 +2,7 @@
 
 #include <pcbdefs.h>
 #include <struct.h>
+#include <event.h>
 
 STRUCT(UPCB)
 {
