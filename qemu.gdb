@@ -15,7 +15,7 @@ set architecture i386
 add-symbol-file bin/kernel.elf 0x100000
 #add-symbol-file user/xfont/bin/xfont.elf 0x10000000
 #add-symbol-file user/echo/bin/echo.elf 0x10000000
-add-symbol-file user/shell/bin/shell.elf 0x10000000
+#add-symbol-file user/shell/bin/shell.elf 0x10000000
 #add-symbol-file user/gview/bin/gview.elf 0x10000000
 #add-symbol-file user/hello/bin/hello.elf 0x10000000
 #add-symbol-file user/true/bin/true.elf 0x10000000
@@ -92,3 +92,5 @@ b exp14
 #bc exec_user_program_fc
 #bc __crt_start
 #c
+bc execap
+bc exec.c:60

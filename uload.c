@@ -49,8 +49,6 @@ int exec_user_program_fc(FILE *f)
 
 	mmu_set_pd(mmu_get_pd());
 
-	printf("shcmd[0]:%p\n", *(int*)0x10005a80);
-
 	return res;
 }
 

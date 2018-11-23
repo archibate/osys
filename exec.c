@@ -56,6 +56,7 @@ int execap(const char *name, const char *arg)
 		.ds = 0x0023,
 		.es = 0x0023,
 	};
+
 	move_to_user(&uregs);
 
 out:

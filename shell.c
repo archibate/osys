@@ -255,6 +255,8 @@ int shell_main(void)
 void init_shell(void)
 {
 	chdir("/root");
-	stexec("/bin/xfont.exf");
-	stexec("/bin/shell.exf");
+	stexec("/bin/true.exf");
+	//stexec("/bin/hello.exf");
+	//stexec("/bin/xfont.exf");
+	//stexec("/bin/shell.exf");
 }

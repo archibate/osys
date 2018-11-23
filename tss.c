@@ -31,6 +31,6 @@ void set_tss_data(TSS *tss, unsigned long esp, unsigned int iomap_off)
 void init_tss(void)
 {
 	TSS *tss = (TSS *) TSS0_ADDR;
-	set_tss_seg(tss, sizeof(tss));
+	set_tss_seg(tss, sizeof(*tss));
 	set_tss_data(tss, IFRAME_TOP, 0);
 }
