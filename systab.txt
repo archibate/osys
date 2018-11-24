@@ -16,4 +16,5 @@ fork
 execap
 waiton
 setbrk
-map_upcb
+readdir
+rewinddir

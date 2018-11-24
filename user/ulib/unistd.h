@@ -5,3 +5,4 @@
 #include <pcbdefs.h>
 #include <evedefs.h>
 #include <piddefs.h>
+#include <udirent.h>

@@ -1,13 +1,14 @@
-becoming an microkernel??
-syspt: fork() -> exec() -> wait()
-reconsider pgd_* and mmu_reflush structure (tlb)!
 fs: opendir(), readdir(), seekdir(), /bin/ls.exf
 shell: my getline(), readline() lib!!!!!
+lock: consider to impl ref count system?
+reconsider pgd_* and mmu_reflush structure (tlb)!
 ulib: io-buffering for fread/write!!!
 sysmm: auto increase stack on page fault.
 schedule: prio for different task.
 xfont: hankaku -> hanzi
 
+becoming an microkernel??
+syspt: fork() -> exec() -> wait()
 syspt.c::wait_exit.etc.
 pipe!!!!
 event: 2-endpoint ipc: event_set_focus()????

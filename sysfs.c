@@ -47,8 +47,8 @@ int sys_open(const char *name, unsigned int oattr)
 	return fd;
 }
 
-int sys_dirfind(DIRENT *res, int fd, const char *name)
-{ // here to go!!!
+int sys_dirfind(int fd, U_DIRENT *res, const char *name)
+{
 	verify_fd(fd);
 	verify_ptr(res);
 	verify_ptr(name);
@@ -57,9 +57,30 @@ int sys_dirfind(DIRENT *res, int fd, const char *name)
 	if (!de)
 		return -ENOENT;
 
-	memcpy(res, de, sizeof(DIRENT));
+	memcpy(res, &de->e_ude, sizeof(DIRENT));
 
 	return 0;
+}
+
+int sys_readdir(int fd, U_DIRENT *res)
+{
+	verify_fd(fd);
+	verify_ptr(res);
+
+	DIRENT *de = readdir(curr_upcb.files[fd]);
+	if (!de)
+		return -ENOENT;
+
+	memcpy(res, &de->e_ude, sizeof(U_DIRENT));
+
+	return 0;
+}
+
+int sys_rewinddir(int fd)
+{
+	verify_fd(fd);
+
+	return rewinddir(curr_upcb.files[fd]);
 }
 
 int sys_close(int fd)

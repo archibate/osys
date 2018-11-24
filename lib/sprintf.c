@@ -1,7 +1,4 @@
-#include <stdio.h>
 #include <gprintf.h>
-#include <assert.h>
-#include <fifo.h>
 
 
 static char *my_buf;

@@ -29,7 +29,6 @@ void setup_txtinfo_dev
 	, size_t size
 	)
 {
-	printf("txtdev: %d:%s\n", size, data);
 	inode->i_fops = &txtdev_fops;
 	inode->ie_priv_data = (void *) data;
 	inode->i_size = size;

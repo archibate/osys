@@ -19,4 +19,4 @@
 #define _SYS_execap 15
 #define _SYS_waiton 16
 #define _SYS_setbrk 17
-#define _SYS_map_upcb 18
+#define _SYS_readdir 18

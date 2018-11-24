@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <gprintf.h>
-#include <assert.h>
-#include <fifo.h>
 
 
 #define PRINT_BUFSIZ BUFSIZ
@@ -10,7 +8,6 @@ static int i;
 
 static void my_buf_putc(char c)
 {
-	assert();
 	buf[i++] = c;
 }
 

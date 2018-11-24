@@ -17,4 +17,4 @@ _SYS_fork equ 14
 _SYS_execap equ 15
 _SYS_waiton equ 16
 _SYS_setbrk equ 17
-_SYS_map_upcb equ 18
+_SYS_readdir equ 18

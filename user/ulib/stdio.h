@@ -10,7 +10,8 @@ typedef unsigned short _fbuf_idx_t;
 
 STRUCT(FILE) {
 	int f_fd;
-	unsigned int f_oattr;
+	unsigned int f_oattr : 31;
+	unsigned int f_iseof : 1;
 	_fbuf_idx_t f_bpos, f_bsize;
 	char f_buf[BUFSIZ+1];
 };
@@ -27,7 +28,7 @@ int fopen_s(FILE **pf, const char *name, const char *type);
 int fread(void *p, size_t size, size_t count, FILE *f);
 int fwrite(const void *p, size_t size, size_t count, FILE *f);
 int fgets(char *s, size_t size, FILE *f);
-const char *fgetrdbuf(FILE *f);
+const char *fgetbuf(FILE *f);
 int fputs(const char *s, FILE *f);
 int file_need_wr_flush(FILE *f);
 void file_wr_flush(FILE *f);
@@ -35,6 +36,20 @@ void file_rd_flush(FILE *f);
 int fflush(FILE *f);
 int fclose_i(FILE *f);
 int fclose(FILE *f);
+
+static
+int feof(FILE *f)
+{
+	return f->f_iseof;
+}
+
+static
+const char *fgetrdbuf(FILE *f)
+{
+	const char *s = fgetbuf(f);
+	f->f_bpos = f->f_bsize;
+	return s;
+}
 
 static inline
 int __fputc(int c, FILE *f)

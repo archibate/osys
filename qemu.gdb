@@ -13,11 +13,11 @@ set architecture i386
 # For kernel debugging
 # Add KERNEL file for debugging information
 add-symbol-file bin/kernel.elf 0x100000
-add-symbol-file user/cat/bin/cat.elf 0x10000000
+#add-symbol-file user/cat/bin/cat.elf 0x10000000
 #add-symbol-file user/die/bin/die.elf 0x10000000
 #add-symbol-file user/xfont/bin/xfont.elf 0x10000000
 #add-symbol-file user/echo/bin/echo.elf 0x10000000
-#add-symbol-file user/shell/bin/shell.elf 0x10000000
+add-symbol-file user/shell/bin/shell.elf 0x10000000
 #add-symbol-file user/gview/bin/gview.elf 0x10000000
 #add-symbol-file user/hello/bin/hello.elf 0x10000000
 #add-symbol-file user/true/bin/true.elf 0x10000000
@@ -110,4 +110,5 @@ b exp14
 #c
 #bc main
 #bc fclose
-bc init_welcome
+#bc init_welcome
+bc __crt_start

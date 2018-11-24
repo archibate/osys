@@ -94,18 +94,32 @@ int run_cmd(char *cmdl)
 }
 
 
-int main(void)
+int main(const char *fname)
 {
-	printf("\nOSYS shell v0.1\n");
+	FILE *fin = stdin;
+	if (fname[0])
+		fin = fopen(fname, "r");
+
+	if (!fin) {
+		fprintf(stderr, "sh: cannot open %s\n", fin);
+		exit(-1);
+	}
+
+	if (fin == stdin)
+		printf("\nOSYS shell v0.1\n");
 
 	char cmdl[LINE_MAX + 1];
 
 	while (1) {
-		printf("\n> ");
-
-		fgets(cmdl, LINE_MAX, stdin);
+		if (fin == stdin)
+			printf("\n> ");
+		if (!fgets(cmdl, LINE_MAX, fin))
+			break;
 		run_cmd(strtrim(cmdl, CSPACE));
 	}
+
+	if (fin != stdin)
+		fclose(fin);
 
 	return 0;
 }

@@ -207,7 +207,7 @@ int ramfs_open(FILE *f, INODE *inode, unsigned int oattr)
 }
 
 static
-void ramfs_decode_fatents(SUPER *sb, DIR *dir, const FAT_DIRENT *fes, unsigned int ents);
+LIST_HEAD ramfs_decode_fatents(SUPER *sb, const FAT_DIRENT *fes, unsigned int ents);
 
 static
 DIR_OPS ramfs_dops;
@@ -221,7 +221,9 @@ int ramfs_opendir(DIR *dir, INODE *inode, unsigned int oattr)
 	char *buf = inode->i_sb->se_ramdat;
 	buf += inode->ie_clus * inode->i_sb->se_clusiz;
 	unsigned int ents = inode->i_sb->se_clusiz / sizeof(FAT_DIRENT);
-	ramfs_decode_fatents(inode->i_sb, dir, (FAT_DIRENT *) buf, ents);
+	if (!inode->ie_dents)
+		inode->ie_dents = ramfs_decode_fatents(inode->i_sb, (FAT_DIRENT *) buf, ents);
+	dir->de_pos = inode->ie_dents;
 
 	return 0;
 }
@@ -239,6 +241,8 @@ FILE_OPS ramfs_fops = {
 static
 DIR_OPS ramfs_dops = {
 	.opendir = ramfs_opendir,
+	.readdir = simple_readdir,
+	.rewinddir = simple_rewinddir,
 	.dirfind = simple_dirfind,
 	.closedir = ramfs_closedir,
 };
@@ -253,6 +257,7 @@ static
 INODE *ramfs_alloc_inode(SUPER *sb)
 {
 	INODE *inode = kmalloc_for(INODE);
+	inode->ie_dents = 0;
 	inode->i_sb = sb;
 	inode->i_ops = &ramfs_iops;
 	return inode;
@@ -267,12 +272,13 @@ void ramfs_free_inode(INODE *inode)
 static
 void ramfs_free_super(SUPER *sb)
 {
-	for (LIST *le = sb->s_root->d_ents; le;) {
-		DIRENT *de = list_entry(DIRENT, e_list, le);
-		le = le->next;
+	DIRENT *de;
+	rewinddir(sb->s_root);
+	while ((de = readdir(sb->s_root))) {
 		free_inode(de->e_inode);
 		kfree(de);
 	}
+	free_inode(sb->s_inode);
 	kfree(sb->s_root);
 	kfree(sb);
 }
@@ -368,7 +374,7 @@ void copy_fate_to_inode(const FAT_DIRENT *fe, INODE *inode)
 }
 
 static
-void ramfs_decode_fatents(SUPER *sb, DIR *dir, const FAT_DIRENT *fes, unsigned int ents)
+LIST_HEAD ramfs_decode_fatents(SUPER *sb, const FAT_DIRENT *fes, unsigned int ents)
 {
 	//printf("loading directory entries...(%d maxium) from %p\n", ents);
 
@@ -377,7 +383,7 @@ void ramfs_decode_fatents(SUPER *sb, DIR *dir, const FAT_DIRENT *fes, unsigned i
 
 	DIRENT *de = kmalloc_for(DIRENT);
 
-	dir->d_ents = 0;
+	LIST_HEAD dents = 0;
 	for (int i = ents - 1; i >= 0; i--)
 	{
 		const FAT_DIRENT *fe = &fes[i];
@@ -403,7 +409,7 @@ void ramfs_decode_fatents(SUPER *sb, DIR *dir, const FAT_DIRENT *fes, unsigned i
 			}
 			//printf("loaded entry: %s\n", de->e_name);
 
-			list_add_head_n(&dir->d_ents, &de->e_list);
+			list_add_head_n(&dents, &de->e_list);
 
 			de->e_inode = ramfs_alloc_inode(sb);
 			copy_fate_to_inode(fe, de->e_inode);
@@ -426,6 +432,7 @@ void ramfs_decode_fatents(SUPER *sb, DIR *dir, const FAT_DIRENT *fes, unsigned i
 	kfree(de);
 
 	//printf("%d entries loaded\n", total);
+	return dents;
 }
 
 STRUCT(RAMFS_LOADING)
@@ -491,20 +498,16 @@ int ramfs_root_opendir(DIR *dir, INODE *inode, unsigned int oattr)
 	dir->d_inode = inode;
 	dir->d_ops = &ramfs_root_dops;
 	dir->d_oattr = oattr;
-	dir->d_ents = inode->i_sb->s_root->d_ents;
-	return 0;
-}
-
-static
-int ramfs_root_closedir(__attribute__((unused)) DIR *dir)
-{
+	dir->de_pos = inode->ie_dents;
 	return 0;
 }
 
 static
 DIR_OPS ramfs_root_dops = {
 	.opendir = ramfs_root_opendir,
-	.closedir = ramfs_root_closedir,
+	.closedir = simple_closedir,
+	.rewinddir = simple_rewinddir,
+	.readdir = simple_readdir,
 	.dirfind = simple_dirfind,
 };
 
@@ -517,13 +520,15 @@ SUPER *ramfs_load_super(void *ramdisk)
 	es->sb = sb;
 	es->data = (unsigned char *) ramdisk;
 
+	ramfs_decode_mbr(es);
+
 	es->sb->s_inode = ramfs_alloc_inode(es->sb);
 	es->sb->s_inode->i_dops = &ramfs_root_dops;
+
+	es->sb->s_inode->ie_dents = ramfs_decode_fatents(es->sb, es->rootdir, es->rootdir_ents);
+
 	es->sb->s_root = kmalloc_for(DIR);
 	ramfs_root_opendir(es->sb->s_root, es->sb->s_inode, OPEN_RD | OPEN_WR);
-
-	ramfs_decode_mbr(es);
-	ramfs_decode_fatents(es->sb, es->sb->s_root, es->rootdir, es->rootdir_ents);
 
 	es->sb->se_fat = kmalloc((es->fat_ents + 1) * sizeof(clus_t));
 	uncompress_fat12(es->sb->se_fat, es->fat12, es->fat_ents);

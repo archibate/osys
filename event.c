@@ -12,6 +12,7 @@ void wait_on_ex(EVENT *event, TCB *next)
 	}
 	assert(next != current);
 	tcb_remove(current);
+	//printf("wait_on: %p=%p\n", event, event->waiting_head);
 	tcb_insert_after_ch(current, &event->waiting_head);
 	task_run(next);
 }
@@ -20,6 +21,7 @@ void wait_on_ex(EVENT *event, TCB *next)
 void trig_up(EVENT *event)
 {
 	event->trig_count++;
+	//printf("trig_up: %p=%p\n", event, event->waiting_head);
 	if (event->waiting_head) {
 		TCB *next = tcb_shift_forward_ch(&event->waiting_head);
 		tcb_insert_before_ch(next, &current);

@@ -13,10 +13,11 @@ int fflush(FILE *f)
 	return 0;
 }
 
-const char *fgetrdbuf(FILE *f)
+const char *fgetbuf(FILE *f)
 {
-	if (f->f_bpos >= f->f_bsize)
+	if (f->f_bpos >= f->f_bsize) {
 		file_rd_flush(f);
+	}
 	f->f_buf[f->f_bsize] = 0;
 	const char *s = f->f_buf + f->f_bpos;
 	return s;
@@ -30,18 +31,17 @@ int fgets(char *s, size_t size, FILE *f)
 	assert(size > 1);
 
 	do {
-		buf = fgetrdbuf(f);
+		buf = fgetbuf(f);
 		if (!(i = strfind(buf, '\n') + 1)) {
 			i = strlen(buf);
 			if (!i)
 				return 0;
 		}
 
-		f->f_bpos += i;
-
 		if (i > n) i = n;
 		memcpy(s, buf, i);
 		s += i, n -= i;
+		f->f_bpos += i;
 
 	} while (n && buf[i - 1] != '\n');
 
@@ -78,9 +78,12 @@ void file_wr_flush(FILE *f)
 void file_rd_flush(FILE *f)
 {
 	f->f_bsize = read(f->f_fd, f->f_buf, BUFSIZ);
+	if (!f->f_bsize)
+		f->f_iseof = 1;
 	f->f_bpos = 0;
 }
 
+// TODO: impl. io-buffering for these:
 int fread(void *p, size_t size, size_t count, FILE *f)
 {
 	return read(f->f_fd, p, size * count);

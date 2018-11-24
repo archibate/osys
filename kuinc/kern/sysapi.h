@@ -1,6 +1,7 @@
 #pragma once
 
 #include <sizet.h>
+#include <udirent.h>
 #include "syscall.h"
 
 #ifndef __SYS_STATIC
@@ -26,4 +27,6 @@ __SYS_STATIC syscall2(int,execap,(const char *name, const char *arg), name, arg)
 __SYS_STATIC syscall2(int,waiton,(int pid, unsigned int eveid), pid, eveid);
 __SYS_STATIC syscall1(int,chdir,(const char *path), path);
 __SYS_STATIC syscall0(int,fork,(void));
-__SYS_STATIC syscall3(int,map_upcb,(int pid, void *p, unsigned int mattr), pid, p, mattr);
+__SYS_STATIC syscall2(int,readdir,(int fd, struct U_DIRENT *res), fd, res);
+__SYS_STATIC syscall3(int,dirfind,(int fd, struct U_DIRENT *res, const char *name), fd, res, name);
+//__SYS_STATIC syscall3(int,map_upcb,(int pid, void *p, unsigned int mattr), pid, p, mattr);

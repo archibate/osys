@@ -16,3 +16,6 @@ STRUCT(IF_REGS)
 } __attribute__((packed));
 
 typedef IF_REGS PT_REGS;
+
+#define IFTP_OF(pgd) ((char *) (pgd_getmap((pgd), IFRAME_TOP - PGSIZE) & PGMASK) + PGSIZE)
+#define IFRM_OF(pgd) ((IF_REGS *) IFTP_OF(pgd) - 1)

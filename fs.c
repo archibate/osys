@@ -8,19 +8,23 @@
 
 
 DIRENT *__dir_new_entry
-	( INODE *dir_inode
+	( INODE *dirnode
 	, const char *name
 	, unsigned int iattr
 	)
 {
+	//printf("dir_new_entry(%p,%s,%d)\n", dirnode, name, iattr);
+
 	DIRENT *de = kmalloc_for(DIRENT);
 	if (name)
 		strcpy(de->e_name, name);
 
-	de->e_inode = alloc_inode(dir_inode->i_sb);
+	de->e_inode = alloc_inode(dirnode->i_sb);
 	de->e_inode->i_attr = iattr;
 
-	list_add_head_n(&dir_inode->ie_dents, &de->e_list);
+	list_add_head_n(&dirnode->ie_dents, &de->e_list);
+
+	//printf("dir_new_entry: e_name=%s\n", list_entry(DIRENT, e_list, dirnode->ie_dents)->e_name);
 
 	return de;
 }
@@ -74,7 +78,11 @@ int simple_close(__attribute__((unused)) FILE *f)
 int simple_opendir(DIR *dir, INODE *inode, unsigned int oattr)
 {
 	dir->d_ops = inode->i_dops;
-	dir->d_ents = inode->ie_dents;
+	dir->d_inode = inode;
+	dir->d_oattr = oattr;
+
+	dir->de_pos = inode->ie_dents;
+
 	return 0;
 }
 
@@ -85,17 +93,49 @@ int simple_closedir(__attribute__((unused)) DIR *d)
 
 DIRENT *simple_dirfind(DIR *dir, const char *name)
 {
-	list_foreach(le, dir->d_ents) {
+	LIST_NODE *le;
+	//printf("simple_dirfind(%p,%s)\n", dir->d_inode, name);
+	list_for(le, dir->d_inode->ie_dents) {
 		DIRENT *de = list_entry(DIRENT, e_list, le);
-		if (!strcmp(de->e_name, name))
+		//printf("simple_dirfind: testing %s...\n", de->e_name);
+		if (!strcmp(de->e_name, name)) {
+			dir->de_pos = le;
+			//printf("simple_dirfind out\n");
 			return de;
+		}
 	}
+	//printf("simple_dirfind no found\n");
+	return 0;
+}
+
+DIRENT *simple_readdir(DIR *dir)
+{
+	if (!dir->de_pos)
+		return 0;
+	DIRENT *de = list_entry(DIRENT, e_list, dir->de_pos);
+	dir->de_pos = dir->de_pos->next;
+	return de;
+}
+
+int simple_rewinddir(DIR *dir) // TODO: seekdir instead???
+{
+	dir->de_pos = dir->d_inode->ie_dents;
 	return 0;
 }
 
 DIRENT *dirfind(DIR *dir, const char *name)
 {
 	return dir->d_ops->dirfind(dir, name);
+}
+
+int rewinddir(DIR *dir)
+{
+	return dir->d_ops->rewinddir(dir);
+}
+
+DIRENT *readdir(DIR *dir)
+{
+	return dir->d_ops->readdir(dir);
 }
 
 DIRENT *dir_locate_entry(DIR *_dir, const char *_name)
@@ -152,9 +192,9 @@ int inode_open(FILE *file, INODE *inode, unsigned int oattr)
 	return inode->i_fops->open(file, inode, oattr);
 }
 
-void close(FILE *file)
+int close(FILE *file)
 {
-	file->f_ops->close(file);
+	return file->f_ops->close(file);
 }
 
 long seek(FILE *file, long offset, int whence)

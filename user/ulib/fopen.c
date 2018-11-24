@@ -23,6 +23,8 @@ int fopen_i(FILE *f, const char *name, const char *type)
 
 	file_parse_oattr(f, type);
 
+	f->f_iseof = 0;
+
 	int res = f->f_fd = open(name, f->f_oattr);
 	if (res > 0)
 		res = 0;

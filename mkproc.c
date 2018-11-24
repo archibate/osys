@@ -11,6 +11,7 @@
 #include <pexit.h>
 #include <psm.h>
 #include <upcb.h>
+#include <uregs.h>
 #include <print.h>
 
 #define STACK_SIZE 8192
@@ -29,18 +30,11 @@ TCB *create_process_ex
 	, void *arg
 	)
 {
-	TCB *tcb = kmalloc(STACK_SIZE);
-	bzero(tcb, sizeof(PCB));
+	printf("create_process_ex(%s,%p,%p)\n", name, proc, arg);
+
+	TCB *tcb = kmalloc(sizeof(TCB));
+	bzero(tcb, sizeof(TCB));
 	tcb->name = name;
-
-	unsigned long *sp = (unsigned long*)((char*)tcb + STACK_SIZE);
-	*--sp = (unsigned long) arg;
-	*--sp = (unsigned long) __process_exit;
-
-	tcb->sp = (KS_REGS *) sp;
-	bzero(--tcb->sp, sizeof(KS_REGS));
-	tcb->sp->eflags = 0x002;
-	tcb->sp->pc = (unsigned long) proc;
 
 	unsigned long *pgd = (unsigned long *) alloc_ppage();
 	memset(pgd, 0, PGSIZE);
@@ -53,6 +47,16 @@ TCB *create_process_ex
 	}
 
 	UPCB_OF(pgd)->brk = USER_STACK_BEG;
+
+
+	unsigned long *sp = (unsigned long *) IFRM_OF(pgd);
+	*--sp = (unsigned long) arg;
+	*--sp = (unsigned long) __process_exit;
+
+	tcb->sp = (KS_REGS *) sp;
+	bzero(--tcb->sp, sizeof(KS_REGS));
+	tcb->sp->eflags = 0x002;
+	tcb->sp->pc = (unsigned long) proc;
 
 	tcb->pgd = pgd;
 

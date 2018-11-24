@@ -12,6 +12,7 @@ EXTSTRUCT(FILE_OPS);
 EXTSTRUCT(INODE_OPS);
 EXTSTRUCT(INODE);
 EXTSTRUCT(DIRENT);
+EXTSTRUCT(U_DIRENT);
 EXTSTRUCT(SUPER_OPS);
 EXTSTRUCT(SUPER);
 EXTSTRUCT(FSDRIVE);
@@ -52,10 +53,10 @@ struct FILE // 表示一个文件,或一个目录
 		INODE *d_inode;
 		unsigned int d_oattr;
 
-		LIST_HEAD d_ents;
-
 		union {
 			void *d_priv_data;
+
+			LIST_HEAD de_pos;
 		};
 	};
 };};
@@ -92,7 +93,9 @@ struct FILE_OPS // 文件操作,读写之类的
 	int (*fsync)(FILE *file); // 同步文件改动
 
 	// 以下是一些对目录的操作,删除啊遍历啊之类的
-	DIRENT *(*dirfind)(DIR *dir, const char *name);
+	DIRENT *(*dirfind)(DIR *dir, const char *name); // 在目录中寻找一个相应名字的项
+	DIRENT *(*readdir)(DIR *dir); // 读取一个目录项
+	int (*rewinddir)(DIR *dir); // 重定位到目录开始的那一项
 };
 
 
@@ -123,11 +126,13 @@ struct INODE // 表示一个文件或者目录, 算是什么东西的最小单�
 		unsigned char i_type; // inode类型
 		unsigned int i_attr; // inode属性
 	};
-	off_t i_size; // 文件大小
+	union {
+		off_t i_size; // 文件大小
+		LIST_HEAD ie_dents;
+	};
 
 	union {
 		void *ie_priv_data;
-		LIST_HEAD ie_dents;
 		struct FIFO *ie_fifo;
 		struct EFIFO *ie_efifo;
 		struct PIPE *ie_pipe;
@@ -140,13 +145,19 @@ struct INODE // 表示一个文件或者目录, 算是什么东西的最小单�
 };
 
 
+#include <udirent.h>
+
 struct DIRENT // 表示目录中的一个项目, 比如/home/bate, 则bate是home的一个dirent
 {
 	LIST_NODE e_list;
 
-	char e_name[MAX_FNAME + 1];
-
-	INODE *e_inode; // 这个目录项对应的inode
+	union {
+		U_DIRENT e_ude;
+		struct {
+			char e_name[MAX_FNAME + 1];
+			INODE *e_inode; // 这个目录项对应的inode
+		};
+	};
 };
 
 
@@ -204,13 +215,16 @@ DIRENT *dir_find_entry(LIST_HEAD dents, const char *name);
 DIRENT *dir_locate_entry(DIR *_dir, const char *_name);
 int inode_open(FILE *file, INODE *inode, unsigned int oattr);
 int open_in(FILE *file, DIR *indir, const char *name, unsigned int oattr);
-void closedir(DIR *file);
+DIRENT *simple_readdir(DIR *dir);
+DIRENT *readdir(DIR *dir);
+int rewinddir(DIR *dir);
 DIRENT *dirfind(DIR *dir, const char *name);
 DIRENT *simple_dirfind(DIR *dir, const char *name);
 int simple_open(FILE *f, INODE *inode, unsigned int oattr);
 int simple_opendir(DIR *dir, INODE *inode, unsigned int oattr);
-int simple_close(__attribute__((unused)) FILE *f);
-int simple_closedir(__attribute__((unused)) DIR *d);
+int simple_rewinddir(DIR *dir);
+int simple_close(FILE *f);
+int simple_closedir(DIR *d);
 int read(FILE *file, char *buf, size_t size);
 int write(FILE *file, const char *buf, size_t size);
 int mmap(FILE *f, void *p, size_t size, unsigned int mattr);
@@ -220,13 +234,13 @@ long seek(FILE *file, long offset, int whence);
 size_t glinesize(FILE *file);
 char *getline(FILE *file);
 int fsync(FILE *file);
-void close(FILE *file);
+int close(FILE *file);
 DIRENT *__dir_new_entry
-	( INODE *dir_inode
+	( INODE *dirnode
 	, const char *name
 	, unsigned int iattr
 	);
-#define dir_new_entry(dir_inode, name, iattr) (__dir_new_entry(dir_inode, name, iattr)->e_inode)
+#define dir_new_entry(dirnode, name, iattr) (__dir_new_entry(dirnode, name, iattr)->e_inode)
 
 static inline
 int inode_opendir(DIR *dir, INODE *inode, unsigned int oattr)

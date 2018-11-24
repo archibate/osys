@@ -26,13 +26,14 @@ void devfs_free_inode(INODE *inode)
 static
 void devfs_free_super(SUPER *sb)
 {
-	for (LIST *le = sb->s_root->d_ents; le;) {
-		DIRENT *de = list_entry(DIRENT, e_list, le);
-		le = le->next;
+	DIRENT *de;
+	DIR dir;
+	simple_opendir(&dir, sb->s_inode, OPEN_RD);
+	while ((de = readdir(&dir))) {
 		free_inode(de->e_inode);
 		kfree(de);
 	}
-	kfree(sb->s_root);
+	simple_closedir(&dir);
 	kfree(sb);
 }
 
@@ -48,6 +49,8 @@ static
 DIR_OPS devfs_devdir_dops = {
 	.opendir = simple_opendir,
 	.closedir = simple_closedir,
+	.rewinddir = simple_rewinddir,
+	.readdir = simple_readdir,
 	.dirfind = simple_dirfind,
 };
 
