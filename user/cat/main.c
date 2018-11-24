@@ -1,12 +1,11 @@
 #include <stdio.h>
 #include <unistd.h>
-#include <malloc.h>
 
 int main(const char *path)
 {
 	FILE *f = path[0] ? fopen(path, "r") : stdin;
 	if (!f) {
-		fprintf(stderr, "cat: cannot open %s\n", path);
+		fprintf(stderr, "cat: cannot open file %s\n", path);
 		exit(-1);
 	}
 	char buf[BUFSIZ];

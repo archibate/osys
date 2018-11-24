@@ -1,5 +1,5 @@
 D=../../
-NAME=type
+NAME=ls
 KTE=exf
 
 default: all

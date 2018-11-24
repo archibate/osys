@@ -2,7 +2,7 @@
 
 #include <unistd.h>
 
-typedef U_DIRENT DIRENT;
+typedef struct U_DIRENT DIRENT;
 
 static inline
 int opendir(const char *name, unsigned int oattr)

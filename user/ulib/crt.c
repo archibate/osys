@@ -33,11 +33,10 @@ void __attribute__((weak, noreturn)) __crt_start(size_t _arglen, ...)
 #endif
 #ifndef NO_VMON
 	stdout = fopen("/dev/vmon0", "w");
-	stderr = fopen("/dev/vmon0", "w");
 #else
 	stdout = fopen("/dev/mon0", "w");
-	stderr = fopen("/dev/mon0", "w");
 #endif
+	stderr = stdout;
 
 	int res = main(arg, arglen);
 
@@ -45,7 +44,6 @@ void __attribute__((weak, noreturn)) __crt_start(size_t _arglen, ...)
 	fclose(stdin);
 #endif
 	fclose(stdout);
-	fclose(stderr);
 
 	exit(res);
 }

@@ -34,9 +34,9 @@ void __attribute__((noreturn)) shexecap(const char *name, const char *arg)
 	int res = execap(path, arg);
 
 	if (res == -ENOENT)
-		printf("sh: command not found: %s\n", name);
+		fprintf(stderr, "sh: command not found: %s\n", name);
 	else
-		printf("sh: execap(%s): %m\n", path, res);
+		fprintf(stderr, "sh: execap(%s): %m\n", path, res);
 	exit(res);
 }
 
