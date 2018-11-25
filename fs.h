@@ -64,14 +64,14 @@ struct FILE // 表示一个文件,或一个目录
 
 struct FILE_OPS // 文件操作,读写之类的
 {
-	union {
-		int (*open)(FILE *file, INODE *inode, unsigned int oattr); // 打开文件
-		int (*opendir)(DIR *dir, INODE *inode, unsigned int oattr); // 打开目录
-	};
-	union {
-		int (*close)(FILE *file); // 关闭文件(但是不释放FILE指针内存的那种)
-		int (*closedir)(DIR *dir);
-	};
+	//union {
+	int (*open)(FILE *file, INODE *inode, unsigned int oattr); // 打开文件
+	int (*opendir)(DIR *dir, INODE *inode, unsigned int oattr); // 打开目录
+	//};
+	//union {
+	int (*close)(FILE *file); // 关闭文件(但是不释放FILE指针内存的那种)
+	int (*closedir)(DIR *dir);
+	//};
 
 	int (*read)(FILE *file, char *buf, size_t size); // 读取文件
 	int (*write)(FILE *file, const char *buf, size_t size); // 写入文件

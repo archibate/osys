@@ -8,9 +8,11 @@ int main(const char *path)
 		fprintf(stderr, "cat: cannot open file %s\n", path);
 		exit(-1);
 	}
-	char buf[BUFSIZ];
-	while (fgets(buf, sizeof(buf), f))
-		puts(buf);
+
+	do puts(fgetrdbuf(f));
+	while (!feof(f));
+	fflush(stdout);
+
 	if (path[0])
 		fclose(f);
 	return 0;

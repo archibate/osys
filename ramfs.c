@@ -60,8 +60,6 @@ int ramfs_read(FILE *f, char *buf, size_t size)
 {
 	SUPER *sb = f->f_inode->i_sb;
 
-	//printf("%p vs %p\n", &f->f_ops, buf);
-
 	int i = 0;
 	while (1) {
 		if (f->fe_clus >= sb->se_clusmax)
@@ -212,12 +210,10 @@ static
 LIST_HEAD ramfs_decode_fatents(SUPER *sb, const FAT_DIRENT *fes, unsigned int ents);
 
 static
-DIR_OPS ramfs_dops;
-static
 int ramfs_opendir(DIR *dir, INODE *inode, unsigned int oattr)
 {
 	dir->d_oattr = oattr;
-	dir->d_ops = &ramfs_dops;
+	dir->d_ops = &ramfs_fops;
 	dir->d_inode = inode;
 
 	char *buf = inode->i_sb->se_ramdat;
@@ -238,10 +234,6 @@ FILE_OPS ramfs_fops = {
 	//.tell = ramfs_tell,
 	.mmap = ramfs_mmap,
 	.close = ramfs_close,
-};
-
-static
-DIR_OPS ramfs_dops = {
 	.opendir = ramfs_opendir,
 	.readdir = simple_readdir,
 	.rewinddir = simple_rewinddir,
@@ -414,11 +406,6 @@ LIST_HEAD ramfs_decode_fatents(SUPER *sb, const FAT_DIRENT *fes, unsigned int en
 			INODE *inode = alloc_open_inode(sb);
 			copy_fate_to_inode(fe, inode);
 			de->e_ino = inode->i_no;
-
-			if (inode->i_type == INODE_DIR)
-				inode->i_dops = &ramfs_dops;
-			else
-				inode->i_fops = &ramfs_fops;
 
 			de = kmalloc_for(DIRENT);
 			bzero(de, sizeof(DIRENT));

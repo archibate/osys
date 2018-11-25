@@ -106,7 +106,7 @@ int main(const char *fname)
 	}
 
 	if (fin == stdin)
-		printf("\nOSYS shell v0.1\n");
+		printf("\nOSYS shell v0.1 (C) archibate 2018\n");
 
 	char cmdl[LINE_MAX + 1];
 

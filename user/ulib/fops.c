@@ -23,7 +23,7 @@ const char *fgetbuf(FILE *f)
 	return s;
 }
 
-int fgets(char *s, size_t size, FILE *f)
+int fgets(char *s, size_t size, FILE *f) // BUG when last line is termiated without '\n' (FIXME)
 {
 	unsigned i, n = size - 1;
 	const char *buf;

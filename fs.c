@@ -36,11 +36,8 @@ DIRENT *dir_new_entry
 	DIRENT *de = kmalloc_for(DIRENT);
 	if (name)
 		strcpy(de->e_name, name);
-
 	de->e_sb = dirnode->i_sb;
-
 	list_add_head_n(&dirnode->ie_dents, &de->e_list);
-
 	return de;
 }
 
@@ -220,7 +217,10 @@ int inode_open(FILE *file, INODE *inode, unsigned int oattr)
 
 int close(FILE *file)
 {
-	return file->f_ops->close(file);
+	if (file->f_oattr & OPEN_DIR)
+		return file->f_ops->closedir(file);
+	else
+		return file->f_ops->close(file);
 }
 
 long seek(FILE *file, long offset, int whence)

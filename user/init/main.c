@@ -15,7 +15,7 @@ int main(const char *arg)
 		open("/dev/kbd0", OPEN_RD);
 		open("/dev/vmon0", OPEN_WR);
 		open("/dev/vmon0", OPEN_WR);
-		exit(execap("/bin/shell.exf", ""));
+		exit(execap("/bin/shell.exf", "/etc/init.sh"));
 	}
 
 	return 0;

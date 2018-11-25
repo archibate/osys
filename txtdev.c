@@ -4,6 +4,7 @@
 #include <txtdev.h>
 #include <devfs.h>
 #include <memory.h>
+#include <kmalloc.h>
 
 static
 int txtdev_read(FILE *f, char *buf, unsigned long size)
@@ -51,5 +52,8 @@ void setup_strinfo_dev
 	, const char *str
 	)
 {
-	setup_txtinfo_dev(inode, str, strlen(str));
+	size_t len = strlen(str);
+	char *buf = kmalloc(len);
+	memcpy(buf, str, len);
+	setup_txtinfo_dev(inode, buf, len);
 }
