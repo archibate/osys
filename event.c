@@ -14,6 +14,7 @@ void wait_on_ex(EVENT *event, TCB *next)
 	tcb_remove(current);
 	//printf("wait_on: %p=%p\n", event, event->waiting_head);
 	tcb_insert_after_ch(current, &event->waiting_head);
+	//printf("wait_on_ex: task_run(%p)\n", next);
 	task_run(next);
 }
 

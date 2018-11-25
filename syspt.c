@@ -14,7 +14,7 @@ int sys_undefined(void)
 
 #define verify_ptr(p) if ((unsigned long) (p) < USER_BEG) return -EFAULT
 #define verify_pid(pid) if ((pid) < 0 || (pid) > PID_MAX) return -EINVAL
-#define verify_eveid(pid) if ((eveid) >= EVE_MAX) return -EINVAL
+#define verify_eveid(eveid) if ((eveid) >= EVE_MAX) return -EINVAL
 
 
 int sys_waiton(int pid, unsigned int eveid)

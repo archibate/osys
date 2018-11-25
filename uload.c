@@ -31,6 +31,8 @@ int exec_user_program_fc(FILE *f)
 
 	for (size_t off = 0; off < exfhdr.x_size; off += PGSIZE)
 		uload_map_psm_page((unsigned long)addr + off);
+		/*{unsigned long pg = alloc_ppage(); printf("pg=%p\n", pg);
+		map(((unsigned long)addr + off), pg | PG_PSM | PG_P | PG_W | PG_U);}*/
 
 	mmu_set_pd(mmu_get_pd());
 

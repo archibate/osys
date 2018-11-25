@@ -60,6 +60,8 @@ int ramfs_read(FILE *f, char *buf, size_t size)
 {
 	SUPER *sb = f->f_inode->i_sb;
 
+	//printf("%p vs %p\n", &f->f_ops, buf);
+
 	int i = 0;
 	while (1) {
 		if (f->fe_clus >= sb->se_clusmax)
@@ -251,43 +253,39 @@ DIR_OPS ramfs_dops = {
 
 static
 INODE_OPS ramfs_iops = {
+	.link = simple_link,
 };
 
 static
-INODE *ramfs_alloc_inode(SUPER *sb)
+ino_t ramfs_alloc_ino(SUPER *sb)
 {
-	INODE *inode = kmalloc_for(INODE);
-	inode->ie_dents = 0;
-	inode->i_sb = sb;
-	inode->i_ops = &ramfs_iops;
-	return inode;
+	ino_t ino = sb->se_now_ino++;
+	bzero(sb->se_inodes[ino] = kmalloc_for(INODE), sizeof(INODE));
+	sb->se_inodes[ino]->i_ops = &ramfs_iops;
+	sb->se_inodes[ino]->i_fops = &ramfs_fops;
+	sb->se_inodes[ino]->i_no = ino;
+	sb->se_inodes[ino]->i_sb = sb;
+	return ino;
 }
 
 static
-void ramfs_free_inode(INODE *inode)
+INODE *ramfs_open_inode(SUPER *sb, ino_t ino)
 {
-	kfree(inode);
+	return sb->se_inodes[ino];
 }
 
 static
 void ramfs_free_super(SUPER *sb)
 {
-	DIRENT *de;
-	rewinddir(sb->s_root);
-	while ((de = readdir(sb->s_root))) {
-		free_inode(de->e_inode);
-		kfree(de);
-	}
-	free_inode(sb->s_inode);
-	kfree(sb->s_root);
-	kfree(sb);
+	panic("ramfs does not support free_super (yet)\n");
 }
 
 static
 SUPER_OPS ramfs_super_ops = {
 	.free_super = ramfs_free_super,
-	.alloc_inode = ramfs_alloc_inode,
-	.free_inode = ramfs_free_inode,
+	.alloc_ino = ramfs_alloc_ino,
+	.open_inode = ramfs_open_inode,
+	.close_inode = simple_close_inode,
 };
 
 static
@@ -376,12 +374,13 @@ void copy_fate_to_inode(const FAT_DIRENT *fe, INODE *inode)
 static
 LIST_HEAD ramfs_decode_fatents(SUPER *sb, const FAT_DIRENT *fes, unsigned int ents)
 {
-	//printf("loading directory entries...(%d maxium) from %p\n", ents);
+	//printf("loading directory entries...(%d maxium)\n", ents);
 
 	int total = 0;
 	unsigned char chksum = 0;
 
 	DIRENT *de = kmalloc_for(DIRENT);
+	bzero(de, sizeof(DIRENT));
 
 	LIST_HEAD dents = 0;
 	for (int i = ents - 1; i >= 0; i--)
@@ -409,17 +408,20 @@ LIST_HEAD ramfs_decode_fatents(SUPER *sb, const FAT_DIRENT *fes, unsigned int en
 			}
 			//printf("loaded entry: %s\n", de->e_name);
 
+			de->e_sb = sb;
 			list_add_head_n(&dents, &de->e_list);
 
-			de->e_inode = ramfs_alloc_inode(sb);
-			copy_fate_to_inode(fe, de->e_inode);
+			INODE *inode = alloc_open_inode(sb);
+			copy_fate_to_inode(fe, inode);
+			de->e_ino = inode->i_no;
 
-			if (de->e_inode->i_type == INODE_DIR)
-				de->e_inode->i_dops = &ramfs_dops;
+			if (inode->i_type == INODE_DIR)
+				inode->i_dops = &ramfs_dops;
 			else
-				de->e_inode->i_fops = &ramfs_fops;
+				inode->i_fops = &ramfs_fops;
 
 			de = kmalloc_for(DIRENT);
+			bzero(de, sizeof(DIRENT));
 			p = de->e_name;
 			fe = nfe;
 
@@ -492,19 +494,10 @@ void uncompress_fat12(clus_t *fat, const unsigned char *img, unsigned int ents)
 
 static
 DIR_OPS ramfs_root_dops;
-static
-int ramfs_root_opendir(DIR *dir, INODE *inode, unsigned int oattr)
-{
-	dir->d_inode = inode;
-	dir->d_ops = &ramfs_root_dops;
-	dir->d_oattr = oattr;
-	dir->de_pos = inode->ie_dents;
-	return 0;
-}
 
 static
 DIR_OPS ramfs_root_dops = {
-	.opendir = ramfs_root_opendir,
+	.opendir = simple_opendir,
 	.closedir = simple_closedir,
 	.rewinddir = simple_rewinddir,
 	.readdir = simple_readdir,
@@ -515,28 +508,27 @@ static
 SUPER *ramfs_load_super(void *ramdisk)
 {
 	SUPER *sb = kmalloc_for(SUPER);
-	RAMFS_LOADING *es = kmalloc_for(RAMFS_LOADING);
+	bzero(sb, sizeof(SUPER));
 
+	sb->s_ops = &ramfs_super_ops;
+	sb->se_inodes = kmalloc(SE_INODES * sizeof(INODE *));
+
+	RAMFS_LOADING *es = kmalloc_for(RAMFS_LOADING);
 	es->sb = sb;
 	es->data = (unsigned char *) ramdisk;
-
 	ramfs_decode_mbr(es);
 
-	es->sb->s_inode = ramfs_alloc_inode(es->sb);
-	es->sb->s_inode->i_dops = &ramfs_root_dops;
+	int ino_root = ramfs_alloc_ino(sb);
+	assert(ino_root == 0);
 
-	es->sb->s_inode->ie_dents = ramfs_decode_fatents(es->sb, es->rootdir, es->rootdir_ents);
+	sb->se_inodes[0]->ie_dents = ramfs_decode_fatents(sb, es->rootdir, es->rootdir_ents);
+	sb->se_inodes[0]->i_dops = &ramfs_root_dops;
+	sb->se_inodes[0]->i_attr = INODE_DIR | INODE_WR | INODE_RD;
 
-	es->sb->s_root = kmalloc_for(DIR);
-	ramfs_root_opendir(es->sb->s_root, es->sb->s_inode, OPEN_RD | OPEN_WR);
-
-	es->sb->se_fat = kmalloc((es->fat_ents + 1) * sizeof(clus_t));
+	sb->se_fat = kmalloc((es->fat_ents + 1) * sizeof(clus_t));
 	uncompress_fat12(es->sb->se_fat, es->fat12, es->fat_ents);
 
-	es->sb->s_ops = &ramfs_super_ops;
-
 	kfree(es);
-
 	return sb;
 }
 
@@ -555,5 +547,8 @@ void init_ramfs(void)
 
 	extern char ramdisk[];
 	rd_sb = load_super("ramfs", ramdisk);
-	vfs_setroot(rd_sb->s_root);
+	DIR *rt = kmalloc_for(DIR);
+	int res = inode_opendir(rt, open_inode(rd_sb, 0), OPEN_RD | OPEN_WR);
+	assert(!res);
+	vfs_setroot(rt);
 }

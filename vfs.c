@@ -1,7 +1,9 @@
 #include <vfs.h>
+#include <print.h>
 #include <errno.h>
 #include <kmalloc.h>
 #include <memory.h>
+#include <panic.h>
 
 
 DIR *root = 0;
@@ -37,7 +39,8 @@ void vfs_mount(const char *name, SUPER *sb)
 	DIRENT *de = locate_entry(name);
 	/*if (de->e_inode)
 		free_inode(de->e_inode);//FIXME*/
-	de->e_inode = sb->s_inode;
+	de->e_sb = sb;
+	de->e_ino = 0;
 }
 
 
@@ -52,5 +55,5 @@ int open(FILE *file, const char *name, unsigned int oattr)
 	if (!de)
 		return -ENOENT;
 
-	return inode_open(file, de->e_inode, oattr);
+	return inode_open(file, open_dirent(de), oattr);
 }

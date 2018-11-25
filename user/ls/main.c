@@ -11,7 +11,7 @@ int main(const char *path)
 	}
 	DIRENT ent;
 	while (!readdir(i, &ent)) {
-		printf("%s\n", ent.e_name);
+		printf("%10d %s\n", ent.e_ino, ent.e_name);
 	}
 	closedir(i);
 	return 0;

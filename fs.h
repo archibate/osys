@@ -101,6 +101,7 @@ struct FILE_OPS // 文件操作,读写之类的
 
 struct INODE_OPS // inode(文件节点)操作,好像就创建删除之类的————和FILE_OPS不一样
 {
+	int (*link)(INODE *inode, DIRENT *de);
 	/*int (*create)(INODE *inode, DIRENT *dir); // 创建文件, ln
 	int (*remove)(INODE *inode, DIRENT *dir); // 删除文件, rm
 	int (*mkdir)(INODE *inode, DIRENT *dir); // 创建目录, mkdir
@@ -121,6 +122,9 @@ struct INODE // 表示一个文件或者目录, 算是什么东西的最小单�
 	}; // 具体是哪个由i_attr的INODE_DIR字段确定
 
 	SUPER *i_sb; // 所属的super指针
+
+	unsigned int i_no;
+	unsigned int i_lnks;
 
 	union {
 		unsigned char i_type; // inode类型
@@ -151,11 +155,14 @@ struct DIRENT // 表示目录中的一个项目, 比如/home/bate, 则bate是hom
 {
 	LIST_NODE e_list;
 
+	SUPER *e_sb;
+
 	union {
 		U_DIRENT e_ude;
 		struct {
+			ino_t e_ino; // 这个目录项对应的inode编号
 			char e_name[MAX_FNAME + 1];
-			INODE *e_inode; // 这个目录项对应的inode
+			//INODE *e_inode; // 这个目录项对应的inode
 		};
 	};
 };
@@ -163,8 +170,9 @@ struct DIRENT // 表示目录中的一个项目, 比如/home/bate, 则bate是hom
 
 struct SUPER_OPS
 {
-	INODE *(*alloc_inode)(SUPER *sb); // 内存中分配一个inode
-	void (*free_inode)(INODE *inode); // 关闭一个分配的inode
+	ino_t (*alloc_ino)(SUPER *sb); // 文件系统中分配一个inode
+	INODE *(*open_inode)(SUPER *sb, ino_t ino); // 通过号码来打开inode
+	void (*close_inode)(INODE *inode); // 关闭一个打开的inode
 	void (*free_super)(SUPER *sb); // 释放一个已加载的super块
 	int (*sync_fs)(struct SUPER *sb); // 同步改动到文件系统
 };
@@ -191,6 +199,9 @@ struct SUPER // 表示一个具有文件系统的块, 比如: /dev/fd0具有fat1
 			clus_t *se_fat;
 			clus_t se_clusmax;
 			unsigned int se_clusiz;
+			unsigned int se_now_ino;
+#define SE_INODES 1024
+			INODE **se_inodes;
 		};
 	};
 };
@@ -209,8 +220,9 @@ void add_fsdrive(FSDRIVE *fs);
 FSDRIVE *get_fsdrive(const char *name);
 SUPER *load_super(const char *fsname, void *arg);
 void free_super(SUPER *super);
-INODE *alloc_inode(SUPER *sb);
-void free_inode(INODE *inode);
+ino_t alloc_ino(SUPER *sb);
+INODE *open_inode(SUPER *sb, ino_t ino);
+void close_inode(INODE *inode);
 DIRENT *dir_find_entry(LIST_HEAD dents, const char *name);
 DIRENT *dir_locate_entry(DIR *_dir, const char *_name);
 int inode_open(FILE *file, INODE *inode, unsigned int oattr);
@@ -235,12 +247,23 @@ size_t glinesize(FILE *file);
 char *getline(FILE *file);
 int fsync(FILE *file);
 int close(FILE *file);
-DIRENT *__dir_new_entry
+void simple_close_inode(INODE *inode);
+int simple_link(INODE *inode, DIRENT *de);
+DIRENT *dir_new_entry
+	( INODE *dirnode
+	, const char *name
+	);
+INODE *dir_new_inode
 	( INODE *dirnode
 	, const char *name
 	, unsigned int iattr
 	);
-#define dir_new_entry(dirnode, name, iattr) (__dir_new_entry(dirnode, name, iattr)->e_inode)
+
+static inline
+int link(INODE *inode, DIRENT *de)
+{
+	return inode->i_ops->link(inode, de);
+}
 
 static inline
 int inode_opendir(DIR *dir, INODE *inode, unsigned int oattr)
@@ -252,4 +275,16 @@ static inline
 int opendir_in(DIR *dir, DIR *indir, const char *name, unsigned int oattr)
 {
 	return open_in(dir, indir, name, oattr | OPEN_DIR);
+}
+
+static inline
+INODE *alloc_open_inode(SUPER *sb)
+{
+	return open_inode(sb, alloc_ino(sb));
+}
+
+static inline
+INODE *open_dirent(DIRENT *de)
+{
+	return open_inode(de->e_sb, de->e_ino);
 }

@@ -41,6 +41,7 @@ int sys_open(const char *name, unsigned int oattr)
 
 	if (res < 0) {
 		kfree(curr_upcb.files[fd]);
+		curr_upcb.files[fd] = 0;
 		fd = res;
 	}
 

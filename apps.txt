@@ -1,4 +1,5 @@
 cat
 ls
+hello
 shell
 xfont

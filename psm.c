@@ -2,6 +2,7 @@
 #include <panic.h>
 #include <memlay.h>
 #include <page.h> // PGSIZE
+#include <print.h>
 
 
 void init_psm
@@ -23,6 +24,7 @@ static unsigned long psm_stack[PSM_STACK_SIZE], *psm_sp = psm_stack+4;
 void free_ppage
 (unsigned long addr)
 {
+	assert(addr);
 	assert(psm_sp < psm_stack + PSM_STACK_SIZE);
 	*psm_sp++ = addr;
 }

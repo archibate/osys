@@ -56,7 +56,7 @@ void init_slob(void)
 	curr_brk = PGMASK & (PGSIZE - 1 + (unsigned long) slob_head);
 	slob_head->allocated = 0;
 	slob_head->next = 0;
-	slob_head->prev = 0;
+	slob_head->prev = slob_head;
 }
 
 static
@@ -74,7 +74,7 @@ void shrink_mapping_to(unsigned long adr)
 {
 	tprintf("shrink_mapping_to(%p)\n", adr);
 	for (; curr_brk > adr + PGSIZE; curr_brk -= PGSIZE) {
-		free_ppage(unmap(curr_brk) & PGMASK);
+		free_ppage(unmap(curr_brk - PGSIZE) & PGMASK);
 	}
 }
 
@@ -136,19 +136,23 @@ void kfree(void *p)
 
 	// die: 123 23 13
 
+	//printf("kfree(%p)\n", p);
+
 	if (curr->next && !curr->next->allocated) {
 		list_remove_nextof_s3(curr);
 	}
+
+	//printf("kfree!!\n");
 
 	if (curr->prev && !curr->prev->allocated) {
 		list_remove_s2(curr);
 	}
 
-	if (!curr->next && !curr->prev && curr->prev->allocated) {
+	/*if (!curr->next) {// && !curr->prev && !curr->prev->allocated) {
 		curr->prev->next = 0;
 		tprintf("shrink to %p\n", curr->prev + 1);
 		shrink_mapping_to((unsigned long) (curr->prev + 1));
-	}
+	}*/
 
 	curr->allocated = 0;
 }

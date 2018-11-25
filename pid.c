@@ -18,6 +18,6 @@ int new_proc(TCB *proc)
 {
 	int pid = alloc_pid();
 	proc_table[pid] = proc;
-	procfs_new_proc(proc, pid, INODE_RD | INODE_WR);
+	//procfs_new_proc(proc, pid, INODE_RD | INODE_WR);
 	return pid;
 }

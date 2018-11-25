@@ -107,10 +107,3 @@ INODE *setup_efifo_dev(INODE *inode, EFIFO *efifo)
 	inode->ie_efifo = efifo;
 	return inode;
 }
-
-INODE *make_efifo_dev(const char *name, EFIFO *efifo, unsigned int iattr)
-{
-	INODE *inode = dir_new_entry(dev_super->s_inode, name, iattr);
-	setup_efifo_dev(inode, efifo);
-	return inode;
-}

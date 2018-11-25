@@ -23,3 +23,5 @@ int opendir(DIR *dir, const char *name, unsigned int oattr)
 {
 	return open(dir, name, oattr | OPEN_DIR);
 }
+
+#define vfs_inode(path) open_dirent(locate_entry(path))

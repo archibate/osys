@@ -7,24 +7,39 @@
 #include <print.h>
 
 
-DIRENT *__dir_new_entry
+int simple_link(INODE *inode, DIRENT *de)
+{
+	de->e_ino = inode->i_no;
+	inode->i_lnks++;
+	return 0;
+}
+
+INODE *dir_new_inode
 	( INODE *dirnode
 	, const char *name
 	, unsigned int iattr
 	)
 {
-	//printf("dir_new_entry(%p,%s,%d)\n", dirnode, name, iattr);
+	DIRENT *de = dir_new_entry(dirnode, name);
+	INODE *inode = alloc_open_inode(de->e_sb);
+	inode->i_attr = iattr;
+	link(inode, de);
+	return inode;
+}
 
+
+DIRENT *dir_new_entry
+	( INODE *dirnode
+	, const char *name
+	)
+{
 	DIRENT *de = kmalloc_for(DIRENT);
 	if (name)
 		strcpy(de->e_name, name);
 
-	de->e_inode = alloc_inode(dirnode->i_sb);
-	de->e_inode->i_attr = iattr;
+	de->e_sb = dirnode->i_sb;
 
 	list_add_head_n(&dirnode->ie_dents, &de->e_list);
-
-	//printf("dir_new_entry: e_name=%s\n", list_entry(DIRENT, e_list, dirnode->ie_dents)->e_name);
 
 	return de;
 }
@@ -91,6 +106,10 @@ int simple_closedir(__attribute__((unused)) DIR *d)
 	return 0;
 }
 
+void simple_close_inode(__attribute__((unused)) INODE *inode)
+{
+}
+
 DIRENT *simple_dirfind(DIR *dir, const char *name)
 {
 	LIST_NODE *le;
@@ -125,6 +144,7 @@ int simple_rewinddir(DIR *dir) // TODO: seekdir instead???
 
 DIRENT *dirfind(DIR *dir, const char *name)
 {
+	//printf("dirfind(%p,%s)\n", dir, name);
 	return dir->d_ops->dirfind(dir, name);
 }
 
@@ -149,17 +169,20 @@ DIRENT *dir_locate_entry(DIR *_dir, const char *_name)
 	int i;
 	while ((i = strfind(name, '/')) != -1) {
 		name[i] = 0;
+		//printf("dir_locate_entry(%p,%s)\n", dir->d_inode, name);
 		DIRENT *de = dirfind(dir, name);
 		if (!de)
 			return 0;
 		if (dir != _dir) kfree(dir);
 		dir = kmalloc_for(DIR);
-		inode_opendir(dir, de->e_inode, OPEN_RD);
+		inode_opendir(dir, open_dirent(de), OPEN_RD);
 		name += i + 1;
 	}
 
-	if (dir != _dir) kfree(dir);
+	//printf("dir_locate_entry(%p,%s)\n", dir->d_inode, name);
+
 	DIRENT *de = dirfind(dir, name);
+	if (dir != _dir) kfree(dir);
 	return de;
 }
 
@@ -169,7 +192,7 @@ int open_in(FILE *file, DIR *indir, const char *name, unsigned int oattr)
 	if (!de)
 		return -ENOENT;
 
-	return inode_open(file, de->e_inode, oattr);
+	return inode_open(file, open_dirent(de), oattr);
 }
 
 
@@ -189,7 +212,10 @@ int inode_open(FILE *file, INODE *inode, unsigned int oattr)
 		return -EACCES;
 	}
 
-	return inode->i_fops->open(file, inode, oattr);
+	if (oattr & OPEN_DIR)
+		return inode->i_fops->opendir(file, inode, oattr);
+	else
+		return inode->i_fops->open(file, inode, oattr);
 }
 
 int close(FILE *file)
@@ -252,15 +278,19 @@ int mmap(FILE *f, void *p, size_t size, unsigned int mattr)
 
 
 
-
-INODE *alloc_inode(SUPER *sb)
+INODE *open_inode(SUPER *sb, ino_t ino)
 {
-	return sb->s_ops->alloc_inode(sb);
+	return sb->s_ops->open_inode(sb, ino);
 }
 
-void free_inode(INODE *inode)
+void close_inode(INODE *inode)
 {
-	inode->i_sb->s_ops->free_inode(inode);
+	return inode->i_sb->s_ops->close_inode(inode);
+}
+
+ino_t alloc_ino(SUPER *sb)
+{
+	return sb->s_ops->alloc_ino(sb);
 }
 
 void free_super(SUPER *sb)

@@ -37,7 +37,7 @@ void init_heap(void)
 	set_break((void *)(PGMASK & (PGSIZE - 1 + (addr_t) heap_head)));
 	heap_head->allocated = 0;
 	heap_head->next = 0;
-	heap_head->prev = 0;
+	heap_head->prev = heap_head;
 }
 
 #ifdef tprintf
@@ -97,10 +97,11 @@ void free(void *p)
 		list_remove_s2(curr);
 	}
 
-	if (!curr->next && !curr->prev && curr->prev->allocated) {
+	/*if (!curr->next) {// && curr->prev && curr->prev->allocated) {
 		curr->prev->next = 0;
+		FIXME!
 		setbrk(curr->prev + 1);
-	}
+	}*/
 
 	curr->allocated = 0;
 }

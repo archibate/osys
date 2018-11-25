@@ -15,13 +15,14 @@ set architecture i386
 add-symbol-file bin/kernel.elf 0x100000
 #add-symbol-file user/cat/bin/cat.elf 0x10000000
 #add-symbol-file user/die/bin/die.elf 0x10000000
-#add-symbol-file user/xfont/bin/xfont.elf 0x10000000
+add-symbol-file user/xfont/bin/xfont.elf 0x10000000
 #add-symbol-file user/echo/bin/echo.elf 0x10000000
-add-symbol-file user/shell/bin/shell.elf 0x10000000
+#add-symbol-file user/shell/bin/shell.elf 0x10000000
 #add-symbol-file user/gview/bin/gview.elf 0x10000000
 #add-symbol-file user/hello/bin/hello.elf 0x10000000
 #add-symbol-file user/true/bin/true.elf 0x10000000
 #add-symbol-file user/exectest/bin/exectest.elf 0x10000000
+#add-symbol-file user/ls/bin/ls.elf 0x10000000
 
 # For both ;)
 set disassemble-next-line on
@@ -41,9 +42,13 @@ define xs
 	x/6wx $esp
 end
 
+define xsi
+	x/10i *(void**)($esp+4)
+end
+
 b panic
 b exp14
-#b do_break_point
+b do_break_point
 #bc panic
 #bc main
 #bc set_break
@@ -111,4 +116,34 @@ b exp14
 #bc main
 #bc fclose
 #bc init_welcome
+#bc __crt_start
+#c
+#b ramfs_open_inode
+#b dirfind
+#b ramfs.c:224
+#bc chdir
+#bc inode_open
+#bc ramfs_decode_fatents
+#c
+#bc ramfs.c:427
+#c
+#bt
+#xs
+#xsi
+#bc execap
+#bc exec_user_program_fc
+#bc uload.c:39
+#bc ramfs_read
+#bc ramfs.c:73
+#bc __crt_start
+#bc inode_open
+#bc free
+#bc __crt_start
+#c
+#c
+#b on_keyboard_event
+#bc sys_open
 bc __crt_start
+bc main.c:189
+#bc main
+#bc vmon_recursor
