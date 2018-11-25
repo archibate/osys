@@ -1,1 +1,1 @@
-cat /proc/1/name
+shell

@@ -1,13 +1,15 @@
-shell: my getline(), readline() lib!!!!!
+schedule: take good care to the performence problem in ipc between xfont and cat.
+schedule: reconsider 'pcb-switching' policy.
+schedule: prios for different task plz.
+user/xwm: impelement a X window manager!
 proc: child/parent/ppid tasking system?
-schedule: prios for different task.
-sysmm: auto increase stack on page fault.
-ulib: io-buffering for fread/write!!!
 reconsider pgd_* and mmu_reflush structure (tlb)!
 lock: consider to impl ref count system?
+sysmm: auto increase stack on page fault.
+fork&sysmm: copy-on-write or vfork().
+ulib: io-buffering for fread/write!!!
+shell: my getline(), readline() lib!!!!!
 xfont: hankaku -> hanzi display!!!!
-fork: copy-on-write or vfork().
-xwm: a X window manager!
 
 map.c:干脆考虑把所有在USER_BEG以后,且物理地址在PSM管辖范围内的页都free了?
 fs: opendir(), readdir(), seekdir(), /bin/ls.exf

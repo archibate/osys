@@ -90,7 +90,7 @@ void add_task
 	( TCB *tcb
 	)
 {
-	tcb_insert_after_ch(tcb, &current);
+	tcb_insert_before_ch(tcb, &current);
 }
 
 

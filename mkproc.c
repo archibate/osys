@@ -30,7 +30,7 @@ TCB *create_process_ex
 	, void *arg
 	)
 {
-	printf("create_process_ex(%s,%p,%p)\n", name, proc, arg);
+	//printf("create_process_ex(%s,%p,%p)\n", name, proc, arg);
 
 	TCB *tcb = kmalloc(sizeof(TCB));
 	bzero(tcb, sizeof(TCB));

@@ -1,7 +1,7 @@
 ../ulib/start
 ../ulib/crt
 main
-asc16
+hankaku
 ../lib/gprintf
 ../lib/atoi
 ../lib/div

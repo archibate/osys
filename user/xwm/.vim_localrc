@@ -1,0 +1,14 @@
+" set ft=vim
+
+nnoremap <F4> :wa<CR>
+nnoremap <F8> :wa<CR>:sh<CR><CR>
+nnoremap <F5> :wa<CR>:!make install && make -C../.. run<CR><CR>
+nnoremap <F6> :wa<CR>:!make install && make -C../.. NODEP=1 DEBUG=1 debug<CR><CR>
+nnoremap <F7> :wa<CR>:!make install && make -C../.. bochsrun<CR><CR>
+
+set fdm=marker
+
+""" To use aboves, please add the following statements to your ~/.vimrc
+"if filereadable(".vim_localrc")
+"  source .vim_localrc
+"endif

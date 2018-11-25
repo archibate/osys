@@ -31,6 +31,11 @@ int execap(const char *name, const char *arg)
 		goto out;
 	}
 
+	/**/size_t namelen = strlen(name) + 1;
+	char *name2 = kmalloc(namelen);
+	memcpy(name2, name, namelen);
+	current->name = name2;/**/
+
 	size_t arglen = strlen(arg) + 1;
 	char *arg2 = kmalloc(arglen);
 	memcpy(arg2, arg, arglen);

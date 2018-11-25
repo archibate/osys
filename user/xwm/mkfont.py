@@ -5,7 +5,8 @@ with open(sys.argv[1], 'r') as f:
         for line in f.readlines():
             if len(line) >= 8 and line[0] != '#':
                 res = 0
+                term = 1
                 for i in range(8):
-                    res *= 2
-                    res += '.*'.index(line[i])
+                    res += '.*'.index(line[i]) * term
+                    term *= 2
                 fout.write(struct.pack('B', res))

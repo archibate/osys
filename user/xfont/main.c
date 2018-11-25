@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <memory.h>
 #include <vinfo.h>
-#include "hankaku.h"
+#include "asc16.h"
 
 void error(int i, const char *s)
 {
@@ -21,16 +21,16 @@ void putfont
 	, char c
 	)
 {
-	const unsigned char *f = hankaku + 16 * (unsigned char) c;
+	const unsigned char *f = asc16 + 16 * (unsigned char) c;
 
 	for (int j = 0; j < ((col & COL_UNDERLN) ? 15 : 16); j++) {
 		unsigned char w = f[j];
 		for (int i = 0; i < 8; i++) {
-			if (w & 1)
+			if (w & 0x80)
 				p[i] = col & 0xff;
 			else
 				p[i] = (col >> 8) & 0xff;
-			w >>= 1;
+			w <<= 1;
 		}
 		p += stride;
 	}

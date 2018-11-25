@@ -5,4 +5,4 @@
 [SECTION .rodata]
 
 asc16:
-	incbin "hankaku.fnt"
+	incbin "asc16.fnt"
