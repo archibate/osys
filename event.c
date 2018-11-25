@@ -24,9 +24,8 @@ void trig_up(EVENT *event)
 	event->trig_count++;
 	//printf("trig_up: %p=%p\n", event, event->waiting_head);
 	if (event->waiting_head) {
-		TCB *next = tcb_shift_forward_ch(&event->waiting_head);
-		tcb_insert_before_ch(next, &current);
-		assert(current->prev == next);
-		task_run(current->prev);
+		TCB *target = tcb_shift_forward_ch(&event->waiting_head);
+		tcb_insert_before_ch(target, &current);
+		task_run(target);
 	}
 }

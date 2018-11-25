@@ -4,7 +4,7 @@
 
 int main(const char *path)
 {
-	int i = opendir(path, OPEN_RD);
+	int i = opendir(path[0] ? path : ".", OPEN_RD);
 	if (i < 0) {
 		fprintf(stderr, "ls: %s: %m\n", path, i);
 		exit(-1);

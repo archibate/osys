@@ -28,22 +28,14 @@ void __attribute__((weak, noreturn)) __crt_start(size_t _arglen, ...)
 
 	init_heap();
 
-#ifndef NO_IN
-	stdin = fopen("/dev/kbd0", "r");
-#endif
-#ifndef NO_VMON
-	stdout = fopen("/dev/vmon0", "w");
-#else
-	stdout = fopen("/dev/mon0", "w");
-#endif
+	stdin = fdopen(0, "r");
+	stdout = fdopen(1, "w");
 	stderr = stdout;
 
 	int res = main(arg, arglen);
 
-#ifndef NO_IN
-	fclose(stdin);
-#endif
-	fclose(stdout);
+	fdclose(stdin);
+	fdclose(stdout);
 
 	exit(res);
 }

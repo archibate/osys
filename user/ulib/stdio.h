@@ -23,6 +23,8 @@ int printf(const char *fmt, ...);
 int vfprintf(FILE *f, const char *fmt, va_list ap);
 int fprintf(FILE *f, const char *fmt, ...);
 FILE *fopen(const char *name, const char *type);
+FILE *fdopen(int fd, const char *type);
+int fdopen_i(FILE *f, int fd, const char *type);
 int fopen_i(FILE *f, const char *name, const char *type);
 int fopen_s(FILE **pf, const char *name, const char *type);
 int fread(void *p, size_t size, size_t count, FILE *f);
@@ -33,9 +35,11 @@ int fputs(const char *s, FILE *f);
 int file_need_wr_flush(FILE *f);
 void file_wr_flush(FILE *f);
 void file_rd_flush(FILE *f);
-int fflush(FILE *f);
+int fdclose_i(FILE *f);
+int fdclose(FILE *f);
 int fclose_i(FILE *f);
 int fclose(FILE *f);
+int fflush(FILE *f);
 
 static
 int feof(FILE *f)

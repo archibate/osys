@@ -32,7 +32,6 @@ dma
 vinfo
 procfs
 txtdev
-numdev
 welcome
 zero
 ramfs

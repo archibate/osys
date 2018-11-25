@@ -1,5 +1,5 @@
-cat
-ls
-hello
+init
 shell
 xfont
+cat
+ls
