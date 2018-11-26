@@ -63,6 +63,12 @@ void efifo_flush(EFIFO *ef)
 	trig_up(&ef->eve_wr/*, 0x80*/);
 }
 
+static inline
+int __efifo_flush(EFIFO *ef)
+{
+	return __trig_up(&ef->eve_wr/*, 0x80*/);
+}
+
 /*static inline
 void efifo_wf_flush(EFIFO *ef)
 {

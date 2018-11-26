@@ -19,10 +19,10 @@ void event_init(EVENT *event)
 }
 
 void wait_on_ex(EVENT *event, struct TCB *next);
+void wait_on(EVENT *event);
+int __trig_up(EVENT *event);
 void trig_up(EVENT *event);
 
-#include <sched.h>
-
-#define wait_on(event) wait_on_ex(event, current->next)
+//#include <sched.h> // extern TCB *current;
 
 #include <tcb.h>

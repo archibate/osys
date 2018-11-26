@@ -1,4 +1,5 @@
 #include <onkeybd.h>
+#include <sched.h>
 #include <print.h>
 #include <efifo.h>
 #include <vkeys.h>
@@ -22,10 +23,15 @@ void on_keyboard_event
 
 	if (scancode < 0x80)
 	{
-		efifo_put(&vmon_efifo, ch);
 		efifo_put(&keybd_efifo, ch);
-		efifo_flush(&vmon_efifo);
-		efifo_flush(&keybd_efifo);
+		efifo_put(&vmon_efifo, ch);
+		int i = 0;
+		i += __efifo_flush(&keybd_efifo);
+		i += __efifo_flush(&vmon_efifo);
+		TCB *c = current;
+		while (i--)
+			c = c->prev;
+		task_run(c);
 	}
 }
 

@@ -13,7 +13,7 @@ void switch_from_to
 	, TCB *next
 	)
 {
-	if (0)
+	//if (0)
 	printf("[%p:%p] %s -> [%p:%p] %s\n",
 			prev, prev->sp, prev->name ? prev->name : "(noname)",
 			next, next->sp, next->name ? next->name : "(noname)");
